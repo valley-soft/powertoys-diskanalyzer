@@ -3,7 +3,7 @@
     "ActionKeyword": "ds",
     "IsGlobal": false,
     "Name": "DiskAnalyzer",
-    "Author": "thetsaw",
+    "Author": "ThetNaingSaw",
     "Version": "1.0.2",
     "Language": "csharp",
     "Website": "https://github.com/thetsaw/PowerToys.Plugin",
