@@ -29,4 +29,13 @@
     </None>
   </ItemGroup>
 
+<Target Name="ExcludeWinRTFromPublish" AfterTargets="ComputeResolvedFilesToPublishList">
+  <ItemGroup>
+    <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+      Condition="'%(Filename)' == 'Microsoft.Windows.SDK.NET' Or
+                 '%(Filename)' == 'WinRT.Runtime'" />
+  </ItemGroup>
+</Target>
+
+
 </Project>
