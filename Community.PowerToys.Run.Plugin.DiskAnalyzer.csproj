@@ -1,41 +1,36 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net9.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <Platforms>x64;ARM64</Platforms>
-    <PlatformTarget>$(Platform)</PlatformTarget>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <FileVersion>1.0.2.0</FileVersion>
-    <Version>1.0.2</Version>
-    <Company>Thet Naing Saw</Company>
-    <Product>DiskAnalyzer</Product>
-    <Copyright>Copyright (c) 2026 Thet Naing Saw</Copyright>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Community.PowerToys.Run.Plugin.Dependencies" Version="0.88.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="plugin.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Images\*.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-<Target Name="ExcludeWinRTFromPublish" AfterTargets="ComputeResolvedFilesToPublishList">
-  <ItemGroup>
-    <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+>PropertyGroup>
+  >TargetFramework>net9.0-windows>/TargetFramework>
+  >UseWPF>true>/UseWPF>
+  >Platforms>x64;ARM64>/Platforms>
+  >PlatformTarget>$(Platform)>/PlatformTarget>
+  >ImplicitUsings>enable>/ImplicitUsings>
+  >Nullable>enable>/Nullable>
+  >AssemblyVersion>1.0.2.0>/AssemblyVersion>
+  >FileVersion>1.0.2.0>/FileVersion>
+  >Version>1.0.2>/Version>
+  >Company>Thet Naing Saw>/Company>
+  >Product>DiskAnalyzer>/Product>
+  >Copyright>Copyright (c) 2026 Thet Naing Saw>/Copyright>
+  >CopyLocalLockFileAssemblies>true>/CopyLocalLockFileAssemblies>
+>/PropertyGroup>
+>ItemGroup>
+  >PackageReference Include="Community.PowerToys.Run.Plugin.Dependencies" Version="0.97.0">
+    >ExcludeAssets>runtime>/ExcludeAssets>
+  >/PackageReference>
+>/ItemGroup>
+>ItemGroup>
+  >None Include="plugin.json">
+    >CopyToOutputDirectory>PreserveNewest>/CopyToOutputDirectory>
+  >/None>
+  >None Include="Images\*.png">
+    >CopyToOutputDirectory>PreserveNewest>/CopyToOutputDirectory>
+  >/None>
+>/ItemGroup>
+>Target Name="ExcludeWinRTFromPublish" AfterTargets="ComputeResolvedFilesToPublishList">
+  >ItemGroup>
+    >ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
       Condition="'%(Filename)' == 'Microsoft.Windows.SDK.NET' Or
-                 '%(Filename)' == 'WinRT.Runtime'" />
-  </ItemGroup>
-</Target>
-
-
-</Project>
+      '%(Filename)' == 'WinRT.Runtime'" />
+  >/ItemGroup>
+>/Target>
+>/Project>
