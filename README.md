@@ -82,26 +82,24 @@ dotnet publish -c Release -r win-arm64 --self-contained false -o publish/arm64
 ```
 
 ## Version History
-v1.0.2 - 2026-05-24
-Updated target framework to net9.0-windows
 
-Updated Community.PowerToys.Run.Plugin.Dependencies to v0.97.0
+### v1.0.2 - 2026-05-24
+- Updated target framework to net9.0-windows
+- Updated Community.PowerToys.Run.Plugin.Dependencies to v0.97.0
+- Compatible with PowerToys v0.97.0 and later
 
-Compatible with PowerToys v0.97.0 and later
+### v1.0.1
+- Bug fixes and stability improvements
 
-v1.0.1
-Bug fixes and stability improvements
+### v1.0.0
+- Initial release
+- List drives with used / free / total space
+- Browse folder sizes ranked by largest
+- Recursive largest file/folder search
+- Cloud folder support (iCloud, OneDrive)
 
-v1.0.0
-Initial release
 
-List drives with used / free / total space
+## License
 
-Browse folder sizes ranked by largest
+[MIT](https://opensource.org/licenses/MIT) © [thetsaw](https://github.com/thetsaw)
 
-Recursive largest file/folder search
-
-Cloud folder support (iCloud, OneDrive)
-
-License
-MIT (c) thetsaw
