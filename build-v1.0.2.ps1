@@ -11,6 +11,14 @@ Write-Host "==> Building ARM64..." -ForegroundColor Cyan
 dotnet publish $csproj -c Release -r win-arm64 --no-self-contained -o "$dir\out\arm64"
 if ($LASTEXITCODE -ne 0) { Write-Host "ARM64 build FAILED" -ForegroundColor Red; exit 1 }
 
+
+# Remove PowerToys DLLs/PDBs bundled by dotnet publish (provided by host at runtime)
+Write-Host "==> Removing unnecessary PowerToys DLLs..." -ForegroundColor Cyan
+$ptDlls = @("PowerToys.Common.UI","PowerToys.ManagedCommon","PowerToys.Settings.UI.Lib","Wox.Infrastructure","Wox.Plugin")
+foreach ($d in $ptDlls) {
+    Remove-Item "$dir\out\x64\$d.dll","$dir\out\x64\$d.pdb" -ErrorAction SilentlyContinue
+    Remove-Item "$dir\out\arm64\$d.dll","$dir\out\arm64\$d.pdb" -ErrorAction SilentlyContinue
+}
 Write-Host "==> Packaging ZIPs (files inside DiskAnalyzer/ subfolder)..." -ForegroundColor Cyan
 
 # x64  stage files inside DiskAnalyzer/ so the zip has the required folder
@@ -48,3 +56,4 @@ $ptoys = @(
         Write-Host ""
         Write-Host "Done! DiskAnalyzer v1.0.2 installed." -ForegroundColor Green
         Get-Item "$dir\DiskAnalyzer-1.0.2-*.zip" | Format-Table Name, @{N="Size";E={"{0:N0} KB" -f ($_.Length/1KB)}}
+
