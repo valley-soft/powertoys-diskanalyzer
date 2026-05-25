@@ -1,14 +1,14 @@
 {
-    "ID": "B4F2E8A1C3D64F7E9A1B2C3D4E5F6A7B",
-    "ActionKeyword": "ds",
-    "IsGlobal": false,
-    "Name": "DiskAnalyzer",
-    "Author": "Thet Naing Saw",
-    "Version": "1.0.2",
-    "Language": "csharp",
-    "Website": "https://github.com/thetsaw/PowerToys.Plugin",
-    "ExecuteFileName": "Community.PowerToys.Run.Plugin.DiskAnalyzer.dll",
-    "IcoPathDark": "Images\\diskanalyzer.dark.png",
-    "IcoPathLight": "Images\\diskanalyzer.light.png",
-    "DynamicLoading": true
+      "ID": "B4F2E8A1C3D64F7E9A1B2C3D4E5F6A7B",
+      "ActionKeyword": "ds",
+      "IsGlobal": false,
+      "Name": "DiskAnalyzer",
+      "Author": "Thet Naing Saw",
+      "Version": "1.0.2",
+      "Language": "csharp",
+      "Website": "https://github.com/thetsaw/PowerToys.Plugin",
+      "ExecuteFileName": "Community.PowerToys.Run.Plugin.DiskAnalyzer.dll",
+      "IcoPathDark": "Images\\diskanalyzer.dark.png",
+      "IcoPathLight": "Images\\diskanalyzer.light.png",
+      "DynamicLoading": false
 }
