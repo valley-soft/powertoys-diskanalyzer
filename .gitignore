@@ -3,3 +3,8 @@ obj/
 out/
 *.user
 .vs/
+
+
+# Build artifacts
+*.zip
+publish/
