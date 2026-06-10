@@ -24,10 +24,13 @@ A [PowerToys Run](https://aka.ms/PowerToysOverview) plugin that brings **disk us
 ## Installation
 
 1. Download the zip for your architecture from [Releases](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
-2. Close PowerToys
-3. Extract the zip into `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer\`
-4. Restart PowerToys
-5. Open PowerToys Run with `Alt+Space` and type `ds` to get started
+2. **Close PowerToys completely** — Right-click the PowerToys icon in the system tray and select **Exit**.
+3. **Extract** the downloaded zip file.
+4. **Copy** the extracted `DiskAnalyzer` folder into: `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins`
+5. **Restart PowerToys** from the Start menu.
+6. **Enable the plugin** — Open PowerToys Settings → PowerToys Run → Plugins → find **DiskAnalyzer** → toggle **ON**.
+7. *(Optional)* Enable **"Include in global result"** to activate global mode. Once enabled, press `Alt+Space`, type `ds` and select a drive letter (e.g. `C:`, `D:`) to instantly scan that drive — no keyword prefix needed.
+
 
 ## Usage
 
