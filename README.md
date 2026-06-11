@@ -1,9 +1,9 @@
 # DiskAnalyzer - PowerToys Run Plugin
 
-[![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/thetsaw/PowerToys.Plugin)
 [![PowerToys](https://img.shields.io/badge/PowerToys-v0.97.0+-orange.svg)](https://github.com/microsoft/PowerToys)
-[![.NET](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![.NET](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 A [PowerToys Run](https://aka.ms/PowerToysOverview) plugin that brings **disk usage analysis** directly into your launcher. Instantly explore drive and folder sizes without leaving your keyboard.
@@ -76,7 +76,7 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 
 ## Building from Source
 
-Requires [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0).
+Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
 ```bash
 git clone https://github.com/thetsaw/PowerToys.Plugin.git
@@ -85,6 +85,12 @@ dotnet publish -c Release -r win-arm64 --self-contained false -o publish/arm64
 ```
 
 ## Version History
+
+### v1.1.0 - 2026-06-10
+- Updated target framework to net10.0-windows
+- Fixed missing plugin icons in PowerToys settings
+- Added allocated on-disk size to scan results
+- Improved scanning performance with parallel processing
 
 ### v1.0.2 - 2026-05-24
 - Updated target framework to net9.0-windows

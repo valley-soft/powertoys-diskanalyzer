@@ -1,5 +1,5 @@
-# DiskAnalyzer v1.0.2  Build & Package Script
-$dir = "D:\Projects\Community.PowerToys.Run.Plugin.DiskAnalyzer"
+# DiskAnalyzer v1.1.0  Build & Package Script
+$dir = $PSScriptRoot
 $csproj = Get-ChildItem -Path $dir -Recurse -Filter "*.csproj" | Select-Object -First 1 -ExpandProperty FullName
 Write-Host "Found project: $csproj" -ForegroundColor Cyan
 
@@ -26,14 +26,14 @@ $stageX64 = "$dir\stage\x64\DiskAnalyzer"
 Remove-Item "$dir\stage\x64" -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $stageX64 -Force | Out-Null
 Copy-Item "$dir\out\x64\*" $stageX64 -Recurse -Force
-Compress-Archive -Path "$dir\stage\x64\DiskAnalyzer" -DestinationPath "$dir\DiskAnalyzer-1.0.2-x64.zip" -Force
+Compress-Archive -Path "$dir\stage\x64\DiskAnalyzer" -DestinationPath "$dir\DiskAnalyzer-1.1.0-x64.zip" -Force
 
 # ARM64  same staging approach
 $stageARM64 = "$dir\stage\arm64\DiskAnalyzer"
 Remove-Item "$dir\stage\arm64" -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $stageARM64 -Force | Out-Null
 Copy-Item "$dir\out\arm64\*" $stageARM64 -Recurse -Force
-Compress-Archive -Path "$dir\stage\arm64\DiskAnalyzer" -DestinationPath "$dir\DiskAnalyzer-1.0.2-ARM64.zip" -Force
+Compress-Archive -Path "$dir\stage\arm64\DiskAnalyzer" -DestinationPath "$dir\DiskAnalyzer-1.1.0-ARM64.zip" -Force
 
 # Clean up staging folder
 Remove-Item "$dir\stage" -Recurse -Force -ErrorAction SilentlyContinue
@@ -54,6 +54,5 @@ $ptoys = @(
         else { Write-Host "PowerToys.exe not found  restart it manually." -ForegroundColor Yellow }
 
         Write-Host ""
-        Write-Host "Done! DiskAnalyzer v1.0.2 installed." -ForegroundColor Green
-        Get-Item "$dir\DiskAnalyzer-1.0.2-*.zip" | Format-Table Name, @{N="Size";E={"{0:N0} KB" -f ($_.Length/1KB)}}
-
+        Write-Host "Done! DiskAnalyzer v1.1.0 installed." -ForegroundColor Green
+        Get-Item "$dir\DiskAnalyzer-1.1.0-*.zip" | Format-Table Name, @{N="Size";E={"{0:N0} KB" -f ($_.Length/1KB)}}
