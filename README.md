@@ -9,6 +9,9 @@
 
 A [PowerToys Run](https://aka.ms/PowerToysOverview) plugin that brings **disk usage analysis** directly into your launcher. Instantly explore drive and folder sizes without leaving your keyboard.
 
+![Scanning drives with PowerToys Run](Images/screenshot-drives.png)
+![Scanning folder sizes with PowerToys Run](Images/screenshot-folders.png)
+
 ## Features
 
 - List all drives with used / free / total space
