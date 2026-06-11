@@ -13,4 +13,4 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         public int ItemCount { get; set; }
         public DateTime LastModified { get; set; }
     }
-}
+} 
