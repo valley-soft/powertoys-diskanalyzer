@@ -56,3 +56,4 @@ $ptoys = @(
         Write-Host ""
         Write-Host "Done! DiskAnalyzer v1.1.0 installed." -ForegroundColor Green
         Get-Item "$dir\DiskAnalyzer-1.1.0-*.zip" | Format-Table Name, @{N="Size";E={"{0:N0} KB" -f ($_.Length/1KB)}}
+ 
