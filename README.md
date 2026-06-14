@@ -1,11 +1,11 @@
 # DiskAnalyzer — PowerToys Run Plugin & Command Palette Extension
 
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
-[![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/thetsaw/PowerToys.Plugin)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+[![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/valley-soft/powertoys-diskanalyzer)
 [![PowerToys](https://img.shields.io/badge/PowerToys-v0.97.0+-orange.svg)](https://github.com/microsoft/PowerToys)
 [![.NET](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Downloads](https://img.shields.io/github/downloads/thetsaw/PowerToys.Plugin/total.svg)](https://github.com/thetsaw/PowerToys.Plugin/releases)
+[![Downloads](https://img.shields.io/github/downloads/valley-soft/powertoys-diskanalyzer/total.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases)
 
 A [PowerToys Run](https://aka.ms/PowerToysOverview) plugin **and** a native Windows Command Palette extension that brings **TreeSize-like disk usage analysis** directly into your launcher — plus a full standalone GUI window. Instantly explore drive and folder sizes without leaving your keyboard.
 
@@ -90,7 +90,7 @@ This project ships two separate tools that work together:
 
 #### Method 1 — Standalone Installer (Recommended)
 
-1. Download **`DiskAnalyzerInstaller-v1.2.0-x64.exe`** (or `arm64`) from [Releases](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
+1. Download **`DiskAnalyzerInstaller-v1.2.0-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Exit PowerToys completely** — Right-click the PowerToys icon in the system tray → **Exit**
 3. **Run the installer** — it will automatically extract and copy plugin files to:
    ```
@@ -101,7 +101,7 @@ This project ships two separate tools that work together:
 
 #### Method 2 — Manual (ZIP)
 
-1. Download the ZIP from [Releases](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
+1. Download the ZIP from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. Exit PowerToys completely
 3. Extract the ZIP to:
    ```
@@ -113,7 +113,7 @@ This project ships two separate tools that work together:
 
 ### Command Palette Extension (MSIX)
 
-1. Download **`DiskAnalyzerCommandPalleteVersion_1.2.0.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
+1. Download **`DiskAnalyzerCommandPalleteVersion_1.2.0.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Double-click** the `.msix` file — Windows will launch the installer
 3. Click **Install**
 4. Open the **Windows Command Palette** — *Disk Analyzer Command Pallete Version* will appear as a top-level entry
@@ -127,8 +127,8 @@ This project ships two separate tools that work together:
 Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
 ```powershell
-git clone https://github.com/thetsaw/PowerToys.Plugin.git
-cd PowerToys.Plugin
+git clone https://github.com/valley-soft/powertoys-diskanalyzer.git
+cd powertoys-diskanalyzer
 .\build-v1.2.0.ps1
 # Installers and MSIX packages appear in out\
 ```
@@ -286,4 +286,4 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 
 ## License
 
-[MIT](https://opensource.org/licenses/MIT) © [Thet Naing Saw](https://github.com/thetsaw)
+[MIT](https://opensource.org/licenses/MIT) © [ValleySoft](https://github.com/valley-soft)

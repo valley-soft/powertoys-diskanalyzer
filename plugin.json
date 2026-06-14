@@ -3,13 +3,12 @@
       "ActionKeyword": "ds",
       "IsGlobal": false,
       "Name": "DiskAnalyzer (PowerToys Run)",
-      "Author": "Thet Naing Saw",
+      "Author": "ValleySoft",
       "Version": "1.2.0",
       "Language": "csharp",
-      "Website": "https://github.com/thetsaw/PowerToys.Plugin",
+      "Website": "https://github.com/valley-soft/powertoys-diskanalyzer",
       "ExecuteFileName": "Community.PowerToys.Run.Plugin.DiskAnalyzer.dll",
       "IcoPathDark": "Images\\DiskAnalyzerDark.png",
       "IcoPathLight": "Images\\DiskAnalyzerLight.png",
       "DynamicLoading": false
 }
-  
