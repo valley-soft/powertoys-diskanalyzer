@@ -15,7 +15,7 @@ This release includes two separate tools:
 
 ### Installation — Command Palette Extension
 
-1. Download `DiskAnalyzerExtension_CmdPal_v1.2.0_x64.msix` (or `arm64`)
+1. Download `DiskAnalyzerCommandPalleteVersion_1.2.0.0_x64.msix` (or `arm64`)
 2. Double-click the `.msix` file and click **Install**
 3. Open Command Palette — *DiskAnalyzer* will appear as a top-level entry
 
