@@ -27,11 +27,10 @@ A [PowerToys Run](https://aka.ms/PowerToysOverview) plugin that brings **disk us
 
 ## Installation
 
-1. Download the zip for your architecture from [Releases](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
+1. Download the `DiskAnalyzerInstaller-v1.2.0-x64.exe` for your architecture from [Releases](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
 2. **Close PowerToys completely** — Right-click the PowerToys icon in the system tray and select **Exit**.
-3. **Extract** the downloaded zip file.
-4. **Copy** the extracted `DiskAnalyzer` folder into: `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins`
-5. **Restart PowerToys** from the Start menu.
+3. **Run** the downloaded installer executable. It will automatically extract and install the plugin to `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins`.
+4. **Restart PowerToys** from the Start menu.
 6. **Enable the plugin** — Open PowerToys Settings → PowerToys Run → Plugins → find **DiskAnalyzer** → toggle **ON**.
 7. *(Optional)* Enable **"Include in global result"** to activate global mode. Once enabled, press `Alt+Space`, type `ds` and select a drive letter (e.g. `C:`, `D:`) to instantly scan that drive — no keyword prefix needed.
 
@@ -84,11 +83,17 @@ Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
 ```bash
 git clone https://github.com/thetsaw/PowerToys.Plugin.git
-dotnet publish -c Release -r win-x64 --self-contained false -o publish/x64
-dotnet publish -c Release -r win-arm64 --self-contained false -o publish/arm64
+.\build-v1.2.0.ps1
 ```
 
 ## Version History
+
+### v1.2.0 - 2026-06-13
+- Added standalone WPF window GUI via `ds gui` command
+- Added custom C# Single-File native installer for Winget distribution
+- Added `ds ext` command to filter files by extension
+- Added `ds empty` command to find empty folders
+- Context Menu: Added support to send files to the Recycle Bin
 
 ### v1.1.0 - 2026-06-10
 - Updated target framework to net10.0-windows
@@ -127,8 +132,8 @@ Here is a breakdown of the key files and folders in this repository:
 *   **`Images/`**: Contains the visual icon assets (`DiskAnalyzerLight.png` and `DiskAnalyzerDark.png`) displayed in the PowerToys Run search bar.
 
 ### Build & Release
-*   **`build-v1.1.0.ps1`**: PowerShell script to automate compiling the C# code, stripping unnecessary DLLs, packaging release ZIPs, and installing the plugin locally for testing.
-*   **`DiskAnalyzer-1.1.0-x64.zip` / `DiskAnalyzer-1.1.0-ARM64.zip`**: The compiled, ready-to-distribute release packages.
+*   **`build-v1.2.0.ps1`**: PowerShell script to automate compiling the C# code, packaging the release ZIP, and embedding it into a native `.exe` installer.
+*   **`DiskAnalyzerInstaller-v1.2.0-x64.exe`**: The compiled, ready-to-distribute Winget-compatible installer package.
 
 ### Repository Files
 *   **`README.md`**: The front-page documentation.
