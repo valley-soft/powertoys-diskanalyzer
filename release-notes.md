@@ -1,13 +1,25 @@
-TreeSize-like disk usage analyzer for PowerToys Run.
+TreeSize-like disk usage analyzer for PowerToys Run and Windows Command Palette.
 
-### Installation
+### Components
 
-1. Download the zip for your architecture (x64 or ARM64)
-2. Extract to `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer`
-3. Restart PowerToys
-4. Open PowerToys Run and type `ds`
+This release includes two separate tools:
+- **PowerToys Run Plugin** (`ds` keyword in Alt+Space) — labeled *DiskAnalyzer (PowerToys Run)* in Command Palette
+- **Command Palette Extension** (MSIX) — labeled *DiskAnalyzer* in Command Palette, no keyword needed
 
-### Usage
+### Installation — PowerToys Run Plugin
+
+1. Download `DiskAnalyzerInstaller-v1.2.0-x64.exe` (or `arm64`)
+2. Exit PowerToys (right-click tray icon → Exit)
+3. Run the installer — it copies files to `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer`
+4. Restart PowerToys and enable the plugin in Settings → PowerToys Run → Plugins
+
+### Installation — Command Palette Extension
+
+1. Download `DiskAnalyzerExtension_CmdPal_v1.2.0_x64.msix` (or `arm64`)
+2. Double-click the `.msix` file and click **Install**
+3. Open Command Palette — *DiskAnalyzer* will appear as a top-level entry
+
+### Usage — PowerToys Run
 
 | Command | Description |
 | :--- | :--- |
@@ -16,18 +28,37 @@ TreeSize-like disk usage analyzer for PowerToys Run.
 | `ds C:\Users` | Scan a folder and show subfolders by size |
 | `ds largest C:\` | Find the largest files recursively |
 | `ds top C:\` | Show top subfolders by size |
+| `ds ext C:\ .mp4` | Find largest files by extension |
+| `ds empty C:\` | Find empty folders |
+| `ds gui` | Open the standalone GUI window |
+
+### Usage — Command Palette Extension
+
+| Command | Description |
+| :--- | :--- |
+| `drives` | List all drives |
+| `top C:\` | Top folders ranked by size |
+| `largest C:\` | Find largest files recursively |
+| `ext C:\ .mp4` | Find files by extension |
+| `empty C:\` | Find empty folders |
+| `C:\Users` | Scan any folder path |
 
 ### Changes in v1.2.0
 
-* **GUI:** Added standalone WPF window GUI via `ds gui` command
-* **Installation:** Created custom C# Single-File native installer for Winget distribution
-* **Search:** Added `ds ext` command to filter files by extension
-* **Search:** Added `ds empty` command to find empty folders
-* **Context Menu:** Added support to send files to the Recycle Bin
+* **New**: Native Command Palette MSIX Extension — type commands directly without a keyword prefix
+* **New**: Async background scanning in CmdPal — live *Scanning…* placeholder updates automatically
+* **New**: Interactive drill-down in CmdPal — click results to navigate
+* **New**: Standalone WPF GUI window (`ds gui`) with full tree explorer
+* **New**: `ds ext` command — filter files by extension
+* **New**: `ds empty` command — find empty folders
+* **New**: ARM64 support — installer and MSIX for ARM64
+* **New**: PowerToys Run plugin labeled *DiskAnalyzer (PowerToys Run)* in CmdPal
+* **Fixed**: Disk used space now matches Windows Explorer exactly
+* **Fixed**: Folder size calculation avoids reparse point loops
 
 ### Changes in v1.1.0
 
-* **Feature:** Added "Allocated on Disk" size metrics to scan results alongside actual logical size.
-* **Performance:** Implemented parallel processing for deep directory scans, significantly improving speed.
-* **Update:** Upgraded target framework to `.NET 10.0` for latest PowerToys compatibility.
-* **Fix:** Corrected an issue where the plugin icon was missing from the PowerToys Run settings menu.
+* **Feature:** Added "Allocated on Disk" size metrics to scan results
+* **Performance:** Implemented parallel processing for deep directory scans
+* **Update:** Upgraded target framework to `.NET 10.0`
+* **Fix:** Corrected missing plugin icon in PowerToys Run settings

@@ -1,58 +1,197 @@
 <Window x:Class="Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Disk Analyzer" Height="600" Width="1000"
+        Title="Disk Analyzer" Height="620" Width="1000"
         WindowStartupLocation="CenterScreen"
-        Background="#F3F3F3">
-    <Grid Margin="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300" />
-            <ColumnDefinition Width="5" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+        Background="#F0F0F0"
+        Foreground="Black">
 
-        <!-- Left Pane: TreeView -->
-        <Border Grid.Column="0" BorderBrush="#CCCCCC" BorderThickness="1" Background="White" CornerRadius="4">
-            <TreeView x:Name="FolderTree" BorderThickness="0" SelectedItemChanged="FolderTree_SelectedItemChanged">
-                <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="📁 " />
-                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
-                        </StackPanel>
-                    </HierarchicalDataTemplate>
-                </TreeView.ItemTemplate>
-            </TreeView>
-        </Border>
+    <Window.Resources>
+        <!-- Force button to always look the same regardless of dark/light mode -->
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#E1E1E1"/>
+            <Setter Property="Foreground" Value="#111111"/>
+            <Setter Property="BorderBrush" Value="#AAAAAA"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              TextElement.Foreground="{TemplateBinding Foreground}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#D0D0D0"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#BBBBBB"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#F0F0F0"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#CCCCCC"/>
+                                <Setter Property="Foreground" Value="#AAAAAA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-        <!-- Grid Splitter -->
-        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" />
+        <!-- TreeView item style to fix dark-mode highlight text -->
+        <Style TargetType="TreeViewItem">
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
 
-        <!-- Right Pane: DataGrid -->
-        <Border Grid.Column="2" BorderBrush="#CCCCCC" BorderThickness="1" Background="White" CornerRadius="4">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10" Background="#FAFAFA">
-                    <TextBlock x:Name="CurrentPathText" Text="Select a folder..." FontWeight="Bold" FontSize="16" VerticalAlignment="Center"/>
-                    <Button Content="Refresh" Margin="15,0,0,0" Padding="10,5" Click="Refresh_Click"/>
-                </StackPanel>
+        <!-- DataGrid column header style -->
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#EBEBEB"/>
+            <Setter Property="Foreground" Value="#222222"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+        </Style>
 
-                <DataGrid x:Name="ItemsGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" 
-                          SelectionMode="Single" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
-                          HorizontalGridLinesBrush="#EEEEEE" BorderThickness="0">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="250" />
-                        <DataGridTextColumn Header="Size" Binding="{Binding FormattedSize}" Width="100" />
-                        <DataGridTextColumn Header="Allocated" Binding="{Binding FormattedAllocated}" Width="100" />
-                        <DataGridTextColumn Header="Items" Binding="{Binding ItemCount}" Width="80" />
-                        <DataGridTextColumn Header="Modified" Binding="{Binding LastModified, StringFormat='g'}" Width="150" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
+        <!-- DataGrid row style -->
+        <Style TargetType="DataGridRow">
+            <Setter Property="Foreground" Value="#111111"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="10,10,10,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Pane: TreeView -->
+            <Border Grid.Column="0" BorderBrush="#BBBBBB" BorderThickness="1" Background="White" CornerRadius="4">
+                <TreeView x:Name="FolderTree"
+                          BorderThickness="0"
+                          Background="White"
+                          Foreground="Black"
+                          ItemsSource="{Binding RootFolders}"
+                          SelectedItemChanged="FolderTree_SelectedItemChanged"
+                          TreeViewItem.Expanded="TreeViewItem_Expanded">
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                            <StackPanel Orientation="Horizontal" Margin="2">
+                                <TextBlock Text="📁 " VerticalAlignment="Center" Foreground="#333333"/>
+                                <TextBlock Text="{Binding Name}" Foreground="#111111" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </Border>
+
+            <!-- Grid Splitter -->
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" />
+
+            <!-- Right Pane -->
+            <Border Grid.Column="2" BorderBrush="#BBBBBB" BorderThickness="1" Background="White" CornerRadius="4">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Toolbar -->
+                    <Border Grid.Row="0" Background="#F2F2F2" BorderBrush="#DDDDDD" BorderThickness="0,0,0,1" Padding="10,8">
+                        <DockPanel>
+                            <Button Content="Browse..." DockPanel.Dock="Right" Margin="5,0,0,0" Click="Browse_Click"/>
+                            <Button Content="Refresh" DockPanel.Dock="Right" Margin="5,0,0,0" Click="Refresh_Click"/>
+                            <Button x:Name="BackButton" Content="← Back" DockPanel.Dock="Left" Margin="0,0,10,0" Click="Back_Click" IsEnabled="False"/>
+                            <TextBlock x:Name="CurrentPathText"
+                                       Text="Select a folder from the tree, or click Browse..."
+                                       FontWeight="SemiBold"
+                                       FontSize="13"
+                                       Foreground="#333333"
+                                       VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis"/>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Results DataGrid -->
+                    <DataGrid x:Name="ItemsGrid"
+                              Grid.Row="1"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              HorizontalGridLinesBrush="#EEEEEE"
+                              BorderThickness="0"
+                              Background="White"
+                              Foreground="#111111"
+                              RowBackground="White"
+                              AlternatingRowBackground="#F8F8F8"
+                              MouseDoubleClick="ItemsGrid_MouseDoubleClick"
+                              Cursor="Hand">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="#111111"/>
+                                        <Setter Property="Padding" Value="4,2"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Size" Binding="{Binding FormattedSize}" Width="100" SortMemberPath="SizeBytes">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="#111111"/>
+                                        <Setter Property="Padding" Value="4,2"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Allocated" Binding="{Binding FormattedAllocated}" Width="100" SortMemberPath="AllocatedSizeBytes">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="#111111"/>
+                                        <Setter Property="Padding" Value="4,2"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Items" Binding="{Binding ItemCount}" Width="70">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="#111111"/>
+                                        <Setter Property="Padding" Value="4,2"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Modified" Binding="{Binding LastModified, StringFormat='g'}" Width="140">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="#111111"/>
+                                        <Setter Property="Padding" Value="4,2"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Status bar -->
+        <Border Grid.Row="1" Background="#E2E2E2" BorderBrush="#BBBBBB" BorderThickness="0,1,0,0" Padding="12,5">
+            <TextBlock x:Name="StatusText" Text="Ready — double-click a folder to drill down" Foreground="#444444" FontSize="12"/>
         </Border>
     </Grid>
 </Window>

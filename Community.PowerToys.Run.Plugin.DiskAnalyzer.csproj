@@ -21,6 +21,11 @@
     <Content Remove="Installer\**" />
     <EmbeddedResource Remove="Installer\**" />
     <None Remove="Installer\**" />
+    
+    <Compile Remove="CmdPalExtension\**" />
+    <Content Remove="CmdPalExtension\**" />
+    <EmbeddedResource Remove="CmdPalExtension\**" />
+    <None Remove="CmdPalExtension\**" />
   </ItemGroup>
 
   <ItemGroup>

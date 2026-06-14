@@ -1,4 +1,4 @@
-# DiskAnalyzer - PowerToys Run Plugin
+# DiskAnalyzer — PowerToys Run Plugin & Command Palette Extension
 
 [![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/thetsaw/PowerToys.Plugin)
@@ -7,39 +7,139 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Downloads](https://img.shields.io/github/downloads/thetsaw/PowerToys.Plugin/total.svg)](https://github.com/thetsaw/PowerToys.Plugin/releases)
 
-A [PowerToys Run](https://aka.ms/PowerToysOverview) plugin that brings **disk usage analysis** directly into your launcher. Instantly explore drive and folder sizes without leaving your keyboard.
+A [PowerToys Run](https://aka.ms/PowerToysOverview) plugin **and** a native Windows Command Palette extension that brings **TreeSize-like disk usage analysis** directly into your launcher — plus a full standalone GUI window. Instantly explore drive and folder sizes without leaving your keyboard.
 
-![Scanning drives with PowerToys Run](Images/screenshot-drives.png)
-![Scanning folder sizes with PowerToys Run](Images/screenshot-folders.png)
+![PowerToys Run — help and commands](Images/ptrun-help-commands.png)
+
+---
+
+## Components
+
+This project ships two separate tools that work together:
+
+| Component | Where it appears | How to trigger |
+|-----------|-----------------|----------------|
+| **PowerToys Run Plugin** | PowerToys Run (`Alt+Space`) and Command Palette (labeled *DiskAnalyzer (PowerToys Run)*) | Type `ds` keyword |
+| **Command Palette Extension** | Windows Command Palette (labeled *Disk Analyzer Command Pallete Version*) | Open CmdPal and type a command directly |
+
+---
 
 ## Features
 
-- List all drives with used / free / total space
-- Browse any folder and see children ranked by size
-- Recursively find the largest files and folders inside any path
-- Accurate sizes for cloud folders (iCloud, OneDrive)
-- Keyboard-first: clicking a result keeps the `ds` prefix so you can keep drilling down
+### PowerToys Run Plugin (`ds` keyword)
+- 🖥️ List all drives with used / free / total space and a visual usage bar
+- 📂 Browse any folder — subfolders and files ranked by size
+- 🔍 Recursively find the largest files inside any path
+- 📊 Show top-level subdirectories ranked by total size
+- 🔎 Filter files by extension (e.g. find all `.mp4` files)
+- 📁 Find empty folders inside any path
+- 🪟 Launch the full standalone **GUI window** with one command
+- 📋 Context menu: open in Explorer, copy path, copy size, drill down, find largest files
+- ⚡ Results cached for 10 seconds — no redundant re-scans
+
+### Command Palette Extension (native CmdPal)
+- 🖥️ Type commands directly — no keyword prefix needed
+- 📂 Async background scanning — shows a *Scanning…* placeholder while working
+- 🔄 Results appear automatically when the scan finishes
+- 🖱️ Click any result to drill down interactively
+- 📋 Context menu: copy path, copy size, open in Explorer, drill into subfolders
+
+---
+
+## PowerToys Run Commands
+
+![Help commands overview](Images/ptrun-help-commands.png)
+
+![Advanced commands: largest, top, ext, empty](Images/ptrun-advanced-commands.png)
+
+### Scanning Folders
+
+![Scanning top-level folders on C:\](Images/ptrun-top-folders.png)
+
+![Scanning C:\WINDOWS folder](Images/ptrun-folder-scan.png)
+
+### Standalone GUI Window (`ds gui`)
+
+![GUI — all drives overview with C:\ selected](Images/gui-drive-overview.png)
+
+![GUI — drilled into C:\WINDOWS](Images/gui-drill-down.png)
+
+- 🗂️ Left pane: expandable tree view of all your drives and folders
+- 📋 Right pane: sortable table showing Name, Size, Allocated, Items, Modified date
+- ⬅️ **Back button** — navigate back through your browsing history
+- 📂 **Browse button** — open any folder with a standard folder picker dialog
+- 🔄 **Refresh button** — rescan the current folder
+- 🖱️ **Double-click** a folder row to drill down into it
+- 🖱️ **Double-click** a file row to reveal it in File Explorer
+- ✅ Sizes sorted correctly by bytes — not alphabetically
+- 🔒 Safe: no delete functionality — read-only tool
+
+---
 
 ## Requirements
 
 - [Microsoft PowerToys](https://github.com/microsoft/PowerToys) v0.97.0 or later
 - Windows 10 / 11 (x64 or ARM64)
+- .NET 10 Runtime (included with PowerToys)
+
+---
 
 ## Installation
 
-1. Download the `DiskAnalyzerInstaller-v1.2.0-x64.exe` for your architecture from [Releases](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
-2. **Close PowerToys completely** — Right-click the PowerToys icon in the system tray and select **Exit**.
-3. **Run** the downloaded installer executable. It will automatically extract and install the plugin to `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins`.
-4. **Restart PowerToys** from the Start menu.
-6. **Enable the plugin** — Open PowerToys Settings → PowerToys Run → Plugins → find **DiskAnalyzer** → toggle **ON**.
-7. *(Optional)* Enable **"Include in global result"** to activate global mode. Once enabled, press `Alt+Space`, type `ds` and select a drive letter (e.g. `C:`, `D:`) to instantly scan that drive — no keyword prefix needed.
+### PowerToys Run Plugin
 
+#### Method 1 — Standalone Installer (Recommended)
+
+1. Download **`DiskAnalyzerInstaller-v1.2.0-x64.exe`** (or `arm64`) from [Releases](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
+2. **Exit PowerToys completely** — Right-click the PowerToys icon in the system tray → **Exit**
+3. **Run the installer** — it will automatically extract and copy plugin files to:
+   ```
+   %LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer\
+   ```
+4. **Restart PowerToys** from the Start menu
+5. **Enable the plugin** — Open PowerToys Settings → PowerToys Run → Plugins → find **DiskAnalyzer** → toggle **ON**
+
+#### Method 2 — Manual (ZIP)
+
+1. Download the ZIP from [Releases](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
+2. Exit PowerToys completely
+3. Extract the ZIP to:
+   ```
+   %LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer\
+   ```
+4. Restart PowerToys and enable the plugin in Settings
+
+---
+
+### Command Palette Extension (MSIX)
+
+1. Download **`DiskAnalyzerCommandPalleteVersion_1.2.0.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
+2. **Double-click** the `.msix` file — Windows will launch the installer
+3. Click **Install**
+4. Open the **Windows Command Palette** — *Disk Analyzer Command Pallete Version* will appear as a top-level entry
+
+> **Note:** The MSIX package is self-signed for development/sideloading. You may need to enable **Developer Mode** in Windows Settings → System → For developers, or trust the certificate manually.
+
+---
+
+### Method 3 — Build from Source
+
+Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
+
+```powershell
+git clone https://github.com/thetsaw/PowerToys.Plugin.git
+cd PowerToys.Plugin
+.\build-v1.2.0.ps1
+# Installers and MSIX packages appear in out\
+```
+
+---
 
 ## Usage
 
-Open PowerToys Run (`Alt+Space`) and type `ds` followed by a command.
+### PowerToys Run Plugin
 
-### Commands
+Open PowerToys Run (`Alt+Space`) and type `ds` followed by a command.
 
 | Command | Description |
 |---------|-------------|
@@ -49,8 +149,12 @@ Open PowerToys Run (`Alt+Space`) and type `ds` followed by a command.
 | `ds C:\Users\Photos` | Drill into any subfolder |
 | `ds largest C:\` | Find the largest files recursively inside a path |
 | `ds top C:\` | Show top-level subfolders ranked by total size |
+| `ds ext C:\ .mp4` | Find the largest files of a specific extension |
+| `ds empty C:\` | Find empty folders inside a path |
+| `ds gui` | Open the full standalone GUI window |
+| `ds gui C:\Users` | Open the GUI window pre-navigated to a specific folder |
 
-### Context Menu (right-click any result)
+#### Context Menu (right-click / `>` on any result)
 
 | Shortcut | Action |
 |----------|--------|
@@ -60,11 +164,49 @@ Open PowerToys Run (`Alt+Space`) and type `ds` followed by a command.
 | `Ctrl+Enter` | Drill down into the selected folder |
 | `Ctrl+L` | Find largest files inside the selected folder |
 
-### Tips
+#### Tips
 
-- Clicking a folder result automatically prefills `ds <path>` so you can keep drilling down without retyping
+- Clicking a folder result automatically prefills `ds <path>` so you can keep drilling down
 - Paths with spaces are supported — wrap them in quotes: `ds "C:\My Folder"`
 - Results are cached for 10 seconds to avoid redundant re-scans
+- The `ds gui` window works independently — you can close PowerToys Run after launching it
+
+---
+
+### Command Palette Extension
+
+Open the Windows Command Palette and click **Disk Analyzer Command Pallete Version** (or search for it). Then type directly:
+
+| Command | Description |
+|---------|-------------|
+| `drives` | List all drives with used / free / total space |
+| `top C:\` | Top-level folders ranked by size |
+| `largest C:\` | Find the largest files recursively |
+| `ext C:\ .mp4` | Find largest files of a specific extension |
+| `empty C:\` | Find empty folders |
+| `C:\Users` | Scan any absolute folder path — ranked by size |
+
+Results appear **as you type** — scanning runs in the background with a *Scanning…* placeholder and updates automatically when done. Click any result to drill down interactively.
+
+---
+
+## GUI Window — How to Use
+
+Launch with `ds gui` from PowerToys Run, then press Enter.
+
+| Action | How |
+|--------|-----|
+| Browse drives | All drives appear in the left tree on startup |
+| Expand a drive/folder | Click the ▶ arrow in the left tree |
+| View folder contents | Click any drive or folder in the left tree |
+| Drill into a subfolder | **Double-click** any folder row in the right grid |
+| Reveal a file | **Double-click** any file row — opens File Explorer |
+| Go back | Click **← Back** button |
+| Pick any folder | Click **Browse...** button |
+| Rescan current view | Click **Refresh** button |
+| Sort columns | Click any column header (Size/Allocated sort by bytes correctly) |
+
+---
 
 ## Settings
 
@@ -77,31 +219,55 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 | Include hidden files | Off | Include items with the Hidden attribute |
 | Show percentage of parent | On | Display what % of the parent each item uses |
 
-## Building from Source
+---
 
-Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
+## Project Structure
 
-```bash
-git clone https://github.com/thetsaw/PowerToys.Plugin.git
-.\build-v1.2.0.ps1
-```
+| File / Folder | Purpose |
+|---------------|---------| 
+| `Main.cs` | Plugin entry point — handles queries, results, and context menus |
+| `DiskAnalyzerHelper.cs` | File system scanning, size calculation, progress bars |
+| `DiskAnalyzerWindow.xaml` / `.cs` | Standalone GUI window (WPF) |
+| `DiskItemInfo.cs` | Data model for scanned files/folders |
+| `plugin.json` | PowerToys metadata (name, keyword, version, icons) |
+| `Images/` | Plugin icon assets and README screenshots |
+| `CmdPalExtension/` | Native Command Palette MSIX extension project |
+| `Installer/` | Single-file native installer source |
+| `build-v1.2.0.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX for x64 & ARM64, installs locally |
+| `out/` | Final output: installer `.exe` files, CmdPal `.msix` packages, and ZIPs |
+
+---
 
 ## Version History
 
-### v1.2.0 - 2026-06-13
-- Added standalone WPF window GUI via `ds gui` command
-- Added custom C# Single-File native installer for Winget distribution
-- Added `ds ext` command to filter files by extension
-- Added `ds empty` command to find empty folders
-- Context Menu: Added support to send files to the Recycle Bin
+### v1.2.0 — 2026-06-14
+- ✨ **New**: Native **Command Palette MSIX Extension** — type commands directly in CmdPal without a keyword
+  - Async background scanning with live *Scanning…* placeholder
+  - Interactive drill-down by clicking results
+  - Supports `drives`, `top`, `largest`, `ext`, `empty`, and any folder path
+- ✨ **New**: Standalone GUI window (`ds gui`) with full drive/folder tree explorer
+  - Expandable left tree pane showing all drives
+  - Right grid with sortable Name, Size, Allocated, Items, Modified columns
+  - Double-click to drill down into folders
+  - Double-click files to reveal in File Explorer
+  - ← Back navigation, Browse folder picker, Refresh
+  - Sizes sort correctly by bytes (not alphabetically)
+- ✨ **New**: `ds ext <path> <extension>` — find largest files by extension
+- ✨ **New**: `ds empty <path>` — find empty folders
+- ✨ **New**: ARM64 support — separate installer and MSIX for ARM64 devices
+- ✨ **New**: PowerToys Run plugin labeled *DiskAnalyzer (PowerToys Run)* in CmdPal to distinguish from the MSIX extension
+- 🛠️ **Fixed**: Disk used space now matches Windows Explorer exactly
+- 🛠️ **Fixed**: Folder size calculation uses queue-based BFS (avoids reparse points)
+- 📦 **New**: Single-file native `.exe` installer for both x64 and ARM64
+- 📦 **New**: MSIX packages for Command Palette extension (x64 and ARM64)
 
-### v1.1.0 - 2026-06-10
+### v1.1.0 — 2026-06-10
 - Updated target framework to net10.0-windows
 - Fixed missing plugin icons in PowerToys settings
 - Added allocated on-disk size to scan results
 - Improved scanning performance with parallel processing
 
-### v1.0.2 - 2026-05-24
+### v1.0.2 — 2026-05-24
 - Updated target framework to net9.0-windows
 - Updated Community.PowerToys.Run.Plugin.Dependencies to v0.97.0
 - Compatible with PowerToys v0.97.0 and later
@@ -116,34 +282,8 @@ git clone https://github.com/thetsaw/PowerToys.Plugin.git
 - Recursive largest file/folder search
 - Cloud folder support (iCloud, OneDrive)
 
-
-## Project Structure
-
-Here is a breakdown of the key files and folders in this repository:
-
-### Code & Core Logic
-*   **`Main.cs`**: The entry point of the plugin. Hooks into PowerToys Run, processes search queries, formats results, and handles Context Menu actions.
-*   **`DiskAnalyzerHelper.cs`**: Contains the background logic for scanning the file system, calculating exact/allocated sizes using Windows APIs, parallel task processing, and generating visual progress bars.
-*   **`DiskItemInfo.cs`**: The data model representing a scanned file or folder (stores Name, Path, Actual Size, Allocated Size, etc.).
-
-### Configuration & Settings
-*   **`plugin.json`**: PowerToys metadata file defining the plugin's name, activation keyword (`ds`), version, and icon locations.
-*   **`Community.PowerToys.Run.Plugin.DiskAnalyzer.csproj`**: The .NET project file. Tells the compiler how to build the code, target .NET framework version, and manages dependencies.
-*   **`Images/`**: Contains the visual icon assets (`DiskAnalyzerLight.png` and `DiskAnalyzerDark.png`) displayed in the PowerToys Run search bar.
-
-### Build & Release
-*   **`build-v1.2.0.ps1`**: PowerShell script to automate compiling the C# code, packaging the release ZIP, and embedding it into a native `.exe` installer.
-*   **`DiskAnalyzerInstaller-v1.2.0-x64.exe`**: The compiled, ready-to-distribute Winget-compatible installer package.
-
-### Repository Files
-*   **`README.md`**: The front-page documentation.
-*   **`.gitignore`**: Defines files that Git should not track (e.g., `bin/` and `obj/` build artifacts). Note: Release ZIPs are forcefully tracked for distribution.
-*   **`LICENSE`**: The MIT License file.
-*   **`ptrun-lint.log`**: A log file generated by a linter or formatting tool checking for code style/syntax issues.
-
+---
 
 ## License
 
-[MIT](https://opensource.org/licenses/MIT) © [thetsaw](https://github.com/thetsaw)
-
- 
+[MIT](https://opensource.org/licenses/MIT) © [Thet Naing Saw](https://github.com/thetsaw)

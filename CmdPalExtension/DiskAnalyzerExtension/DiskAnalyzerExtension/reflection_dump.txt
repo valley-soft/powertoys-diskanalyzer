@@ -1,0 +1,232 @@
+ListPage methods:
+Void add_ItemsChanged(Windows.Foundation.TypedEventHandler`2[System.Object,Microsoft.CommandPalette.Extensions.IItemsChangedEventArgs])
+Void remove_ItemsChanged(Windows.Foundation.TypedEventHandler`2[System.Object,Microsoft.CommandPalette.Extensions.IItemsChangedEventArgs])
+System.String get_PlaceholderText()
+Void set_PlaceholderText(System.String)
+System.String get_SearchText()
+Void set_SearchText(System.String)
+Boolean get_ShowDetails()
+Void set_ShowDetails(Boolean)
+Boolean get_HasMoreItems()
+Void set_HasMoreItems(Boolean)
+Microsoft.CommandPalette.Extensions.IFilters get_Filters()
+Void set_Filters(Microsoft.CommandPalette.Extensions.IFilters)
+Microsoft.CommandPalette.Extensions.IGridProperties get_GridProperties()
+Void set_GridProperties(Microsoft.CommandPalette.Extensions.IGridProperties)
+Microsoft.CommandPalette.Extensions.ICommandItem get_EmptyContent()
+Void set_EmptyContent(Microsoft.CommandPalette.Extensions.ICommandItem)
+Microsoft.CommandPalette.Extensions.IListItem[] GetItems()
+Void LoadMore()
+Void RaiseItemsChanged(Int32)
+Void SetSearchNoUpdate(System.String)
+Boolean get_IsLoading()
+Void set_IsLoading(Boolean)
+System.String get_Title()
+Void set_Title(System.String)
+Microsoft.CommandPalette.Extensions.OptionalColor get_AccentColor()
+Void set_AccentColor(Microsoft.CommandPalette.Extensions.OptionalColor)
+System.String get_Name()
+Void set_Name(System.String)
+System.String get_Id()
+Void set_Id(System.String)
+Microsoft.CommandPalette.Extensions.Toolkit.IconInfo get_Icon()
+Void set_Icon(Microsoft.CommandPalette.Extensions.Toolkit.IconInfo)
+Microsoft.CommandPalette.Extensions.IIconInfo Microsoft.CommandPalette.Extensions.ICommand.get_Icon()
+Void add_PropChanged(Windows.Foundation.TypedEventHandler`2[System.Object,Microsoft.CommandPalette.Extensions.IPropChangedEventArgs])
+Void remove_PropChanged(Windows.Foundation.TypedEventHandler`2[System.Object,Microsoft.CommandPalette.Extensions.IPropChangedEventArgs])
+Void OnPropertyChanged(System.String)
+Boolean SetProperty[T](T ByRef, T, System.String)
+System.Type GetType()
+System.Object MemberwiseClone()
+Void Finalize()
+System.String ToString()
+Boolean Equals(System.Object)
+Int32 GetHashCode()
+
+ListPage properties:
+System.String PlaceholderText
+System.String SearchText
+Boolean ShowDetails
+Boolean HasMoreItems
+Microsoft.CommandPalette.Extensions.IFilters Filters
+Microsoft.CommandPalette.Extensions.IGridProperties GridProperties
+Microsoft.CommandPalette.Extensions.ICommandItem EmptyContent
+Boolean IsLoading
+System.String Title
+Microsoft.CommandPalette.Extensions.OptionalColor AccentColor
+System.String Name
+System.String Id
+Microsoft.CommandPalette.Extensions.Toolkit.IconInfo Icon
+Toolkit classes:
+IEnumerable_Microsoft_CommandPalette_Extensions_INotifyPropChanged
+IEnumerable_Microsoft_CommandPalette_Extensions_IListItem
+IEnumerable_Microsoft_CommandPalette_Extensions_ICommandItem
+Microsoft_CommandPalette_Extensions_Toolkit_ListPageWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_FontIconDataWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_SettingsFormWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_OpenUrlCommandWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_CommandResultWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_ItemsChangedEventArgsWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_CommandContextItemWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_ToastArgsWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_IconInfoWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_TreeContentWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_CommandProvider_SupportCommandsWithPropertiesWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_LogMessageWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_TagWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_DetailsSeparatorWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_CommandWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_DetailsWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_ListItemWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_DetailsLinkWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_DetailsElementWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_FilterWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_BaseObservableWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_PageWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_PropChangedEventArgsWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_MarkdownContentWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_WrappedDockItemWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_ProgressStateWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_SectionWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_SeparatorWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_SmallGridLayoutWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_Settings_SettingsContentPageWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_MediumGridLayoutWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_GalleryGridLayoutWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_DetailsCommandsWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_IconDataWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_FallbackCommandItemWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_GoToPageArgsWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_DetailsTagsWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_SettingsWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_ConfirmationArgsWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_Toolkit_StatusMessageWinRTTypeDetails
+Microsoft_CommandPalette_Extensions_ExtensionServerWinRTTypeDetails
+AnonymousCommand
+BaseObservable
+ChoiceSetSetting
+ClipboardHelper
+ColorHelpers
+Command
+CommandContextItem
+CommandItem
+CommandProvider
+CommandResult
+CopyPathCommand
+CopyTextCommand
+NoOpCommand
+OpenFileCommand
+OpenInConsoleCommand
+OpenPropertiesCommand
+OpenUrlCommand
+ShowFileInFolderCommand
+ConfirmationArgs
+ContentPage
+Details
+DetailsCommands
+DetailsElement
+DetailsLink
+DetailsSeparator
+DetailsTags
+WrappedDockItem
+WrappedDockList
+DynamicListPage
+ExtensionHost
+FallbackCommandItem
+Filter
+Filters
+FontIconData
+FormContent
+FuzzyStringMatcher
+GalleryGridLayout
+GoToPageArgs
+IconData
+IconHelpers
+IconInfo
+InvokableCommand
+ISettingsForm
+ItemsChangedEventArgs
+JsonSerializationContext
+JsonSettingsManager
+KeyChordHelpers
+ListHelpers
+ScoredListItem
+Scored`1
+ListItem
+ListPage
+LogMessage
+MarkdownContent
+MatchOption
+MatchResult
+MediumGridLayout
+NativeMethods
+Page
+ProgressState
+PropChangedEventArgs
+SearchPrecisionScore
+Section
+Separator
+Settings
+SettingsForm
+Setting`1
+ShellHelpers
+SmallGridLayout
+StatusMessage
+Tag
+TextSetting
+ThumbnailHelper
+ToastArgs
+ToastStatusMessage
+ToggleSetting
+TreeContent
+Utilities
+WeakEventListener`3
+WellKnownExtensionAttributes
+Resources
+Choice
+<>c__DisplayClass14_0
+<>c__DisplayClass26_0
+<>c__DisplayClass2_0
+<>c__DisplayClass3_0
+<>c__DisplayClass4_0
+<>c__DisplayClass19_0
+SupportCommandsWithProperties
+<>c__DisplayClass5_0
+<>c__DisplayClass7_0
+<>c__DisplayClass8_0
+Scoring
+Folding
+Text
+Bonus
+RentedSpan`1
+PreparedFuzzyQuery
+PreparedFuzzyQueryThreadCache
+<>O
+<>c
+<>c__DisplayClass11_0
+<>c__DisplayClass17_0
+<>c
+<>c__2`1
+<>c__3`1
+<>c__DisplayClass1_0
+<>c__DisplayClass3_0`1
+SHFILEINFO
+AssocF
+AssocStr
+SettingsContentPage
+<>c
+ShellRunAsType
+<>c__DisplayClass10_0
+<FromHIconToStream>d__19
+<GetFileIconStream>d__10
+<GetFileIconStreamUsingFilePath>d__12
+<GetImageThumbnailAsync>d__13
+<GetProtocolIconStream>d__17
+<GetThumbnail>d__1
+<TryExtractUsingPIDL>d__11
+<<LogMessage>b__0>d
+<<ShowStatus>b__0>d
+<<HideStatus>b__0>d
+<>c
+<>c
+Cache

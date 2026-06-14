@@ -56,6 +56,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         /// </summary>
         public List<Result> Query(Query query)
         {
+
+
             var search = query.Search?.Trim() ?? string.Empty;
 
             // Strip "ds " prefix if ChangeQuery doubled it
@@ -86,7 +88,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                         Score = 1000,
                         Action = _ =>
                         {
-                            var path = search.Length > 3 ? search[3..].Trim().Trim('"') : "C:\\";
+                            // If no path given after 'gui', pass null so LoadAllDrives() is called
+                            var path = search.Length > 3 ? search[3..].Trim().Trim('"') : null;
                             Application.Current.Dispatcher.Invoke(() =>
                             {
                                 var window = new DiskAnalyzerWindow(path);
@@ -111,9 +114,13 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 return new List<Result>();
             }
 
+
+
             var search = query.Search?.Trim() ?? string.Empty;
 
-            if (string.IsNullOrEmpty(search) || search.Equals(CmdDrives, StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrEmpty(search) || 
+                search.Equals(CmdDrives, StringComparison.OrdinalIgnoreCase) ||
+                search.StartsWith(CmdGui, StringComparison.OrdinalIgnoreCase))
             {
                 return new List<Result>();
             }
@@ -328,26 +335,6 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 });
             }
 
-            // Move to Recycle Bin
-            menus.Add(new ContextMenuResult
-            {
-                PluginName = Name,
-                Title = "Move to Recycle Bin (Ctrl+Del)",
-                FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                Glyph = "\xE74D", // Delete
-                AcceleratorKey = Key.Delete,
-                AcceleratorModifiers = ModifierKeys.Control,
-                Action = _ =>
-                {
-                    var result = MessageBox.Show($"Are you sure you want to move {item.Name} to the Recycle Bin?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        DiskAnalyzerHelper.MoveToRecycleBin(item.FullPath);
-                    }
-                    return true; // Close launcher
-                },
-            });
-
             return menus;
         }
 
@@ -536,7 +523,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 
             foreach (var drive in drives)
             {
-                var usedBytes = drive.TotalSize - drive.AvailableFreeSpace;
+                var usedBytes = drive.TotalSize - drive.TotalFreeSpace;
                 var allocatedBytes = DiskAnalyzerHelper.GetAllocatedSize(drive.Name, usedBytes); // Rough estimation for drive
                 var usedPercent = (double)usedBytes / drive.TotalSize * 100;
                 var bar = DiskAnalyzerHelper.CreateProgressBar(usedPercent);
@@ -544,7 +531,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 results.Add(new Result
                 {
                     Title = $"{drive.Name} \u2014 {DiskAnalyzerHelper.FormatSize(usedBytes)} used of {DiskAnalyzerHelper.FormatSize(drive.TotalSize)} ({usedPercent:F1}%)",
-                    SubTitle = $"{bar} Free: {DiskAnalyzerHelper.FormatSize(drive.AvailableFreeSpace)} | Allocated: {DiskAnalyzerHelper.FormatSize(allocatedBytes)}",
+                    SubTitle = $"{bar} Free: {DiskAnalyzerHelper.FormatSize(drive.TotalFreeSpace)} | Allocated: {DiskAnalyzerHelper.FormatSize(allocatedBytes)}",
                     IcoPath = _iconPath,
                     Score = (int)usedPercent,
                     ToolTipData = new ToolTipData(
@@ -555,7 +542,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                         $"Total: {DiskAnalyzerHelper.FormatSize(drive.TotalSize)}\n" +
                         $"Used: {DiskAnalyzerHelper.FormatSize(usedBytes)} ({usedPercent:F1}%)\n" +
                         $"Allocated: {DiskAnalyzerHelper.FormatSize(allocatedBytes)}\n" +
-                        $"Free: {DiskAnalyzerHelper.FormatSize(drive.AvailableFreeSpace)}"),
+                        $"Free: {DiskAnalyzerHelper.FormatSize(drive.TotalFreeSpace)}"),
                     ContextData = new DiskItemInfo
                     {
                         FullPath = drive.Name,

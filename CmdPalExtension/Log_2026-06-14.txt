@@ -1,0 +1,556 @@
+[09:35:21.6894580] [Info] Program.cs::Main::81
+    ============================================================
+Hello World! Command Palette is starting.
+
+Application:
+  App version:           0.11.11601.0
+  Packaging flavor:      Packaged
+  Is elevated:           no
+
+Environment:
+  OS version:            Microsoft Windows 10.0.26200
+  OS architecture:       X64
+  Runtime identifier:    win-x64
+  Framework:             .NET 10.0.8
+  Process architecture:  X64
+  Culture:               en-US
+  UI culture:            en-US
+
+Paths:
+  Log directory:         C:\Users\thetn\AppData\Local\Microsoft\PowerToys\CmdPal\Logs\0.100.0.0
+  Config directory:      C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalState
+  Cache directory:       C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalCache
+============================================================
+[09:35:23.6199489] [Error] AppCache.cs::.ctor::57
+    One or more errors occurred while indexing apps
+[09:35:23.6296198] [Error] AppCache.cs::.ctor::61
+    
+System.Runtime.InteropServices.COMException (-2147024881): 
+Stack trace: 
+   at WinRT.ExceptionHelpers.<ThrowExceptionForHR>g__Throw|38_0(Int32) + 0x42
+   at ABI.Windows.ApplicationModel.IPackageMethods.get_InstalledLocation(IObjectReference) + 0x7d
+   at Microsoft.CmdPal.Ext.Apps.Programs.PackageWrapper.GetWrapperFromPackage(Package) + 0x95
+   at Microsoft.CmdPal.Ext.Apps.Programs.PackageManagerWrapper.FindPackagesForCurrentUser() + 0xdd
+   at Microsoft.CmdPal.Ext.Apps.Programs.UWP.CurrentUserPackages() + 0x3f
+   at Microsoft.CmdPal.Ext.Apps.Programs.UWP.All() + 0x68
+   at Microsoft.CmdPal.Ext.Apps.AppCache.<.ctor>b__9_1() + 0x15
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread, ExecutionContext, ContextCallback, Object) + 0x3d
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread, ExecutionContext, ContextCallback, Object) + 0x70
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&, Thread) + 0x248
+[09:35:23.6333216] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 3 ms::74
+[09:35:24.4565182] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.home for provider com.microsoft.cmdpal.builtin.core
+[09:35:24.4583129] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.timedate.dockBand for provider com.microsoft.cmdpal.builtin.datetime
+[09:35:24.4607203] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.performanceWidget for provider PerformanceMonitor
+[09:35:25.0334771] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 393 ms
+[09:35:25.0547058] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 414 ms
+[09:35:25.1628941] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 522 ms
+[09:35:25.2570294] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 65 ms
+[09:35:25.2998775] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 107 ms
+[09:35:25.6512833] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 52 command(s) and 0 band(s) from Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 460 ms
+[09:35:25.6514423] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 54 command(s) and 0 band(s) from 3 extension(s) in 1012 ms
+[09:45:37.1816403] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 1751 ms
+[09:45:37.3884464] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 50 ms
+[09:45:37.3886281] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 1 command(s) and 0 band(s) from 1 extension(s) in 1958 ms
+[09:48:20.6570448] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 1765 ms
+[09:48:20.8703338] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 50 ms
+[09:48:20.8705411] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 1 command(s) and 0 band(s) from 1 extension(s) in 1979 ms
+[09:49:27.5059122] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 2 ms::74
+[09:58:00.7857263] [Info] Program.cs::Main::81
+    ============================================================
+Hello World! Command Palette is starting.
+
+Application:
+  App version:           0.11.11601.0
+  Packaging flavor:      Packaged
+  Is elevated:           no
+
+Environment:
+  OS version:            Microsoft Windows 10.0.26200
+  OS architecture:       X64
+  Runtime identifier:    win-x64
+  Framework:             .NET 10.0.8
+  Process architecture:  X64
+  Culture:               en-US
+  UI culture:            en-US
+
+Paths:
+  Log directory:         C:\Users\thetn\AppData\Local\Microsoft\PowerToys\CmdPal\Logs\0.100.0.0
+  Config directory:      C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalState
+  Cache directory:       C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalCache
+============================================================
+[09:58:03.4208489] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDisplayName} : ms-resource:AIXHost/ClickToDo/AppDisplayName : Unexpected HRESULT has been returned from a call to a COM component.
+[09:58:03.4471930] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDescription} : ms-resource:AIXHost/ClickToDo/AppDescription : Unexpected HRESULT has been returned from a call to a COM component.
+[09:58:04.6104335] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 2 ms::74
+[09:58:05.4932321] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.home for provider com.microsoft.cmdpal.builtin.core
+[09:58:05.5892215] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.timedate.dockBand for provider com.microsoft.cmdpal.builtin.datetime
+[09:58:05.5938346] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.performanceWidget for provider PerformanceMonitor
+[09:58:06.0866635] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 361 ms
+[09:58:06.9491162] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 1223 ms
+[09:58:07.5706920] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 1845 ms
+[09:58:07.8789675] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 108 ms
+[09:58:07.9035848] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 132 ms
+[09:58:08.9533576] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 52 command(s) and 0 band(s) from Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 1184 ms
+[09:58:08.9535441] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 54 command(s) and 0 band(s) from 3 extension(s) in 3228 ms
+[10:01:43.1973615] [Info] Program.cs::Main::81
+    ============================================================
+Hello World! Command Palette is starting.
+
+Application:
+  App version:           0.11.11601.0
+  Packaging flavor:      Packaged
+  Is elevated:           no
+
+Environment:
+  OS version:            Microsoft Windows 10.0.26200
+  OS architecture:       X64
+  Runtime identifier:    win-x64
+  Framework:             .NET 10.0.8
+  Process architecture:  X64
+  Culture:               en-US
+  UI culture:            en-US
+
+Paths:
+  Log directory:         C:\Users\thetn\AppData\Local\Microsoft\PowerToys\CmdPal\Logs\0.100.0.0
+  Config directory:      C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalState
+  Cache directory:       C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalCache
+============================================================
+[10:01:45.7665227] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDisplayName} : ms-resource:AIXHost/ClickToDo/AppDisplayName : Unexpected HRESULT has been returned from a call to a COM component.
+[10:01:45.7705023] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDescription} : ms-resource:AIXHost/ClickToDo/AppDescription : Unexpected HRESULT has been returned from a call to a COM component.
+[10:01:46.7275979] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 3 ms::74
+[10:01:47.5951082] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.home for provider com.microsoft.cmdpal.builtin.core
+[10:01:47.5963996] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.timedate.dockBand for provider com.microsoft.cmdpal.builtin.datetime
+[10:01:47.5999134] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.performanceWidget for provider PerformanceMonitor
+[10:01:48.1743061] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 450 ms
+[10:01:48.3494176] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 625 ms
+[10:01:49.6926485] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 1968 ms
+[10:01:49.8783181] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 41 ms
+[10:01:49.8929019] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 55 ms
+[10:01:50.1296820] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 52 command(s) and 0 band(s) from Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 302 ms
+[10:01:50.1299172] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 54 command(s) and 0 band(s) from 3 extension(s) in 2405 ms
+[10:09:08.7871337] [Info] Program.cs::Main::81
+    ============================================================
+Hello World! Command Palette is starting.
+
+Application:
+  App version:           0.11.11601.0
+  Packaging flavor:      Packaged
+  Is elevated:           no
+
+Environment:
+  OS version:            Microsoft Windows 10.0.26200
+  OS architecture:       X64
+  Runtime identifier:    win-x64
+  Framework:             .NET 10.0.8
+  Process architecture:  X64
+  Culture:               en-US
+  UI culture:            en-US
+
+Paths:
+  Log directory:         C:\Users\thetn\AppData\Local\Microsoft\PowerToys\CmdPal\Logs\0.100.0.0
+  Config directory:      C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalState
+  Cache directory:       C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalCache
+============================================================
+[10:09:11.1207817] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDisplayName} : ms-resource:AIXHost/ClickToDo/AppDisplayName : Unexpected HRESULT has been returned from a call to a COM component.
+[10:09:11.1247650] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDescription} : ms-resource:AIXHost/ClickToDo/AppDescription : Unexpected HRESULT has been returned from a call to a COM component.
+[10:09:12.1644410] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 4 ms::74
+[10:09:13.0815336] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.home for provider com.microsoft.cmdpal.builtin.core
+[10:09:13.0828325] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.timedate.dockBand for provider com.microsoft.cmdpal.builtin.datetime
+[10:09:13.0872973] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.performanceWidget for provider PerformanceMonitor
+[10:09:13.6013358] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 394 ms
+[10:09:13.7484048] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 541 ms
+[10:09:15.1312260] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 1924 ms
+[10:09:15.3151068] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 49 ms
+[10:09:15.3340777] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 67 ms
+[10:09:15.5939186] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 52 command(s) and 0 band(s) from Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 329 ms
+[10:09:15.5941304] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 54 command(s) and 0 band(s) from 3 extension(s) in 2387 ms
+[10:18:37.1297024] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 1811 ms
+[10:18:37.3183439] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 51 ms
+[10:18:37.3185424] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 1 command(s) and 0 band(s) from 1 extension(s) in 1999 ms
+[10:19:34.1925140] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 1606 ms
+[10:19:34.3856807] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 54 ms
+[10:19:34.3857936] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 1 command(s) and 0 band(s) from 1 extension(s) in 1799 ms
+[10:19:50.0590927] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 2 ms::74
+[10:25:55.1223186] [Info] Program.cs::Main::81
+    ============================================================
+Hello World! Command Palette is starting.
+
+Application:
+  App version:           0.11.11601.0
+  Packaging flavor:      Packaged
+  Is elevated:           no
+
+Environment:
+  OS version:            Microsoft Windows 10.0.26200
+  OS architecture:       X64
+  Runtime identifier:    win-x64
+  Framework:             .NET 10.0.8
+  Process architecture:  X64
+  Culture:               en-US
+  UI culture:            en-US
+
+Paths:
+  Log directory:         C:\Users\thetn\AppData\Local\Microsoft\PowerToys\CmdPal\Logs\0.100.0.0
+  Config directory:      C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalState
+  Cache directory:       C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalCache
+============================================================
+[10:25:57.3907904] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDisplayName} : ms-resource:AIXHost/ClickToDo/AppDisplayName : Unexpected HRESULT has been returned from a call to a COM component.
+[10:25:57.3955849] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDescription} : ms-resource:AIXHost/ClickToDo/AppDescription : Unexpected HRESULT has been returned from a call to a COM component.
+[10:25:58.2531391] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 3 ms::74
+[10:25:59.0552621] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.home for provider com.microsoft.cmdpal.builtin.core
+[10:25:59.0569545] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.timedate.dockBand for provider com.microsoft.cmdpal.builtin.datetime
+[10:25:59.0602597] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.performanceWidget for provider PerformanceMonitor
+[10:25:59.5549178] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 374 ms
+[10:25:59.7070288] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 527 ms
+[10:26:01.2052004] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 2025 ms
+[10:26:01.4153170] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 68 ms
+[10:26:01.4309755] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 82 ms
+[10:26:01.7326295] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 52 command(s) and 0 band(s) from Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 386 ms
+[10:26:01.7328616] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 54 command(s) and 0 band(s) from 3 extension(s) in 2552 ms
+[10:28:45.0761519] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 1804 ms
+[10:28:45.2872352] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 54 ms
+[10:28:45.2873586] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 1 command(s) and 0 band(s) from 1 extension(s) in 2015 ms
+[10:29:54.9834758] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 2 ms::74
+[10:30:07.0938115] [Info] Program.cs::Main::81
+    ============================================================
+Hello World! Command Palette is starting.
+
+Application:
+  App version:           0.11.11601.0
+  Packaging flavor:      Packaged
+  Is elevated:           no
+
+Environment:
+  OS version:            Microsoft Windows 10.0.26200
+  OS architecture:       X64
+  Runtime identifier:    win-x64
+  Framework:             .NET 10.0.8
+  Process architecture:  X64
+  Culture:               en-US
+  UI culture:            en-US
+
+Paths:
+  Log directory:         C:\Users\thetn\AppData\Local\Microsoft\PowerToys\CmdPal\Logs\0.100.0.0
+  Config directory:      C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalState
+  Cache directory:       C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalCache
+============================================================
+[10:30:09.1278109] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDisplayName} : ms-resource:AIXHost/ClickToDo/AppDisplayName : Unexpected HRESULT has been returned from a call to a COM component.
+[10:30:09.1321023] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDescription} : ms-resource:AIXHost/ClickToDo/AppDescription : Unexpected HRESULT has been returned from a call to a COM component.
+[10:30:10.3044190] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 2 ms::74
+[10:30:11.1505681] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.home for provider com.microsoft.cmdpal.builtin.core
+[10:30:11.1526962] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.timedate.dockBand for provider com.microsoft.cmdpal.builtin.datetime
+[10:30:11.1574027] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.performanceWidget for provider PerformanceMonitor
+[10:30:11.6247138] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 339 ms
+[10:30:11.6443137] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 358 ms
+[10:30:11.7804046] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 494 ms
+[10:30:11.9523420] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 125 ms
+[10:30:11.9636307] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 135 ms
+[10:30:12.3520566] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 52 command(s) and 0 band(s) from Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 526 ms
+[10:30:12.3522471] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 54 command(s) and 0 band(s) from 3 extension(s) in 1066 ms
+[10:30:23.9875987] [Info] SearchQuery.cs::TryExecuteFallbackQuery::269
+    Retrying search with implicit filename wildcard matching. Reason=primary query returned zero rows, Query="dik"
+[10:34:02.2210203] [Info] Program.cs::Main::81
+    ============================================================
+Hello World! Command Palette is starting.
+
+Application:
+  App version:           0.11.11601.0
+  Packaging flavor:      Packaged
+  Is elevated:           no
+
+Environment:
+  OS version:            Microsoft Windows 10.0.26200
+  OS architecture:       X64
+  Runtime identifier:    win-x64
+  Framework:             .NET 10.0.8
+  Process architecture:  X64
+  Culture:               en-US
+  UI culture:            en-US
+
+Paths:
+  Log directory:         C:\Users\thetn\AppData\Local\Microsoft\PowerToys\CmdPal\Logs\0.100.0.0
+  Config directory:      C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalState
+  Cache directory:       C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalCache
+============================================================
+[10:34:04.2143583] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDisplayName} : ms-resource:AIXHost/ClickToDo/AppDisplayName : Unexpected HRESULT has been returned from a call to a COM component.
+[10:34:04.2177937] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDescription} : ms-resource:AIXHost/ClickToDo/AppDescription : Unexpected HRESULT has been returned from a call to a COM component.
+[10:34:05.4403197] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 3 ms::74
+[10:34:06.0490352] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.home for provider com.microsoft.cmdpal.builtin.core
+[10:34:06.1006603] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.timedate.dockBand for provider com.microsoft.cmdpal.builtin.datetime
+[10:34:06.1032757] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.performanceWidget for provider PerformanceMonitor
+[10:34:06.5207537] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 335 ms
+[10:34:06.5244496] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 339 ms
+[10:34:06.6046874] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 419 ms
+[10:34:06.6943050] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 62 ms
+[10:34:06.7221964] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 89 ms
+[10:34:07.2538197] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 52 command(s) and 0 band(s) from Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 623 ms
+[10:34:07.2540263] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 54 command(s) and 0 band(s) from 3 extension(s) in 1068 ms
+[10:36:20.6232197] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 1598 ms
+[10:36:20.8139966] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 46 ms
+[10:36:20.8141553] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 1 command(s) and 0 band(s) from 1 extension(s) in 1789 ms
+[10:36:47.4625003] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 14 ms::74
+[10:41:42.3472535] [Info] Program.cs::Main::81
+    ============================================================
+Hello World! Command Palette is starting.
+
+Application:
+  App version:           0.11.11601.0
+  Packaging flavor:      Packaged
+  Is elevated:           no
+
+Environment:
+  OS version:            Microsoft Windows 10.0.26200
+  OS architecture:       X64
+  Runtime identifier:    win-x64
+  Framework:             .NET 10.0.8
+  Process architecture:  X64
+  Culture:               en-US
+  UI culture:            en-US
+
+Paths:
+  Log directory:         C:\Users\thetn\AppData\Local\Microsoft\PowerToys\CmdPal\Logs\0.100.0.0
+  Config directory:      C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalState
+  Cache directory:       C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalCache
+============================================================
+[10:41:45.3497947] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDisplayName} : ms-resource:AIXHost/ClickToDo/AppDisplayName : Unexpected HRESULT has been returned from a call to a COM component.
+[10:41:45.3638003] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDescription} : ms-resource:AIXHost/ClickToDo/AppDescription : Unexpected HRESULT has been returned from a call to a COM component.
+[10:41:46.6877314] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 2 ms::74
+[10:41:47.7065714] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.home for provider com.microsoft.cmdpal.builtin.core
+[10:41:47.7084182] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.timedate.dockBand for provider com.microsoft.cmdpal.builtin.datetime
+[10:41:47.7119233] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.performanceWidget for provider PerformanceMonitor
+[10:41:48.0544939] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 241 ms
+[10:41:48.1074239] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 294 ms
+[10:41:48.1678992] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 39 ms
+[10:41:48.4848027] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 52 command(s) and 0 band(s) from Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 357 ms
+[10:41:48.4849471] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 53 command(s) and 0 band(s) from 2 extension(s) in 671 ms
+[10:45:44.4523068] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 1948 ms
+[10:45:44.6612673] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 58 ms
+[10:45:44.6614654] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 1 command(s) and 0 band(s) from 1 extension(s) in 2157 ms
+[11:14:51.8963405] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 2 ms::74
+[11:17:19.0312499] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 255 ms
+[11:17:19.1393063] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 53 ms
+[11:17:19.1394910] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 1 command(s) and 0 band(s) from 1 extension(s) in 364 ms
+[11:19:59.0969591] [Info] Program.cs::Main::81
+    ============================================================
+Hello World! Command Palette is starting.
+
+Application:
+  App version:           0.11.11601.0
+  Packaging flavor:      Packaged
+  Is elevated:           no
+
+Environment:
+  OS version:            Microsoft Windows 10.0.26200
+  OS architecture:       X64
+  Runtime identifier:    win-x64
+  Framework:             .NET 10.0.8
+  Process architecture:  X64
+  Culture:               en-US
+  UI culture:            en-US
+
+Paths:
+  Log directory:         C:\Users\thetn\AppData\Local\Microsoft\PowerToys\CmdPal\Logs\0.100.0.0
+  Config directory:      C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalState
+  Cache directory:       C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalCache
+============================================================
+[11:20:01.4645867] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDisplayName} : ms-resource:AIXHost/ClickToDo/AppDisplayName : Unexpected HRESULT has been returned from a call to a COM component.
+[11:20:01.4712905] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDescription} : ms-resource:AIXHost/ClickToDo/AppDescription : Unexpected HRESULT has been returned from a call to a COM component.
+[11:20:02.5584020] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 4 ms::74
+[11:20:03.4274847] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.home for provider com.microsoft.cmdpal.builtin.core
+[11:20:03.4291556] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.timedate.dockBand for provider com.microsoft.cmdpal.builtin.datetime
+[11:20:03.4331698] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.performanceWidget for provider PerformanceMonitor
+[11:20:03.9355458] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 376 ms
+[11:20:03.9548757] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 396 ms
+[11:20:04.0914085] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 532 ms
+[11:20:04.2444996] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 110 ms
+[11:20:04.2634180] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 130 ms
+[11:20:04.5970458] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 52 command(s) and 0 band(s) from Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 465 ms
+[11:20:04.5972151] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 54 command(s) and 0 band(s) from 3 extension(s) in 1038 ms
+[11:23:00.1770696] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 11 ms
+[11:23:00.1858309] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 6 ms
+[11:23:00.1860432] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 1 command(s) and 0 band(s) from 1 extension(s) in 20 ms
+[11:23:09.2703179] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 216 ms
+[11:23:09.3833705] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 56 ms
+[11:23:09.3835454] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 1 command(s) and 0 band(s) from 1 extension(s) in 329 ms
+[11:23:29.3700519] [Info] Program.cs::Main::81
+    ============================================================
+Hello World! Command Palette is starting.
+
+Application:
+  App version:           0.11.11601.0
+  Packaging flavor:      Packaged
+  Is elevated:           no
+
+Environment:
+  OS version:            Microsoft Windows 10.0.26200
+  OS architecture:       X64
+  Runtime identifier:    win-x64
+  Framework:             .NET 10.0.8
+  Process architecture:  X64
+  Culture:               en-US
+  UI culture:            en-US
+
+Paths:
+  Log directory:         C:\Users\thetn\AppData\Local\Microsoft\PowerToys\CmdPal\Logs\0.100.0.0
+  Config directory:      C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalState
+  Cache directory:       C:\Users\thetn\AppData\Local\Packages\Microsoft.CommandPalette_8wekyb3d8bbwe\LocalCache
+============================================================
+[11:23:31.7748463] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDisplayName} : ms-resource:AIXHost/ClickToDo/AppDisplayName : Unexpected HRESULT has been returned from a call to a COM component.
+[11:23:31.7797001] [Error] UWPApplication.cs::TryLoadIndirectString::220
+    Unable to load resource @{MicrosoftWindows.Client.CoreAI_1000.26100.8655.0_x64__cw5n1h2txyewy? ms-resource:///resources/AIXHost/ClickToDo/AppDescription} : ms-resource:AIXHost/ClickToDo/AppDescription : Unexpected HRESULT has been returned from a call to a COM component.
+[11:23:32.8863304] [Trace] AllAppsPage.cs::AllAppsPage.BuildListItems took: 3 ms::74
+[11:23:33.8928287] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.home for provider com.microsoft.cmdpal.builtin.core
+[11:23:33.8947078] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.timedate.dockBand for provider com.microsoft.cmdpal.builtin.datetime
+[11:23:33.8998214] [Warning] CommandProviderWrapper.cs::InitializeCommands::346
+    Skipping duplicate pinned dock band command com.microsoft.cmdpal.performanceWidget for provider PerformanceMonitor
+[11:23:34.4653658] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 430 ms
+[11:23:34.5983030] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 563 ms
+[11:23:34.6616696] [Info] TopLevelCommandManager.cs::TryStartExtensionAsync::485
+    Started extension DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 626 ms
+[11:23:34.7806465] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DavideGiacometti.VisualStudioForCmdPal_0.0.3.0_x64__vmjk9v3vswc4e in 79 ms
+[11:23:34.7924658] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 1 command(s) and 0 band(s) from DiskAnalyzerExtension_1.2.0.0_x64__8wekyb3d8bbwe in 90 ms
+[11:23:35.0753764] [Info] TopLevelCommandManager.cs::TryLoadCommandsAsync::539
+    Loaded 52 command(s) and 0 band(s) from Microsoft.PowerToys.SparseApp_0.100.0.0_neutral__8wekyb3d8bbwe in 376 ms
+[11:23:35.0755959] [Info] TopLevelCommandManager.cs::StartExtensionsAndGetCommands::398
+    Loaded 54 command(s) and 0 band(s) from 3 extension(s) in 1040 ms

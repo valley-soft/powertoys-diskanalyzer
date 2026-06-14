@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "DiskAnalyzerExtension (Package)": {
+      "commandName": "MsixPackage",
+      "doNotLaunchApp": true
+    },
+    "DiskAnalyzerExtension (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

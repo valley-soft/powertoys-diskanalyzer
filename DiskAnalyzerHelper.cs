@@ -3,10 +3,42 @@
 
 using System.IO;
 using System.Text;
+#if !CMD_PAL
 using Wox.Plugin.Logger;
+#endif
 
 namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 {
+    internal static class LogHelper
+    {
+        public static void Error(string message, Type type)
+        {
+#if !CMD_PAL
+            Log.Error(message, type);
+#else
+            System.Diagnostics.Debug.WriteLine($"ERROR [{type.Name}]: {message}");
+#endif
+        }
+
+        public static void Warn(string message, Type type)
+        {
+#if !CMD_PAL
+            Log.Warn(message, type);
+#else
+            System.Diagnostics.Debug.WriteLine($"WARN [{type.Name}]: {message}");
+#endif
+        }
+
+        public static void Debug(string message, Type type)
+        {
+#if !CMD_PAL
+            Log.Debug(message, type);
+#else
+            System.Diagnostics.Debug.WriteLine($"DEBUG [{type.Name}]: {message}");
+#endif
+        }
+    }
+
     /// <summary>
     /// Helper methods for disk scanning, size formatting, and UI elements.
     /// </summary>
@@ -17,47 +49,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true, EntryPoint = "GetCompressedFileSizeW", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
         private static extern uint GetCompressedFileSize(string lpFileName, out uint lpFileSizeHigh);
 
-        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
-        private struct SHFILEOPSTRUCT
-        {
-            public IntPtr hwnd;
-            public uint wFunc;
-            public string pFrom;
-            public string pTo;
-            public ushort fFlags;
-            public int fAnyOperationsAborted;
-            public IntPtr hNameMappings;
-            public string lpszProgressTitle;
-        }
 
-        [System.Runtime.InteropServices.DllImport("shell32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
-        private static extern int SHFileOperation(ref SHFILEOPSTRUCT fileOp);
-
-        private const uint FO_DELETE = 0x0003;
-        private const ushort FOF_ALLOWUNDO = 0x0040;
-        private const ushort FOF_NOCONFIRMATION = 0x0010;
-
-        /// <summary>
-        /// Safely moves a file or folder to the Windows Recycle Bin.
-        /// </summary>
-        public static bool MoveToRecycleBin(string path)
-        {
-            try
-            {
-                var shf = new SHFILEOPSTRUCT
-                {
-                    wFunc = FO_DELETE,
-                    fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION,
-                    pFrom = path + '\0' + '\0'
-                };
-                return SHFileOperation(ref shf) == 0;
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"Failed to move {path} to recycle bin: {ex.Message}", typeof(DiskAnalyzerHelper));
-                return false;
-            }
-        }
 
         public static long GetAllocatedSize(string path, long actualSize)
         {
@@ -80,6 +72,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 return (actualSize + clusterSize - 1) / clusterSize * clusterSize;
             }
         }
+
+
 
         // Fix #2: Shared EnumerationOptions factory — no more duplicated construction
         private static EnumerationOptions CreateOptions(bool includeHidden, bool recurse = false, int maxDepth = 1)
@@ -160,7 +154,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             {
                 path = path.Trim().Trim('"');
 
-                if (string.IsNullOrWhiteSpace(path))
+                if (string.IsNullOrWhiteSpace(path) || !Path.IsPathRooted(path))
                 {
                     return false;
                 }
@@ -225,7 +219,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                         }
                         catch (Exception ex)
                         {
-                            Log.Warn($"Error calculating size for {sub.FullName}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                            LogHelper.Warn($"Error calculating size for {sub.FullName}: {ex.Message}", typeof(DiskAnalyzerHelper));
                             folderItems[i] = new DiskItemInfo
                             {
                                 Name = sub.Name,
@@ -243,7 +237,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn($"Error enumerating directories in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                    LogHelper.Warn($"Error enumerating directories in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
                 }
 
                 // Fix #2: EnumerateFiles instead of GetFiles — lazy, no full array load
@@ -266,18 +260,18 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                         }
                         catch (Exception ex)
                         {
-                            Log.Debug($"Skipping file {file.Name}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                            LogHelper.Debug($"Skipping file {file.Name}: {ex.Message}", typeof(DiskAnalyzerHelper));
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn($"Error enumerating files in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                    LogHelper.Warn($"Error enumerating files in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
                 }
             }
             catch (Exception ex)
             {
-                Log.Error($"Error scanning directory {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                LogHelper.Error($"Error scanning directory {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
             }
 
             return items;
@@ -325,7 +319,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     }
                     catch (Exception ex)
                     {
-                        Log.Debug($"Skipping file {file.Name}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                        LogHelper.Debug($"Skipping file {file.Name}: {ex.Message}", typeof(DiskAnalyzerHelper));
                     }
                 });
 
@@ -345,7 +339,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             }
             catch (Exception ex)
             {
-                Log.Error($"Error finding largest files in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                LogHelper.Error($"Error finding largest files in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
             }
 
             return files;
@@ -393,7 +387,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     }
                     catch (Exception ex)
                     {
-                        Log.Warn($"Error calculating size for {sub.FullName}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                        LogHelper.Warn($"Error calculating size for {sub.FullName}: {ex.Message}", typeof(DiskAnalyzerHelper));
                         folderItems[i] = new DiskItemInfo
                         {
                             Name = sub.Name,
@@ -415,7 +409,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             }
             catch (Exception ex)
             {
-                Log.Error($"Error getting top folders in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                LogHelper.Error($"Error getting top folders in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
             }
 
             return folders;
@@ -462,7 +456,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     }
                     catch (Exception ex)
                     {
-                        Log.Debug($"Skipping file {file.Name}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                        LogHelper.Debug($"Skipping file {file.Name}: {ex.Message}", typeof(DiskAnalyzerHelper));
                     }
                 });
 
@@ -482,7 +476,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             }
             catch (Exception ex)
             {
-                Log.Error($"Error finding files by extension {extension} in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                LogHelper.Error($"Error finding files by extension {extension} in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
             }
 
             return files;
@@ -525,7 +519,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     }
                     catch (Exception ex)
                     {
-                        Log.Debug($"Skipping directory {subDir.Name}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                        LogHelper.Debug($"Skipping directory {subDir.Name}: {ex.Message}", typeof(DiskAnalyzerHelper));
                     }
                 });
 
@@ -533,7 +527,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             }
             catch (Exception ex)
             {
-                Log.Error($"Error finding empty folders in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                LogHelper.Error($"Error finding empty folders in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
             }
 
             return emptyFolders;
@@ -550,39 +544,128 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 
             try
             {
-                var options = CreateOptions(includeHidden, recurse: depth > 1, maxDepth: depth);
                 var dirInfo = new DirectoryInfo(path);
+                var q = new Queue<DirectoryInfo>();
+                q.Enqueue(dirInfo);
 
-                var files = dirInfo.EnumerateFiles("*", options).AsParallel();
-                long localSize = 0;
-                long localAllocated = 0;
-                int localCount = 0;
-
-                files.ForAll(file =>
+                while (q.Count > 0)
                 {
+                    var cur = q.Dequeue();
                     try
                     {
-                        long size = file.Length;
-                        Interlocked.Add(ref localSize, size);
-                        Interlocked.Add(ref localAllocated, GetAllocatedSize(file.FullName, size));
-                        Interlocked.Increment(ref localCount);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Debug($"Skipping file {file.Name}: {ex.Message}", typeof(DiskAnalyzerHelper));
-                    }
-                });
+                        if ((cur.Attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint) continue;
 
-                totalSize = localSize;
-                totalAllocated = localAllocated;
-                itemCount = localCount;
+                        try
+                        {
+                            foreach (var f in cur.GetFiles())
+                            {
+                                long size = f.Length;
+                                totalSize += size;
+                                totalAllocated += GetAllocatedSize(f.FullName, size);
+                                itemCount++;
+                            }
+
+                            if (depth > 1) // If recurse is true
+                            {
+                                foreach (var d in cur.GetDirectories())
+                                {
+                                    if ((d.Attributes & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint)
+                                    {
+                                        q.Enqueue(d);
+                                    }
+                                }
+                            }
+                        }
+                        catch (UnauthorizedAccessException)
+                        {
+                            // Fallback to robocopy backup mode to scan this restricted folder recursively
+                            if (depth > 1)
+                            {
+                                int subFilesCount;
+                                long subSize = GetDirectorySizeWithRobocopy(cur.FullName, out subFilesCount);
+                                totalSize += subSize;
+                                totalAllocated += subSize; // Approximate allocation as same as size
+                                itemCount += subFilesCount;
+                            }
+                        }
+                        catch { }
+                    }
+                    catch { }
+                }
             }
             catch (Exception ex)
             {
-                Log.Debug($"Error calculating size for {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                LogHelper.Debug($"Error calculating size for {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
             }
 
             return (totalSize, totalAllocated, itemCount);
+        }
+
+        private static string EscapePathForCommandLine(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return "";
+            if (path.EndsWith("\\"))
+            {
+                return path + "\\";
+            }
+            return path;
+        }
+
+        private static long GetDirectorySizeWithRobocopy(string path, out int fileCount)
+        {
+            fileCount = 0;
+            try
+            {
+                string escapedPath = EscapePathForCommandLine(path);
+                string escapedTemp = EscapePathForCommandLine(System.IO.Path.GetTempPath());
+                var startInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "robocopy.exe",
+                    Arguments = $"\"{escapedPath}\" \"{escapedTemp}\" /L /S /NJH /BYTES /B /XJ",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+
+                using (var process = System.Diagnostics.Process.Start(startInfo))
+                {
+                    string output = process.StandardOutput.ReadToEnd();
+                    process.WaitForExit();
+
+                    long bytes = 0;
+                    int files = 0;
+
+                    var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var line in lines)
+                    {
+                        string trimmed = line.Trim();
+                        if (trimmed.Contains("Files") && trimmed.Contains(":"))
+                        {
+                            var parts = trimmed.Split(new[] { ' ', '\t', ':' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (parts.Length >= 2 && int.TryParse(parts[1], out int f))
+                            {
+                                files = f;
+                            }
+                        }
+                        else if (trimmed.Contains("Bytes") && trimmed.Contains(":"))
+                        {
+                            var parts = trimmed.Split(new[] { ' ', '\t', ':' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (parts.Length >= 2 && long.TryParse(parts[1], out long b))
+                            {
+                                bytes = b;
+                            }
+                        }
+                    }
+
+                    fileCount = files;
+                    return bytes;
+                }
+            }
+            catch
+            {
+                return 0;
+            }
         }
     }
 }
