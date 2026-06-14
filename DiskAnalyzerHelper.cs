@@ -17,6 +17,48 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true, EntryPoint = "GetCompressedFileSizeW", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
         private static extern uint GetCompressedFileSize(string lpFileName, out uint lpFileSizeHigh);
 
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+        private struct SHFILEOPSTRUCT
+        {
+            public IntPtr hwnd;
+            public uint wFunc;
+            public string pFrom;
+            public string pTo;
+            public ushort fFlags;
+            public int fAnyOperationsAborted;
+            public IntPtr hNameMappings;
+            public string lpszProgressTitle;
+        }
+
+        [System.Runtime.InteropServices.DllImport("shell32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+        private static extern int SHFileOperation(ref SHFILEOPSTRUCT fileOp);
+
+        private const uint FO_DELETE = 0x0003;
+        private const ushort FOF_ALLOWUNDO = 0x0040;
+        private const ushort FOF_NOCONFIRMATION = 0x0010;
+
+        /// <summary>
+        /// Safely moves a file or folder to the Windows Recycle Bin.
+        /// </summary>
+        public static bool MoveToRecycleBin(string path)
+        {
+            try
+            {
+                var shf = new SHFILEOPSTRUCT
+                {
+                    wFunc = FO_DELETE,
+                    fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION,
+                    pFrom = path + '\0' + '\0'
+                };
+                return SHFileOperation(ref shf) == 0;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Failed to move {path} to recycle bin: {ex.Message}", typeof(DiskAnalyzerHelper));
+                return false;
+            }
+        }
+
         public static long GetAllocatedSize(string path, long actualSize)
         {
             try
@@ -377,6 +419,124 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             }
 
             return folders;
+        }
+
+        /// <summary>
+        /// Finds the largest files of a specific extension.
+        /// </summary>
+        public static List<DiskItemInfo> FindFilesByExtension(string path, string extension, int maxResults, bool includeHidden)
+        {
+            var files = new List<DiskItemInfo>();
+
+            try
+            {
+                if (!extension.StartsWith(".")) extension = "." + extension;
+                var options = CreateOptions(includeHidden, recurse: true, maxDepth: int.MaxValue);
+                var dirInfo = new DirectoryInfo(path);
+                if (!dirInfo.Exists) return files;
+                
+                var topFiles = new SortedSet<(long Size, long Allocated, string Path, string Name, DateTime Modified)>(
+                    Comparer<(long Size, long Allocated, string Path, string Name, DateTime Modified)>.Create(
+                        (a, b) =>
+                        {
+                            var cmp = a.Size.CompareTo(b.Size);
+                            return cmp != 0 ? cmp : string.Compare(a.Path, b.Path, StringComparison.Ordinal);
+                        }));
+
+                object lockObj = new object();
+
+                dirInfo.EnumerateFiles("*" + extension, options).AsParallel().ForAll(file =>
+                {
+                    try
+                    {
+                        long size = file.Length;
+                        long allocated = GetAllocatedSize(file.FullName, size);
+                        lock (lockObj)
+                        {
+                            topFiles.Add((size, allocated, file.FullName, file.Name, file.LastWriteTime));
+                            if (topFiles.Count > maxResults)
+                            {
+                                topFiles.Remove(topFiles.Min);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Debug($"Skipping file {file.Name}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                    }
+                });
+
+                files = topFiles
+                    .OrderByDescending(f => f.Size)
+                    .Select(f => new DiskItemInfo
+                    {
+                        Name = f.Name,
+                        FullPath = f.Path,
+                        SizeBytes = f.Size,
+                        AllocatedSizeBytes = f.Allocated,
+                        IsFile = true,
+                        ItemCount = 1,
+                        LastModified = f.Modified,
+                    })
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error finding files by extension {extension} in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
+            }
+
+            return files;
+        }
+
+        /// <summary>
+        /// Finds folders that contain 0 files and 0 bytes.
+        /// </summary>
+        public static List<DiskItemInfo> FindEmptyFolders(string path, int maxResults, bool includeHidden)
+        {
+            var emptyFolders = new List<DiskItemInfo>();
+
+            try
+            {
+                var options = CreateOptions(includeHidden, recurse: true, maxDepth: int.MaxValue);
+                var dirInfo = new DirectoryInfo(path);
+                if (!dirInfo.Exists) return emptyFolders;
+
+                var dirs = dirInfo.EnumerateDirectories("*", options);
+                var results = new System.Collections.Concurrent.ConcurrentBag<DiskItemInfo>();
+
+                dirs.AsParallel().ForAll(subDir =>
+                {
+                    try
+                    {
+                        // Check if it has any children at all
+                        if (!subDir.EnumerateFileSystemInfos().Any())
+                        {
+                            results.Add(new DiskItemInfo
+                            {
+                                Name = subDir.Name,
+                                FullPath = subDir.FullName,
+                                SizeBytes = 0,
+                                AllocatedSizeBytes = 0,
+                                IsFile = false,
+                                ItemCount = 0,
+                                LastModified = subDir.LastWriteTime,
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Debug($"Skipping directory {subDir.Name}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                    }
+                });
+
+                emptyFolders = results.Take(maxResults).ToList();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error finding empty folders in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
+            }
+
+            return emptyFolders;
         }
 
         /// <summary>

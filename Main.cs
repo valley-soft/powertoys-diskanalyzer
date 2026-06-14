@@ -26,6 +26,9 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         private const string CmdDrives = "drives";
         private const string CmdLargest = "largest ";
         private const string CmdTop = "top ";
+        private const string CmdExt = "ext ";
+        private const string CmdEmpty = "empty ";
+        private const string CmdGui = "gui";
 
         // Fix #4: Scan result cache â€” 10-second TTL avoids redundant re-scans
         private static readonly ConcurrentDictionary<string, (DateTime Timestamp, List<Result> Results)> _scanCache = new();
@@ -68,6 +71,31 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             if (search.Equals(CmdDrives, StringComparison.OrdinalIgnoreCase))
             {
                 return GetDriveResults();
+            }
+
+            // "gui" command â€” opens standalone window
+            if (search.StartsWith(CmdGui, StringComparison.OrdinalIgnoreCase))
+            {
+                return new List<Result>
+                {
+                    new Result
+                    {
+                        Title = "Open DiskAnalyzer Window",
+                        SubTitle = "Launch the full standalone graphical user interface",
+                        IcoPath = _iconPath,
+                        Score = 1000,
+                        Action = _ =>
+                        {
+                            var path = search.Length > 3 ? search[3..].Trim().Trim('"') : "C:\\";
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                var window = new DiskAnalyzerWindow(path);
+                                window.Show();
+                            });
+                            return true;
+                        }
+                    }
+                };
             }
 
             return new List<Result>();
@@ -113,6 +141,27 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 {
                     var path = search[4..].Trim().Trim('"');
                     results = GetTopFoldersResults(path);
+                }
+                // "ext <path> <ext>" â€” find largest files by extension
+                else if (search.StartsWith(CmdExt, StringComparison.OrdinalIgnoreCase))
+                {
+                    var parts = search[4..].Trim().Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length == 2)
+                    {
+                        var path = parts[0].Trim('"');
+                        var ext = parts[1].Trim('"');
+                        results = GetFilesByExtensionResults(path, ext);
+                    }
+                    else
+                    {
+                        return new List<Result> { new Result { Title = "Usage: ds ext <path> <extension>", SubTitle = "Example: ds ext C:\\ .mp4", IcoPath = _iconPath, Score = 100 } };
+                    }
+                }
+                // "empty <path>" â€” find empty folders
+                else if (search.StartsWith(CmdEmpty, StringComparison.OrdinalIgnoreCase))
+                {
+                    var path = search[6..].Trim().Trim('"');
+                    results = GetEmptyFoldersResults(path);
                 }
                 // Direct path â€” scan the directory
                 else if (DiskAnalyzerHelper.IsValidPath(search))
@@ -279,6 +328,26 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 });
             }
 
+            // Move to Recycle Bin
+            menus.Add(new ContextMenuResult
+            {
+                PluginName = Name,
+                Title = "Move to Recycle Bin (Ctrl+Del)",
+                FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                Glyph = "\xE74D", // Delete
+                AcceleratorKey = Key.Delete,
+                AcceleratorModifiers = ModifierKeys.Control,
+                Action = _ =>
+                {
+                    var result = MessageBox.Show($"Are you sure you want to move {item.Name} to the Recycle Bin?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        DiskAnalyzerHelper.MoveToRecycleBin(item.FullPath);
+                    }
+                    return true; // Close launcher
+                },
+            });
+
             return menus;
         }
 
@@ -395,6 +464,18 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 },
                 new Result
                 {
+                    Title = "gui",
+                    SubTitle = "Open the full standalone WPF graphical interface",
+                    IcoPath = _iconPath,
+                    Score = 750,
+                    Action = _ =>
+                    {
+                        _context?.API.ChangeQuery("ds gui", true);
+                        return false;
+                    },
+                },
+                new Result
+                {
                     Title = @"largest C:\",
                     SubTitle = "Find the largest files in a directory (recursive)",
                     IcoPath = _iconPath,
@@ -414,6 +495,30 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     Action = _ =>
                     {
                         _context?.API.ChangeQuery(@"ds top C:\", true);
+                        return false;
+                    },
+                },
+                new Result
+                {
+                    Title = @"ext C:\ .mp4",
+                    SubTitle = "Find largest files of a specific extension",
+                    IcoPath = _iconPath,
+                    Score = 500,
+                    Action = _ =>
+                    {
+                        _context?.API.ChangeQuery(@"ds ext C:\ .mp4", true);
+                        return false;
+                    },
+                },
+                new Result
+                {
+                    Title = @"empty C:\",
+                    SubTitle = "Find folders that contain no files or subfolders",
+                    IcoPath = _iconPath,
+                    Score = 400,
+                    Action = _ =>
+                    {
+                        _context?.API.ChangeQuery(@"ds empty C:\", true);
                         return false;
                     },
                 },
@@ -682,6 +787,100 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     {
                         _context?.API.ChangeQuery($"ds {folder.FullPath}", true);
                         return false;
+                    },
+                });
+                rank++;
+            }
+
+            return results;
+        }
+
+        private List<Result> GetFilesByExtensionResults(string path, string ext)
+        {
+            if (!Directory.Exists(path))
+            {
+                return new List<Result>
+                {
+                    new Result { Title = "Directory not found", SubTitle = $"Path does not exist: {path}", IcoPath = _iconPath, Score = 100 }
+                };
+            }
+
+            var files = DiskAnalyzerHelper.FindFilesByExtension(path, ext, _maxResults, _includeHiddenFiles);
+
+            if (!files.Any())
+            {
+                return new List<Result>
+                {
+                    new Result { Title = "No files found", SubTitle = $"No accessible files ending in '{ext}' in: {path}", IcoPath = _iconPath, Score = 100 }
+                };
+            }
+
+            var results = new List<Result>
+            {
+                new Result { Title = $"\U0001F50D Largest {ext} files in: {path}", SubTitle = $"Showing top {Math.Min(files.Count, _maxResults)} files", IcoPath = _iconPath, Score = 10000 }
+            };
+
+            int rank = 1;
+            foreach (var file in files)
+            {
+                results.Add(new Result
+                {
+                    Title = $"#{rank} {file.Name} \u2014 {DiskAnalyzerHelper.FormatSize(file.SizeBytes)}",
+                    SubTitle = $"Allocated: {DiskAnalyzerHelper.FormatSize(file.AllocatedSizeBytes)} | {file.FullPath}",
+                    IcoPath = _iconPath,
+                    Score = 10000 - rank,
+                    ContextData = file,
+                    Action = _ =>
+                    {
+                        System.Diagnostics.Process.Start("explorer.exe", $"/select,\"{file.FullPath}\"");
+                        return true;
+                    },
+                });
+                rank++;
+            }
+
+            return results;
+        }
+
+        private List<Result> GetEmptyFoldersResults(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                return new List<Result>
+                {
+                    new Result { Title = "Directory not found", SubTitle = $"Path does not exist: {path}", IcoPath = _iconPath, Score = 100 }
+                };
+            }
+
+            var folders = DiskAnalyzerHelper.FindEmptyFolders(path, _maxResults, _includeHiddenFiles);
+
+            if (!folders.Any())
+            {
+                return new List<Result>
+                {
+                    new Result { Title = "No empty folders found", SubTitle = $"Could not find any empty folders in: {path}", IcoPath = _iconPath, Score = 100 }
+                };
+            }
+
+            var results = new List<Result>
+            {
+                new Result { Title = $"\U0001F4C1 Empty folders in: {path}", SubTitle = $"Showing up to {_maxResults} empty folders", IcoPath = _iconPath, Score = 10000 }
+            };
+
+            int rank = 1;
+            foreach (var folder in folders)
+            {
+                results.Add(new Result
+                {
+                    Title = $"\U0001F4C1 {folder.Name}",
+                    SubTitle = folder.FullPath,
+                    IcoPath = _iconPath,
+                    Score = 10000 - rank,
+                    ContextData = folder,
+                    Action = _ =>
+                    {
+                        System.Diagnostics.Process.Start("explorer.exe", $"\"{folder.FullPath}\"");
+                        return true;
                     },
                 });
                 rank++;

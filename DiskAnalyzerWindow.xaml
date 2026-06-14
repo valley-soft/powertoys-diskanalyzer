@@ -1,0 +1,58 @@
+<Window x:Class="Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Disk Analyzer" Height="600" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="#F3F3F3">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Pane: TreeView -->
+        <Border Grid.Column="0" BorderBrush="#CCCCCC" BorderThickness="1" Background="White" CornerRadius="4">
+            <TreeView x:Name="FolderTree" BorderThickness="0" SelectedItemChanged="FolderTree_SelectedItemChanged">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📁 " />
+                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+        </Border>
+
+        <!-- Grid Splitter -->
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" />
+
+        <!-- Right Pane: DataGrid -->
+        <Border Grid.Column="2" BorderBrush="#CCCCCC" BorderThickness="1" Background="White" CornerRadius="4">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10" Background="#FAFAFA">
+                    <TextBlock x:Name="CurrentPathText" Text="Select a folder..." FontWeight="Bold" FontSize="16" VerticalAlignment="Center"/>
+                    <Button Content="Refresh" Margin="15,0,0,0" Padding="10,5" Click="Refresh_Click"/>
+                </StackPanel>
+
+                <DataGrid x:Name="ItemsGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" 
+                          SelectionMode="Single" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="#EEEEEE" BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="250" />
+                        <DataGridTextColumn Header="Size" Binding="{Binding FormattedSize}" Width="100" />
+                        <DataGridTextColumn Header="Allocated" Binding="{Binding FormattedAllocated}" Width="100" />
+                        <DataGridTextColumn Header="Items" Binding="{Binding ItemCount}" Width="80" />
+                        <DataGridTextColumn Header="Modified" Binding="{Binding LastModified, StringFormat='g'}" Width="150" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
