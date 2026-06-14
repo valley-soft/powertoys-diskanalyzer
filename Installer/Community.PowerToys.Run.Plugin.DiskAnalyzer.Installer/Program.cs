@@ -15,29 +15,27 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
             Console.WriteLine("=============================================\n");
 
             string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string ptPluginsDir = Path.Combine(localAppData, "Microsoft", "PowerToys", "PowerToys Run", "Plugins");
-            string targetDir = Path.Combine(ptPluginsDir, "DiskAnalyzer");
+            
+            // PowerToys Run Directory
+            string ptRunDir = Path.Combine(localAppData, "Microsoft", "PowerToys", "PowerToys Run", "Plugins", "DiskAnalyzer");
+            
+            // Command Palette Directory
+            string cmdPalDir = Path.Combine(localAppData, "Microsoft", "PowerToys", "CmdPal", "Plugins", "DiskAnalyzer");
 
-            Console.WriteLine($"Target Installation Directory:");
-            Console.WriteLine(targetDir + "\n");
-
-            if (!Directory.Exists(ptPluginsDir))
-            {
-                Console.WriteLine("ERROR: PowerToys Run plugins directory not found!");
-                Console.WriteLine("Are you sure PowerToys is installed?");
-                WaitForExit();
-                return;
-            }
+            Console.WriteLine("Target Installation Directories:");
+            Console.WriteLine("1. " + ptRunDir);
+            Console.WriteLine("2. " + cmdPalDir + "\n");
 
             Console.WriteLine("Extracting files...");
 
             try
             {
-                if (Directory.Exists(targetDir))
-                {
-                    Directory.Delete(targetDir, true);
-                }
-                Directory.CreateDirectory(targetDir);
+                // Clean old directories
+                if (Directory.Exists(ptRunDir)) Directory.Delete(ptRunDir, true);
+                if (Directory.Exists(cmdPalDir)) Directory.Delete(cmdPalDir, true);
+                
+                Directory.CreateDirectory(ptRunDir);
+                Directory.CreateDirectory(cmdPalDir);
 
                 // Read embedded zip file
                 var assembly = Assembly.GetExecutingAssembly();
@@ -54,7 +52,16 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
 
                     using (ZipArchive archive = new ZipArchive(stream))
                     {
-                        archive.ExtractToDirectory(targetDir);
+                        // Extract to PowerToys Run
+                        archive.ExtractToDirectory(ptRunDir);
+                    }
+                    
+                    // Reset stream position to extract again
+                    stream.Position = 0;
+                    using (ZipArchive archive = new ZipArchive(stream))
+                    {
+                        // Extract to Command Palette
+                        archive.ExtractToDirectory(cmdPalDir);
                     }
                 }
 
