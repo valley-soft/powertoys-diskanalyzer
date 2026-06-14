@@ -1,6 +1,6 @@
 # DiskAnalyzer - PowerToys Run Plugin
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/thetsaw/PowerToys.Plugin/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/thetsaw/PowerToys.Plugin)
 [![PowerToys](https://img.shields.io/badge/PowerToys-v0.97.0+-orange.svg)](https://github.com/microsoft/PowerToys)
 [![.NET](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)

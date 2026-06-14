@@ -7,9 +7,9 @@
     <PlatformTarget>$(Platform)</PlatformTarget>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
-    <Version>1.1.0</Version>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
+    <Version>1.2.0</Version>
     <Authors>Thet Naing Saw</Authors>
     <Company>Thet Naing Saw</Company>
     <Product>DiskAnalyzer</Product>
