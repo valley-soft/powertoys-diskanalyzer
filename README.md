@@ -116,7 +116,9 @@ This project ships two separate tools that work together:
 3. Click **Install**
 4. Open the **Windows Command Palette** — *ValleySoft Disk Analyzer* will appear as a top-level entry
 
-> **Note:** The MSIX package is self-signed for development/sideloading. You may need to enable **Developer Mode** in Windows Settings → System → For developers, or trust the certificate manually.
+> **Note:** The MSIX package is self-signed for open-source sideloading. To install it, you must either:
+> 1. Enable **Developer Mode** in Windows Settings → System → For developers.
+> 2. Or manually trust the certificate by downloading `ValleySoft_Certificate.cer` from the Releases page, double-clicking it, clicking **Install Certificate**, selecting **Local Machine**, and placing it in the **Trusted Root Certification Authorities** store.
 
 ---
 
