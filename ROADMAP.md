@@ -1,4 +1,4 @@
-﻿# Roadmap for Version 1.2
+# Roadmap for Version 1.2
 
 **Target**: Next Week
 
@@ -13,4 +13,3 @@
 * [ ] Add more advanced ValleySoft Disk Analyzer features to the core PowerToys Run plugin.
 * [ ] Design and implement the new Command Palette UI.
 * [ ] Optimize the parallel scanning engine further to guarantee zero latency on startup.
-

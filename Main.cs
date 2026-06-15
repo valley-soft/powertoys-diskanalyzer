@@ -1,4 +1,4 @@
-﻿// Copyright (c) Thet. All rights reserved.
+// Copyright (c) Thet. All rights reserved.
 // Licensed under the MIT License.
 
 using System.Collections.Concurrent;
@@ -22,7 +22,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         public string Name => "DiskAnalyzer";
         public string Description => "Analyze disk space usage like TreeSize. Scan folders, find large files, and view drive info.";
 
-        // Fix #5: Command name constants Ã¢â‚¬â€ no more magic strings
+        // Fix #5: Command name constants â€” no more magic strings
         private const string CmdDrives = "drives";
         private const string CmdLargest = "largest ";
         private const string CmdTop = "top ";
@@ -30,7 +30,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         private const string CmdEmpty = "empty ";
         private const string CmdGui = "gui";
 
-        // Fix #4: Scan result cache Ã¢â‚¬â€ 10-second TTL avoids redundant re-scans
+        // Fix #4: Scan result cache â€” 10-second TTL avoids redundant re-scans
         private static readonly ConcurrentDictionary<string, (DateTime Timestamp, List<Result> Results)> _scanCache = new();
         private static readonly TimeSpan CacheTtl = TimeSpan.FromSeconds(10);
 
@@ -52,7 +52,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         }
 
         /// <summary>
-        /// Fast initial results Ã¢â‚¬â€ shows command hints.
+        /// Fast initial results â€” shows command hints.
         /// </summary>
         public List<Result> Query(Query query)
         {
@@ -69,13 +69,13 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 return GetHelpResults();
             }
 
-            // "drives" command Ã¢â‚¬â€ fast, no delayed execution needed
+            // "drives" command â€” fast, no delayed execution needed
             if (search.Equals(CmdDrives, StringComparison.OrdinalIgnoreCase))
             {
                 return GetDriveResults();
             }
 
-            // "gui" command Ã¢â‚¬â€ opens standalone window
+            // "gui" command â€” opens standalone window
             if (search.StartsWith(CmdGui, StringComparison.OrdinalIgnoreCase))
             {
                 return new List<Result>
@@ -137,19 +137,19 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 
                 List<Result> results;
 
-                // "largest <path>" Ã¢â‚¬â€ find largest files
+                // "largest <path>" â€” find largest files
                 if (search.StartsWith(CmdLargest, StringComparison.OrdinalIgnoreCase))
                 {
                     var path = search[8..].Trim().Trim('"');
                     results = GetLargestFilesResults(path);
                 }
-                // "top <path>" Ã¢â‚¬â€ top subdirectories by size
+                // "top <path>" â€” top subdirectories by size
                 else if (search.StartsWith(CmdTop, StringComparison.OrdinalIgnoreCase))
                 {
                     var path = search[4..].Trim().Trim('"');
                     results = GetTopFoldersResults(path);
                 }
-                // "ext <path> <ext>" Ã¢â‚¬â€ find largest files by extension
+                // "ext <path> <ext>" â€” find largest files by extension
                 else if (search.StartsWith(CmdExt, StringComparison.OrdinalIgnoreCase))
                 {
                     var parts = search[4..].Trim().Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
@@ -164,13 +164,13 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                         return new List<Result> { new Result { Title = "Usage: ds ext <path> <extension>", SubTitle = "Example: ds ext C:\\ .mp4", IcoPath = _iconPath, Score = 100 } };
                     }
                 }
-                // "empty <path>" Ã¢â‚¬â€ find empty folders
+                // "empty <path>" â€” find empty folders
                 else if (search.StartsWith(CmdEmpty, StringComparison.OrdinalIgnoreCase))
                 {
                     var path = search[6..].Trim().Trim('"');
                     results = GetEmptyFoldersResults(path);
                 }
-                // Direct path Ã¢â‚¬â€ scan the directory
+                // Direct path â€” scan the directory
                 else if (DiskAnalyzerHelper.IsValidPath(search))
                 {
                     results = GetDirectoryScanResults(search.Trim('"'));

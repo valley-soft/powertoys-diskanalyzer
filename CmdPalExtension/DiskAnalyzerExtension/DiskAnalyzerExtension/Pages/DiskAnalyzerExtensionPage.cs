@@ -1,4 +1,4 @@
-﻿// Copyright (c) Thet Naing Saw. All rights reserved.
+// Copyright (c) Thet Naing Saw. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -11,13 +11,13 @@ namespace DiskAnalyzerExtension
 {
     /// <summary>
     /// Single ListPage that drives its own internal navigation via a state machine.
-    /// Clicking a menu item â†’ changes mode â†’ RaiseItemsChanged â†’ new items appear.
-    /// A "â† Back" item always appears at the top of sub-views.
+    /// Clicking a menu item → changes mode → RaiseItemsChanged → new items appear.
+    /// A "← Back" item always appears at the top of sub-views.
     /// SearchText is cleared on every mode change so CmdPal's built-in filter never hides results.
     /// </summary>
     public sealed partial class DiskAnalyzerExtensionPage : ListPage
     {
-        // â”€â”€ State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── State ─────────────────────────────────────────────────────────────
         public enum PageMode { MainMenu, Drives, Scanning, TopFolders, LargestFiles, ExtFiles, EmptyFolders }
 
         private PageMode _mode    = PageMode.MainMenu;
@@ -50,7 +50,7 @@ namespace DiskAnalyzerExtension
             }
         }
 
-        // â”€â”€ Navigate helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Navigate helper ───────────────────────────────────────────────────
         private void GoTo(PageMode mode, string path = "", string ext = "")
         {
             _mode         = mode;
@@ -65,11 +65,11 @@ namespace DiskAnalyzerExtension
         private IListItem BackItem() =>
             new ListItem(new MySetModeCommand(this, PageMode.MainMenu))
             {
-                Title = "â† Back to main menu",
+                Title = "← Back to main menu",
                 Icon  = new IconInfo("\ue72b"),
             };
 
-        // â”€â”€ Main dispatcher â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Main dispatcher ───────────────────────────────────────────────────
         public override IListItem[] GetItems()
         {
             return _mode switch
@@ -85,14 +85,14 @@ namespace DiskAnalyzerExtension
             };
         }
 
-        // â”€â”€ Async wrapper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Async wrapper ─────────────────────────────────────────────────────
         private IListItem[] AsyncItems(Func<IListItem[]> buildFn)
         {
             if (_asyncCache != null)
                 return PrependBack(_asyncCache);
 
             if (_asyncRunning)
-                return new[] { PlaceholderItem("Workingâ€¦ please wait.") };
+                return new[] { PlaceholderItem("Working… please wait.") };
 
             _asyncRunning = true;
             System.Threading.Tasks.Task.Run(() =>
@@ -103,7 +103,7 @@ namespace DiskAnalyzerExtension
                 RaiseItemsChanged();
             });
 
-            return new[] { PlaceholderItem("Workingâ€¦ please wait.") };
+            return new[] { PlaceholderItem("Working… please wait.") };
         }
 
         private IListItem[] PrependBack(IListItem[] items)
@@ -113,7 +113,7 @@ namespace DiskAnalyzerExtension
             return list.ToArray();
         }
 
-        // â”€â”€ MAIN MENU â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── MAIN MENU ─────────────────────────────────────────────────────────
         private IListItem[] MainMenuItems() => new IListItem[]
         {
             new ListItem(new MyNoOpCommand())
@@ -155,12 +155,12 @@ namespace DiskAnalyzerExtension
             new ListItem(new MySetModeCommand(this, PageMode.Scanning, "C:\\Users"))
             {
                 Title    = "C:\\Users",
-                Subtitle = "Scan any folder â€“ ranked by size",
+                Subtitle = "Scan any folder – ranked by size",
                 Icon     = new IconInfo("\ue71b"),
             },
         };
 
-        // â”€â”€ DRIVES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── DRIVES ────────────────────────────────────────────────────────────
         private IListItem[] DriveItems()
         {
             var drives = System.IO.DriveInfo.GetDrives()
@@ -193,7 +193,7 @@ namespace DiskAnalyzerExtension
             return items.ToArray();
         }
 
-        // â”€â”€ FOLDER SCAN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── FOLDER SCAN ───────────────────────────────────────────────────────
         private IListItem[] FolderScanItems(string path)
         {
             var results = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.ScanDirectory(path, 1, false);
@@ -205,8 +205,8 @@ namespace DiskAnalyzerExtension
             {
                 new ListItem(new MyNoOpCommand())
                 {
-                    Title    = $"ðŸ“‚ {path}",
-                    Subtitle = $"Total: {Fmt(totalSize)}  â€“  {results.Count} items",
+                    Title    = $"📂 {path}",
+                    Subtitle = $"Total: {Fmt(totalSize)}  –  {results.Count} items",
                     Icon     = new IconInfo("\ue71b"),
                 }
             };
@@ -236,7 +236,7 @@ namespace DiskAnalyzerExtension
 
                 items.Add(new ListItem(primaryCmd)
                 {
-                    Title        = $"{(isFile ? "ðŸ“„" : "ðŸ“")} {item.Name}",
+                    Title        = $"{(isFile ? "📄" : "📁")} {item.Name}",
                     Subtitle     = $"{bar} {Fmt(item.SizeBytes)}  ({pct:F1}%)",
                     Icon         = new IconInfo("\ue71b"),
                     MoreCommands = moreCommands.ToArray(),
@@ -245,7 +245,7 @@ namespace DiskAnalyzerExtension
             return items.ToArray();
         }
 
-        // â”€â”€ TOP FOLDERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── TOP FOLDERS ───────────────────────────────────────────────────────
         private IListItem[] TopFolderItems(string path)
         {
             if (!System.IO.Directory.Exists(path))
@@ -258,8 +258,8 @@ namespace DiskAnalyzerExtension
             {
                 new ListItem(new MyNoOpCommand())
                 {
-                    Title    = $"ðŸ“Š Top folders in {path}",
-                    Subtitle = $"Total: {Fmt(totalSize)}  â€“  {results.Count} folders",
+                    Title    = $"📊 Top folders in {path}",
+                    Subtitle = $"Total: {Fmt(totalSize)}  –  {results.Count} folders",
                     Icon     = new IconInfo("\ue71b"),
                 }
             };
@@ -272,8 +272,8 @@ namespace DiskAnalyzerExtension
 
                 items.Add(new ListItem(new MySetModeCommand(this, PageMode.Scanning, capturedPath))
                 {
-                    Title        = $"ðŸ“ {item.Name}",
-                    Subtitle     = $"{bar} {Fmt(item.SizeBytes)}  ({pct:F1}%)  â€“  {item.ItemCount} items",
+                    Title        = $"📁 {item.Name}",
+                    Subtitle     = $"{bar} {Fmt(item.SizeBytes)}  ({pct:F1}%)  –  {item.ItemCount} items",
                     Icon         = new IconInfo("\ue71b"),
                     MoreCommands = new CommandContextItem[]
                     {
@@ -287,7 +287,7 @@ namespace DiskAnalyzerExtension
             return items.ToArray();
         }
 
-        // â”€â”€ LARGEST FILES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── LARGEST FILES ─────────────────────────────────────────────────────
         private IListItem[] LargestFileItems(string path)
         {
             if (!System.IO.Directory.Exists(path))
@@ -301,7 +301,7 @@ namespace DiskAnalyzerExtension
             {
                 new ListItem(new MyNoOpCommand())
                 {
-                    Title    = $"ðŸ” Largest files in {path}",
+                    Title    = $"🔍 Largest files in {path}",
                     Subtitle = $"{results.Count} files found",
                     Icon     = new IconInfo("\ue71b"),
                 }
@@ -312,8 +312,8 @@ namespace DiskAnalyzerExtension
                 var capturedPath = item.FullPath;
                 items.Add(new ListItem(new MyOpenExplorerCommand(capturedPath, true))
                 {
-                    Title        = $"ðŸ“„ {item.Name}",
-                    Subtitle     = $"{Fmt(item.SizeBytes)}  â€“  {capturedPath}",
+                    Title        = $"📄 {item.Name}",
+                    Subtitle     = $"{Fmt(item.SizeBytes)}  –  {capturedPath}",
                     Icon         = new IconInfo("\ue71b"),
                     MoreCommands = new CommandContextItem[]
                     {
@@ -326,7 +326,7 @@ namespace DiskAnalyzerExtension
             return items.ToArray();
         }
 
-        // â”€â”€ EXTENSION FILES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── EXTENSION FILES ───────────────────────────────────────────────────
         private IListItem[] ExtensionItems(string path, string ext)
         {
             if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(ext))
@@ -343,8 +343,8 @@ namespace DiskAnalyzerExtension
             {
                 new ListItem(new MyNoOpCommand())
                 {
-                    Title    = $"ðŸ”Ž {ext} files in {path}",
-                    Subtitle = $"Total: {Fmt(totalSize)}  â€“  {results.Count} files",
+                    Title    = $"🔎 {ext} files in {path}",
+                    Subtitle = $"Total: {Fmt(totalSize)}  –  {results.Count} files",
                     Icon     = new IconInfo("\ue71b"),
                 }
             };
@@ -354,8 +354,8 @@ namespace DiskAnalyzerExtension
                 var capturedPath = item.FullPath;
                 items.Add(new ListItem(new MyOpenExplorerCommand(capturedPath, true))
                 {
-                    Title        = $"ðŸ“„ {item.Name}",
-                    Subtitle     = $"{Fmt(item.SizeBytes)}  â€“  {capturedPath}",
+                    Title        = $"📄 {item.Name}",
+                    Subtitle     = $"{Fmt(item.SizeBytes)}  –  {capturedPath}",
                     Icon         = new IconInfo("\ue71b"),
                     MoreCommands = new CommandContextItem[]
                     {
@@ -367,7 +367,7 @@ namespace DiskAnalyzerExtension
             return items.ToArray();
         }
 
-        // â”€â”€ EMPTY FOLDERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── EMPTY FOLDERS ─────────────────────────────────────────────────────
         private IListItem[] EmptyFolderItems(string path)
         {
             if (!System.IO.Directory.Exists(path))
@@ -381,7 +381,7 @@ namespace DiskAnalyzerExtension
             {
                 new ListItem(new MyNoOpCommand())
                 {
-                    Title    = $"ðŸ“ Empty folders in {path}",
+                    Title    = $"📁 Empty folders in {path}",
                     Subtitle = $"{results.Count} empty folders found",
                     Icon     = new IconInfo("\ue71b"),
                 }
@@ -392,7 +392,7 @@ namespace DiskAnalyzerExtension
                 var capturedPath = item.FullPath;
                 items.Add(new ListItem(new MyOpenExplorerCommand(capturedPath, false))
                 {
-                    Title        = $"ðŸ“ {item.Name}",
+                    Title        = $"📁 {item.Name}",
                     Subtitle     = capturedPath,
                     Icon         = new IconInfo("\ue71b"),
                     MoreCommands = new CommandContextItem[]
@@ -405,7 +405,7 @@ namespace DiskAnalyzerExtension
             return items.ToArray();
         }
 
-        // â”€â”€ Shared helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Shared helpers ────────────────────────────────────────────────────
         internal void SetMode(PageMode mode, string path = "", string ext = "") =>
             GoTo(mode, path, ext);
 
@@ -416,15 +416,15 @@ namespace DiskAnalyzerExtension
         {
             const int total = 10;
             int filled = (int)Math.Round(pct / 100.0 * total);
-            string block = pct < 70 ? "ðŸŸ©" : pct < 90 ? "ðŸŸ¨" : "ðŸŸ¥";
-            return string.Concat(Enumerable.Range(0, total).Select(i => i < filled ? block : "â¬œ"));
+            string block = pct < 70 ? "🟩" : pct < 90 ? "🟨" : "🟥";
+            return string.Concat(Enumerable.Range(0, total).Select(i => i < filled ? block : "⬜"));
         }
 
         private static IListItem PlaceholderItem(string msg) =>
             new ListItem(new MyNoOpCommand()) { Title = msg };
     }
 
-    // â”€â”€ Commands â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Commands ──────────────────────────────────────────────────────────────
 
     public sealed partial class MyNoOpCommand : InvokableCommand
     {
@@ -491,4 +491,3 @@ namespace DiskAnalyzerExtension
         }
     }
 }
-
