@@ -11,8 +11,16 @@ Currently, only the latest release of the project receives security updates.
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability within this project, please open an Issue on GitHub. If the vulnerability is sensitive, please email the maintainers directly.
+**Do NOT open a public GitHub issue for security vulnerabilities.**
 
-Please do not disclose the vulnerability publicly until it has been patched.
+Please use GitHub's private vulnerability reporting instead:
 
-We will try to acknowledge your report within 48 hours and will keep you informed of our progress towards a fix.
+👉 https://github.com/valley-soft/powertoys-diskanalyzer/security/advisories/new
+
+Include:
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+
+You'll receive an acknowledgment within 48 hours and a status update
+within 7 days. We credit researchers in our release notes upon request.
