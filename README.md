@@ -52,7 +52,8 @@ This project ships two separate tools that work together:
 
 ### Scanning Folders
 
-![Scanning top-level folders on C:\](Images/ptrun-top-folders.png)
+![Scanning top-level folders on C:](Images/ptrun-top-folders.png)
+
 
 ![Scanning C:\WINDOWS folder](Images/ptrun-folder-scan.png)
 
