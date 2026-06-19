@@ -1,0 +1,17 @@
+PackageIdentifier: ValleySoft.DiskAnalyzer
+PackageVersion: 1.2.0
+PackageLocale: en-US
+Publisher: ValleySoft
+PublisherUrl: https://github.com/valley-soft
+PackageName: Disk Analyzer
+PackageUrl: https://github.com/valley-soft/powertoys-diskanalyzer
+License: MIT
+LicenseUrl: https://github.com/valley-soft/powertoys-diskanalyzer/blob/main/LICENSE
+ShortDescription: TreeSize-like disk usage analyzer for PowerToys Run and Windows Command Palette.
+Description: A native Windows Command Palette extension and PowerToys Run plugin that brings TreeSize-like disk usage analysis directly into your launcher, along with a full standalone GUI window. Instantly explore drive and folder sizes without leaving your keyboard.
+Tags:
+  - powertoys
+  - disk-analyzer
+  - utility
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0
