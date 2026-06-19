@@ -6,6 +6,15 @@ This release includes two separate tools:
 - **PowerToys Run Plugin** (`ds` keyword in Alt+Space) — labeled *DiskAnalyzer (PowerToys Run)* in Command Palette
 - **Command Palette Extension** (MSIX) — labeled *DiskAnalyzer* in Command Palette, no keyword needed
 
+### Installation — Standalone App (Microsoft Store)
+
+The full standalone GUI version of Disk Analyzer is officially available on the Microsoft Store. This is the recommended way to install and keep the app automatically updated!
+
+[![Get it from Microsoft](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
+
+Alternatively, install via the command line:
+`winget install --id 9NF073KLTVWN --source msstore`
+
 ### Installation — PowerToys Run Plugin
 
 1. Download `DiskAnalyzerInstaller-v1.2.0-x64.exe` (or `arm64`)
