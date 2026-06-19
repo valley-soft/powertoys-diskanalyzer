@@ -1,8 +1,0 @@
-PackageIdentifier: ValleySoft.DiskAnalyzer
-PackageVersion: 1.2.0
-InstallerType: msstore
-Installers:
-  - Architecture: neutral
-    StoreProductID: 9NF073KLTVWN
-ManifestType: installer
-ManifestVersion: 1.6.0
