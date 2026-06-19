@@ -1,6 +1,7 @@
 # DiskAnalyzer — PowerToys Run Plugin & Command Palette Extension
 
 [![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+[![Microsoft Store](https://img.shields.io/badge/Microsoft_Store-Available-0078D7?logo=windows&logoColor=white)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/valley-soft/powertoys-diskanalyzer)
 [![PowerToys](https://img.shields.io/badge/PowerToys-v0.97.0+-orange.svg)](https://github.com/microsoft/PowerToys)
 [![.NET](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
@@ -84,6 +85,19 @@ This project ships two separate tools that work together:
 ---
 
 ## Installation
+
+### Standalone App (Microsoft Store)
+
+The full standalone GUI version of Disk Analyzer is officially available on the Microsoft Store. This is the recommended way to install and keep the app automatically updated!
+
+[![Get it from Microsoft](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
+
+Alternatively, you can install it instantly via the command line using `winget`:
+```powershell
+winget install --id 9NF073KLTVWN --source msstore
+```
+
+---
 
 ### PowerToys Run Plugin
 
