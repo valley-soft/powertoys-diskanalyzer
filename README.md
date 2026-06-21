@@ -90,16 +90,13 @@ This project ships two separate tools that work together:
 
 ## Installation
 
-### Standalone App (Microsoft Store)
+### Standalone App (WinUI 3)
 
-The full standalone GUI version of Disk Analyzer is officially available on the Microsoft Store. This is the recommended way to install and keep the app automatically updated!
+1. Download **`ValleySoft.DiskAnalyzer.App_1.3.0.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+2. **Double-click** the `.msix` file — Windows will launch the installer
+3. Click **Install**
 
-[![Get it from Microsoft](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
-
-Alternatively, you can install it instantly via the command line using `winget`:
-```powershell
-winget install --id 9NF073KLTVWN --source msstore
-```
+> **Note:** The standalone app is not yet available in the Microsoft Store. When it is officially available, the Microsoft Store will be the recommended way to install and keep the app automatically updated!
 
 ---
 
@@ -130,7 +127,7 @@ winget install --id 9NF073KLTVWN --source msstore
 
 ### Command Palette Extension (MSIX)
 
-1. Download **`DiskAnalyzerCommandPalleteVersion_1.3.0.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`DiskAnalyzerExtension_1.3.0.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Double-click** the `.msix` file — Windows will launch the installer
 3. Click **Install**
 4. Open the **Windows Command Palette** — *ValleySoft Disk Analyzer* will appear as a top-level entry
