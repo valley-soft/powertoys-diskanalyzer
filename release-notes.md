@@ -2,10 +2,9 @@ TreeSize-like disk usage analyzer for PowerToys Run and Windows Command Palette.
 
 ### Components
 
-This release includes three separate tools:
-- **Standalone App (WinUI 3)** — fully featured GUI window with interactive Visual Charts!
-- **PowerToys Run Plugin** (`ds` keyword in Alt+Space) — labeled *DiskAnalyzer (PowerToys Run)* in Command Palette
-- **Command Palette Extension** (MSIX) — labeled *DiskAnalyzer* in Command Palette, no keyword needed
+This release includes three tools, bundled into two easy installations:
+- **Standalone App (WinUI 3)** and **Command Palette Extension** — both bundled together in the native `.msix` package!
+- **PowerToys Run Plugin** (`ds` keyword in Alt+Space) — installed via the standalone `.exe` installer.
 
 ---
 
@@ -26,11 +25,11 @@ This release includes three separate tools:
 
 ---
 
-### Installation — Standalone App
+### Installation — Standalone App & Command Palette Extension (Unified MSIX)
 
 1. Download **`ValleySoft.DiskAnalyzer.App_1.3.0.0_x64.msix`** (or `arm64`) from the assets below.
 2. Double-click the `.msix` file and click **Install**.
-3. Launch the app from your Start Menu.
+3. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
 
 > **Note:** The standalone app is not yet available in the Microsoft Store. When it is officially available, the Microsoft Store will be the recommended way to install and keep the app automatically updated!
 >
@@ -48,11 +47,7 @@ This release includes three separate tools:
 3. Run the installer — it will flawlessly clean install to `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer`
 4. Restart PowerToys and enable the plugin in Settings → PowerToys Run → Plugins
 
-### Installation — Command Palette Extension
 
-1. Download **`DiskAnalyzerExtension_1.3.0.0_x64.msix`** (or `arm64`)
-2. Double-click the `.msix` file and click **Install**
-3. Open Command Palette — *DiskAnalyzer* will appear as a top-level entry
 
 ### Usage
 
@@ -71,7 +66,7 @@ This release includes three separate tools:
 * **Fully featured Standalone WinUI 3 App** with interactive Visual Charts (Pie/Bar/Donut/Sunburst) for deeper disk analysis!
 * **Unified Installer** features a flawless 1-click Clean Install mode, automatically purging old DLLs from `%LOCALAPPDATA%` to prevent version conflicts.
 * Completely separated and distinct display names for the Standalone App, Command Palette Extension, and PowerToys Run plugin to eliminate confusion.
-* Official Microsoft Store submission packaging and configuration for the Standalone App.
+* **Unified the Command Palette Extension and Standalone App into a single MSIX package** for seamless Microsoft Store distribution.
 
 #### Changed
 * Upgraded the Core project and shared logic to **.NET 10.0** for maximum performance and modern API support.

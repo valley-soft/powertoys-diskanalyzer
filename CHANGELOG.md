@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Fully featured Standalone WinUI 3 App** with interactive Visual Charts (Pie/Bar/Donut/Sunburst) for deeper disk analysis!
 - **Unified Installer** features a flawless 1-click Clean Install mode, automatically purging old DLLs from `%LOCALAPPDATA%` to prevent version conflicts.
 - Completely separated and distinct display names for the Standalone App, Command Palette Extension, and PowerToys Run plugin to eliminate confusion.
-- Official Microsoft Store submission packaging and configuration for the Standalone App.
+- **Unified the Command Palette Extension and Standalone App into a single MSIX package** for seamless Microsoft Store distribution.
 
 ### Changed
 - Upgraded the Core project and shared logic to **.NET 10.0** for maximum performance and modern API support.

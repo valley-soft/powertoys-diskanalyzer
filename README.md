@@ -14,13 +14,12 @@ A [PowerToys Run](https://aka.ms/PowerToysOverview) plugin **and** a native Wind
 
 ## Components
 
-This project ships three separate tools that work together:
+This project ships three tools, bundled into two easy installations:
 
-| Component | Where it appears | How to trigger |
+| Component | Installation Method | How to trigger |
 |-----------|-----------------|----------------|
-| **Standalone App (WinUI 3)** | Start Menu | Launch from Start Menu |
-| **PowerToys Run Plugin** | PowerToys Run (`Alt+Space`) and Command Palette (labeled *DiskAnalyzer (PowerToys Run)*) | Type `ds` keyword |
-| **Command Palette Extension** | Windows Command Palette (labeled *ValleySoft Disk Analyzer*) | Open CmdPal and type a command directly |
+| **Standalone App (WinUI 3)** & **Command Palette Extension** | Install the `.msix` package | Launch from Start Menu or open Windows Command Palette |
+| **PowerToys Run Plugin** | Install the `.exe` installer | Open PowerToys Run (`Alt+Space`) and type `ds` keyword |
 
 ---
 
@@ -98,11 +97,12 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 ## Installation
 
-### Standalone App (WinUI 3)
+### Standalone App (WinUI 3) & Command Palette Extension (Unified MSIX)
 
 1. Download **`ValleySoft.DiskAnalyzer.App_1.3.0.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Double-click** the `.msix` file — Windows will launch the installer
 3. Click **Install**
+4. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
 
 > **Note:** The standalone app is not yet available in the Microsoft Store. When it is officially available, the Microsoft Store will be the recommended way to install and keep the app automatically updated!
 >
@@ -138,16 +138,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
    ```
 4. Restart PowerToys and enable the plugin in Settings
 
----
-
-### Command Palette Extension (MSIX)
-
-1. Download **`DiskAnalyzerExtension_1.3.0.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
-2. **Double-click** the `.msix` file — Windows will launch the installer
-3. Click **Install**
-4. Open the **Windows Command Palette** — *ValleySoft Disk Analyzer* will appear as a top-level entry
-
-> **Note:** The MSIX package is self-signed for open-source sideloading. To install it, you must either:
+> **Note:** The unified MSIX package (Standalone App + Command Palette) is self-signed for open-source sideloading. To install it, you must either:
 > 1. Enable **Developer Mode** in Windows Settings → System → For developers.
 > 2. Or manually trust the certificate by downloading `ValleySoft_Certificate.cer` from the Releases page, double-clicking it, clicking **Install Certificate**, selecting **Local Machine**, and placing it in the **Trusted Root Certification Authorities** store.
 
@@ -276,6 +267,7 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 #### Added
 - ✨ **New**: **Fully featured Standalone WinUI 3 App** with interactive Visual Charts (Pie/Bar/Donut/Sunburst) for deeper disk analysis!
 - 📦 **New**: **Unified Installer** features a flawless 1-click Clean Install mode, automatically purging old DLLs from `%LOCALAPPDATA%` to prevent version conflicts.
+- 📦 **New**: **Unified the Command Palette Extension and Standalone App into a single MSIX package** for seamless Microsoft Store distribution.
 - 🏷️ **New**: Completely separated and distinct display names for the Standalone App, Command Palette Extension, and PowerToys Run plugin to eliminate confusion.
 
 #### Changed
