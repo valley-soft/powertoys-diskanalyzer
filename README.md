@@ -59,7 +59,9 @@ This project ships three separate tools that work together:
 
 ![Scanning C:\WINDOWS folder](Docs/Images/ptrun-folder-scan.png)
 
-### Standalone GUI Window (`ds gui`)
+### Standalone App (WinUI 3)
+
+Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalone experience.
 
 ![GUI — Main Overview](Docs/Images/standalone-app-ui.png)
 
@@ -69,15 +71,12 @@ This project ships three separate tools that work together:
 
 ![GUI — Alternate View](Docs/Images/standalone-app-ui-2.png)
 
-- 🗂️ Left pane: expandable tree view of all your drives and folders
-- 📋 Right pane: sortable table showing Name, Size, Allocated, Items, Modified date
-- ⬅️ **Back button** — navigate back through your browsing history
-- 📂 **Browse button** — open any folder with a standard folder picker dialog
-- 🔄 **Refresh button** — rescan the current folder
-- 🖱️ **Double-click** a folder row to drill down into it
-- 🖱️ **Double-click** a file row to reveal it in File Explorer
-- ✅ Sizes sorted correctly by bytes — not alphabetically
-- 🔒 Safe: no delete functionality — read-only tool
+- 📊 **Visual Charts**: Instantly visualize disk usage with beautiful interactive Pie, Donut, Bar, and Sunburst charts.
+- 🗂️ **Deep Scanning**: Scan any drive or folder to see exact byte-for-byte size analysis.
+- 📋 **Sortable Data**: View Name, Size, Allocated Size, Items count, and Modified dates.
+- ⬅️ **Navigation**: Fully integrated back-and-forth history, plus an interactive breadcrumb bar.
+- 📂 **Integration**: Double-click any folder to drill down, or double-click any file to seamlessly reveal it in Windows Explorer.
+- 🔒 **Safe**: Read-only tool with absolutely no delete functionality—your data is safe.
 
 ---
 
@@ -175,8 +174,8 @@ Open PowerToys Run (`Alt+Space`) and type `ds` followed by a command.
 | `ds top C:\` | Show top-level subfolders ranked by total size |
 | `ds ext C:\ .mp4` | Find the largest files of a specific extension |
 | `ds empty C:\` | Find empty folders inside a path |
-| `ds gui` | Open the full standalone GUI window |
-| `ds gui C:\Users` | Open the GUI window pre-navigated to a specific folder |
+| `ds gui` | Open the legacy WPF GUI window |
+| `ds gui C:\Users` | Open the legacy WPF GUI window pre-navigated to a specific folder |
 
 #### Context Menu (right-click / `>` on any result)
 
@@ -214,21 +213,20 @@ Results appear **as you type** — scanning runs in the background with a *Scann
 
 ---
 
-## GUI Window — How to Use
+## Standalone App — How to Use
 
-Launch with `ds gui` from PowerToys Run, then press Enter.
+Launch **DiskAnalyzer** from your Windows Start Menu.
 
 | Action | How |
 |--------|-----|
-| Browse drives | All drives appear in the left tree on startup |
-| Expand a drive/folder | Click the ▶ arrow in the left tree |
-| View folder contents | Click any drive or folder in the left tree |
-| Drill into a subfolder | **Double-click** any folder row in the right grid |
+| Scan a drive | Click the drive letter from the dropdown or sidebar |
+| Pick a custom folder | Click **Browse...** to pick any folder on your PC |
+| View visual charts | Click the **Chart** icon in the toolbar |
+| Drill into a subfolder | **Double-click** any folder row in the data grid |
 | Reveal a file | **Double-click** any file row — opens File Explorer |
-| Go back | Click **← Back** button |
-| Pick any folder | Click **Browse...** button |
-| Rescan current view | Click **Refresh** button |
-| Sort columns | Click any column header (Size/Allocated sort by bytes correctly) |
+| Go back | Click the **← Back** button or use the breadcrumb trail |
+| Rescan current view | Click the **Refresh** button |
+| Sort columns | Click any column header (Size/Allocated sort correctly by bytes) |
 
 ---
 
@@ -250,25 +248,38 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 | File / Folder | Purpose |
 |---------------|---------| 
 | `Main.cs` | Plugin entry point — handles queries, results, and context menus |
-| `DiskAnalyzerHelper.cs` | File system scanning, size calculation, progress bars |
-| `DiskAnalyzerWindow.xaml` / `.cs` | Standalone GUI window (WPF) |
-| `DiskItemInfo.cs` | Data model for scanned files/folders |
+| `Core/` | Shared class library containing the disk scanning engine |
+| `Standalone App/` | WinUI 3 standalone application |
+| `DiskAnalyzerWindow.xaml` / `.cs` | Legacy standalone GUI window (WPF) triggered via `ds gui` |
 | `plugin.json` | PowerToys metadata (name, keyword, version, icons) |
-| `Docs/Images/` | Plugin icon assets and README screenshots |
+| `Docs/Images/` | README screenshots |
+| `Images/` | Plugin icon assets (`DiskAnalyzerLight.png` / `DiskAnalyzerDark.png`) |
 | `CmdPalExtension/` | Native Command Palette MSIX extension project |
 | `Installer/` | Single-file native installer source |
-| `build-v1.3.0.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX for x64 & ARM64, installs locally |
-| `out/` | Final output: installer `.exe` files, CmdPal `.msix` packages, and ZIPs |
+| `build-v1.3.0.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX + Standalone MSIX for x64 & ARM64 |
+| `out/` | Final output directory for all generated artifacts |
 
 ---
 
 ## Version History
 
 ### v1.3.0 — 2026-06-21
-- ✨ **New**: Fully featured Standalone WinUI 3 App with interactive Visual Charts!
-- ✨ **New**: Unified Installer features a flawless 1-click Clean Install mode
-- 🛠️ **Fixed**: PowerToys Run `AssemblyLoadContext` bug completely resolved by natively compiling core logic into the plugin
-- 🛠️ **Fixed**: Standalone App sizes and calculations rigorously synced with Windows Explorer
+
+#### Added
+- ✨ **New**: **Fully featured Standalone WinUI 3 App** with interactive Visual Charts (Pie/Bar/Donut/Sunburst) for deeper disk analysis!
+- 📦 **New**: **Unified Installer** features a flawless 1-click Clean Install mode, automatically purging old DLLs from `%LOCALAPPDATA%` to prevent version conflicts.
+- 🏷️ **New**: Completely separated and distinct display names for the Standalone App, Command Palette Extension, and PowerToys Run plugin to eliminate confusion.
+
+#### Changed
+- 🚀 **Performance**: Upgraded the Core project and shared logic to **.NET 10.0** for maximum performance and modern API support.
+- 🏗️ **Architecture**: Extracted the shared core scanning engine into a perfectly synchronized standard, improving accuracy and maintainability.
+- 🧹 **Cleanup**: Deeply cleaned the repository, permanently ignoring and removing old legacy build artifacts.
+
+#### Fixed
+- 🛠️ **Fixed**: PowerToys Run `AssemblyLoadContext` bug completely resolved! Core logic is now natively compiled directly into the plugin instead of using `ProjectReference`.
+- 🛠️ **Fixed**: Standalone App sizes and calculations rigorously synced with Windows Explorer to ensure accurate byte-for-byte size reporting.
+- 🛠️ **Fixed**: Resolved hidden files straggler toggles in XAML and WPF; hidden system files are now properly counted and interactable.
+- 🛠️ **Fixed**: Fixed severe junction point infinite loop bugs in the directory scanner.
 
 ### v1.2.0 — 2026-06-14
 - ✨ **New**: Native **Command Palette MSIX Extension** — type commands directly in CmdPal without a keyword
