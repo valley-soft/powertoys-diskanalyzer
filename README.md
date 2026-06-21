@@ -98,6 +98,13 @@ This project ships three separate tools that work together:
 3. Click **Install**
 
 > **Note:** The standalone app is not yet available in the Microsoft Store. When it is officially available, the Microsoft Store will be the recommended way to install and keep the app automatically updated!
+>
+> [![Get it from Microsoft](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
+>
+> Alternatively, you can install it instantly via the command line using `winget`:
+> ```powershell
+> winget install --id 9NF073KLTVWN --source msstore
+> ```
 
 ---
 
