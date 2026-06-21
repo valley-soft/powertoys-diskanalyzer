@@ -9,11 +9,20 @@ This release includes three separate tools:
 
 ---
 
-### Standalone WinUI 3 App Screenshots!
+### Screenshots
 
+#### 1. Standalone App (WinUI 3)
 ![GUI — Main Overview](https://raw.githubusercontent.com/valley-soft/powertoys-diskanalyzer/main/Docs/Images/standalone-app-ui.png)
-
 ![GUI — Visual Chart Analysis](https://raw.githubusercontent.com/valley-soft/powertoys-diskanalyzer/main/Docs/Images/standalone-app-visual-chart.png)
+
+#### 2. PowerToys Run Plugin
+![Help commands overview](https://raw.githubusercontent.com/valley-soft/powertoys-diskanalyzer/main/Docs/Images/ptrun-help-commands.png)
+![Scanning top-level folders on C:](https://raw.githubusercontent.com/valley-soft/powertoys-diskanalyzer/main/Docs/Images/ptrun-top-folders.png)
+
+#### 3. Command Palette Extension
+![CmdPal - Screenshot 1](https://raw.githubusercontent.com/valley-soft/powertoys-diskanalyzer/main/Docs/Images/cmdpal-screenshot-1.png)
+![CmdPal - Screenshot 2](https://raw.githubusercontent.com/valley-soft/powertoys-diskanalyzer/main/Docs/Images/cmdpal-screenshot-2.png)
+![CmdPal - Screenshot 3](https://raw.githubusercontent.com/valley-soft/powertoys-diskanalyzer/main/Docs/Images/cmdpal-screenshot-3.png)
 
 ---
 
