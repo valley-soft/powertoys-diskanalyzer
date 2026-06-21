@@ -8,12 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.0] - 2026-06-21
 
 ### Added
-- Fully featured Standalone WinUI 3 App with interactive Visual Charts!
-- Unified Installer features a flawless 1-click Clean Install mode.
+- **Fully featured Standalone WinUI 3 App** with interactive Visual Charts (Pie/Bar/Donut/Sunburst) for deeper disk analysis!
+- **Unified Installer** features a flawless 1-click Clean Install mode, automatically purging old DLLs from `%LOCALAPPDATA%` to prevent version conflicts.
+- Completely separated and distinct display names for the Standalone App, Command Palette Extension, and PowerToys Run plugin to eliminate confusion.
+- Official Microsoft Store submission packaging and configuration for the Standalone App.
+
+### Changed
+- Upgraded the Core project and shared logic to **.NET 10.0** for maximum performance and modern API support.
+- Extracted the shared core scanning engine into a perfectly synchronized standard, improving accuracy and maintainability.
+- Deeply cleaned the repository, permanently ignoring and removing old legacy build artifacts (e.g. `/AppPackages`, `obj`, `bin`).
 
 ### Fixed
-- PowerToys Run `AssemblyLoadContext` bug completely resolved by natively compiling core logic into the plugin.
-- Standalone App sizes and calculations rigorously synced with Windows Explorer.
+- **PowerToys Run `AssemblyLoadContext` bug completely resolved!** Core logic is now natively compiled directly into the plugin instead of using `ProjectReference`, fixing all load failures.
+- **Standalone App sizes and calculations** rigorously synced with Windows Explorer to ensure accurate byte-for-byte size reporting.
+- Resolved hidden files straggler toggles in XAML and WPF; hidden system files are now properly counted and interactable.
+- Fixed severe junction point infinite loop bugs in the directory scanner.
+- Fixed mojibake text corruption in several source code files.
 
 ## [1.2.0] - 2026-06-14
 
