@@ -32,7 +32,7 @@
                 <MenuFlyoutItem Text="Refresh Current" Icon="Refresh" Click="RefreshButton_Click"/>
             </MenuBarItem>
             <MenuBarItem Title="View">
-                <ToggleMenuFlyoutItem Text="Show Hidden Files" IsChecked="False" Click="ShowHiddenFiles_Click" x:Name="ShowHiddenFilesToggle"/>
+                <ToggleMenuFlyoutItem Text="Show Hidden Files" IsChecked="True" Click="ShowHiddenFiles_Click" x:Name="ShowHiddenFilesToggle"/>
                 <MenuFlyoutSeparator/>
                 <MenuFlyoutItem Text="Expand Root Folders" Icon="Add" Click="ExpandAll_Click"/>
                 <MenuFlyoutItem Text="Collapse All" Icon="Remove" Click="CollapseAll_Click"/>

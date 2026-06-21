@@ -197,7 +197,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 
             try
             {
-                var items = await Task.Run(() => DiskAnalyzerHelper.ScanDirectory(path, 1, false));
+                var items = await Task.Run(() => DiskAnalyzerHelper.ScanDirectory(path, 1, true));
 
                 var viewModels = items
                     .Select(i => new GridItemViewModel
