@@ -99,7 +99,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
 
         private async void BtnInstall_Click(object sender, RoutedEventArgs e)
         {
-            bool isCleanInstall = RadioClean.IsChecked == true;
+            bool isCleanInstall = true; // Always clean install now
             bool installPlugin = CheckPlugin.IsChecked == true;
             bool installCmdPal = CheckCmdPal.IsChecked == true;
             bool installApp = CheckApp.IsChecked == true;
@@ -115,7 +115,6 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
             CheckPlugin.IsEnabled = false;
             CheckCmdPal.IsEnabled = false;
             CheckApp.IsEnabled = false;
-            RadioExpress.IsEnabled = false;
             RadioClean.IsEnabled = false;
             ProgressBar.Visibility = Visibility.Visible;
             ProgressBar.IsIndeterminate = true;
@@ -132,6 +131,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
             BtnInstall.Click -= BtnInstall_Click;
             BtnInstall.Click += (s, ev) => { Application.Current.Shutdown(); };
             BtnInstall.IsEnabled = true;
+
+            MessageBox.Show("Installation complete!\n\nPlease completely exit and restart PowerToys for the new plugin to load properly. (Right-click the PowerToys icon in the system tray and select 'Exit', then start it again from the Start Menu)", "Installation Successful", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void LogMessage(string message)

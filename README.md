@@ -1,6 +1,6 @@
 # DiskAnalyzer — PowerToys Run Plugin & Command Palette Extension
 
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 [![Microsoft Store](https://img.shields.io/badge/Microsoft_Store-Available-0078D7?logo=windows&logoColor=white)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/valley-soft/powertoys-diskanalyzer)
 [![PowerToys](https://img.shields.io/badge/PowerToys-v0.97.0+-orange.svg)](https://github.com/microsoft/PowerToys)
@@ -47,22 +47,26 @@ This project ships two separate tools that work together:
 
 ## PowerToys Run Commands
 
-![Help commands overview](Images/ptrun-help-commands.png)
+![Help commands overview](Docs/Images/ptrun-help-commands.png)
 
-![Advanced commands: largest, top, ext, empty](Images/ptrun-advanced-commands.png)
+![Advanced commands: largest, top, ext, empty](Docs/Images/ptrun-advanced-commands.png)
 
 ### Scanning Folders
 
-![Scanning top-level folders on C:](Images/ptrun-top-folders.png)
+![Scanning top-level folders on C:](Docs/Images/ptrun-top-folders.png)
 
 
-![Scanning C:\WINDOWS folder](Images/ptrun-folder-scan.png)
+![Scanning C:\WINDOWS folder](Docs/Images/ptrun-folder-scan.png)
 
 ### Standalone GUI Window (`ds gui`)
 
-![GUI — all drives overview with C:\ selected](Images/gui-drive-overview.png)
+![GUI — Main Overview](Docs/Images/standalone-app-ui.png)
 
-![GUI — drilled into C:\WINDOWS](Images/gui-drill-down.png)
+![GUI — Visual Chart Analysis](Docs/Images/standalone-app-visual-chart.png)
+
+![GUI — View Menu](Docs/Images/standalone-app-view-menu.png)
+
+![GUI — Alternate View](Docs/Images/standalone-app-ui-2.png)
 
 - 🗂️ Left pane: expandable tree view of all your drives and folders
 - 📋 Right pane: sortable table showing Name, Size, Allocated, Items, Modified date
@@ -103,7 +107,7 @@ winget install --id 9NF073KLTVWN --source msstore
 
 #### Method 1 — Standalone Installer (Recommended)
 
-1. Download **`DiskAnalyzerInstaller-v1.2.0-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`DiskAnalyzerInstaller-v1.3.0-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Exit PowerToys completely** — Right-click the PowerToys icon in the system tray → **Exit**
 3. **Run the installer** — it will automatically extract and copy plugin files to:
    ```
@@ -126,7 +130,7 @@ winget install --id 9NF073KLTVWN --source msstore
 
 ### Command Palette Extension (MSIX)
 
-1. Download **`DiskAnalyzerCommandPalleteVersion_1.2.0.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`DiskAnalyzerCommandPalleteVersion_1.3.0.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Double-click** the `.msix` file — Windows will launch the installer
 3. Click **Install**
 4. Open the **Windows Command Palette** — *ValleySoft Disk Analyzer* will appear as a top-level entry
@@ -144,7 +148,7 @@ Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 ```powershell
 git clone https://github.com/valley-soft/powertoys-diskanalyzer.git
 cd powertoys-diskanalyzer
-.\build-v1.2.0.ps1
+.\build-v1.3.0.ps1
 # Installers and MSIX packages appear in out\
 ```
 
@@ -245,15 +249,21 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 | `DiskAnalyzerWindow.xaml` / `.cs` | Standalone GUI window (WPF) |
 | `DiskItemInfo.cs` | Data model for scanned files/folders |
 | `plugin.json` | PowerToys metadata (name, keyword, version, icons) |
-| `Images/` | Plugin icon assets and README screenshots |
+| `Docs/Images/` | Plugin icon assets and README screenshots |
 | `CmdPalExtension/` | Native Command Palette MSIX extension project |
 | `Installer/` | Single-file native installer source |
-| `build-v1.2.0.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX for x64 & ARM64, installs locally |
+| `build-v1.3.0.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX for x64 & ARM64, installs locally |
 | `out/` | Final output: installer `.exe` files, CmdPal `.msix` packages, and ZIPs |
 
 ---
 
 ## Version History
+
+### v1.3.0 — 2026-06-21
+- ✨ **New**: Fully featured Standalone WinUI 3 App with interactive Visual Charts!
+- ✨ **New**: Unified Installer features a flawless 1-click Clean Install mode
+- 🛠️ **Fixed**: PowerToys Run `AssemblyLoadContext` bug completely resolved by natively compiling core logic into the plugin
+- 🛠️ **Fixed**: Standalone App sizes and calculations rigorously synced with Windows Explorer
 
 ### v1.2.0 — 2026-06-14
 - ✨ **New**: Native **Command Palette MSIX Extension** — type commands directly in CmdPal without a keyword

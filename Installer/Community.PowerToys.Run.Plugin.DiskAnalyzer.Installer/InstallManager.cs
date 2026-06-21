@@ -94,7 +94,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
             log("\nInstalling PowerToys Run Plugin...");
 
             string localAppData  = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string ptRunDir      = Path.Combine(localAppData, "PowerToys", "PowerToys Run", "Plugins", "DiskAnalyzer");
+            string ptRunDir      = Path.Combine(localAppData, "Microsoft", "PowerToys", "PowerToys Run", "Plugins", "DiskAnalyzer");
             string payloadDir    = Path.Combine(extractDir, "Plugin");
             string settingsFile  = Path.Combine(ptRunDir, "settings.json");
             string? settingsBackup = null;
@@ -138,6 +138,9 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
                 $"$dst = '{ptRunDir}'\r\n" +
                 $"$status = '{statusFile}'\r\n" +
                 "Set-Content -Path $status -Value 'Started'\r\n" +
+                $"$oldSystemDir = '{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "PowerToys", "modules", "launcher", "Plugins", "DiskAnalyzer")}'\r\n" +
+                "if (Test-Path $oldSystemDir) { Remove-Item -Path $oldSystemDir -Recurse -Force -ErrorAction SilentlyContinue }\r\n" +
+                "if (Test-Path $dst) { Remove-Item -Path $dst -Recurse -Force -ErrorAction SilentlyContinue }\r\n" +
                 "if (!(Test-Path $dst)) { New-Item -ItemType Directory -Path $dst -Force | Out-Null }\r\n" +
                 "Get-ChildItem -Path $src -Recurse | ForEach-Object {\r\n" +
                 "    $rel = $_.FullName.Substring($src.Length + 1)\r\n" +

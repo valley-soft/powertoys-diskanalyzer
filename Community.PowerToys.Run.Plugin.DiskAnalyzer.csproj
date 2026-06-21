@@ -28,10 +28,15 @@
     <EmbeddedResource Remove="CmdPalExtension\**" />
     <None Remove="CmdPalExtension\**" />
     
-    <Compile Remove="Core\**" />
-    <Content Remove="Core\**" />
-    <EmbeddedResource Remove="Core\**" />
-    <None Remove="Core\**" />
+    <Compile Remove="CmdPalExtension\**" />
+    <Content Remove="CmdPalExtension\**" />
+    <EmbeddedResource Remove="CmdPalExtension\**" />
+    <None Remove="CmdPalExtension\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Compile Core directly to avoid ALC load issues in PowerToys Run -->
+    <Compile Include="Core\ValleySoft.DiskAnalyzer.Core\**\*.cs" Exclude="Core\ValleySoft.DiskAnalyzer.Core\obj\**;Core\ValleySoft.DiskAnalyzer.Core\bin\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,7 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="Core\ValleySoft.DiskAnalyzer.Core\ValleySoft.DiskAnalyzer.Core.csproj" />
+    <!-- Removed ProjectReference to compile directly -->
   </ItemGroup>
 
   <ItemGroup>

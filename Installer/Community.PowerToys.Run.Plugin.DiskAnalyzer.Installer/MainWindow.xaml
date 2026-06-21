@@ -39,8 +39,8 @@
         <!-- Install Mode -->
         <GroupBox Grid.Row="1" Header="Installation Mode" Foreground="White" BorderBrush="#333333" Padding="10" Margin="0,0,0,15">
             <StackPanel>
-                <RadioButton x:Name="RadioExpress" Content="Express Upgrade (Preserves existing settings)" IsChecked="True"/>
-                <RadioButton x:Name="RadioClean" Content="Clean Install (Wipes all previous app data and settings)"/>
+                <RadioButton x:Name="RadioClean" Content="Clean Install (Recommended)" IsChecked="True"/>
+                <TextBlock Text="This will automatically uninstall previous versions, completely wipe out old plugin directories, and cleanly install the self-contained version. It guarantees a flawless setup." Foreground="#AAAAAA" TextWrapping="Wrap" Margin="20,5,0,0"/>
             </StackPanel>
         </GroupBox>
 
