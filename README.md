@@ -104,7 +104,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 3. Click **Install**
 4. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
 
-> **Note:** The standalone app is not yet available in the Microsoft Store. When it is officially available, the Microsoft Store will be the recommended way to install and keep the app automatically updated!
+> **Recommended:** The Microsoft Store is the easiest way to install and keep the app automatically updated!
 >
 > [![Get it from Microsoft](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
 >
