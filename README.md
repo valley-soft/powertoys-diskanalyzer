@@ -26,6 +26,14 @@ This project ships three separate tools that work together:
 
 ## Features
 
+### Standalone App (WinUI 3)
+- 📊 **Visual Charts**: Instantly visualize disk usage with beautiful interactive Pie, Donut, Bar, and Sunburst charts
+- 🗂️ **Deep Scanning**: Scan any drive or folder to see exact byte-for-byte size analysis
+- 📋 **Sortable Data**: View Name, Size, Allocated Size, Items count, and Modified dates
+- ⬅️ **Navigation**: Fully integrated back-and-forth history, plus an interactive breadcrumb bar
+- 📂 **Integration**: Double-click any folder to drill down, or double-click any file to seamlessly reveal it in Windows Explorer
+- 🔒 **Safe**: Read-only tool with absolutely no delete functionality—your data is safe
+
 ### PowerToys Run Plugin (`ds` keyword)
 - 🖥️ List all drives with used / free / total space and a visual usage bar
 - 📂 Browse any folder — subfolders and files ranked by size
@@ -70,13 +78,6 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 ![GUI — View Menu](Docs/Images/standalone-app-view-menu.png)
 
 ![GUI — Alternate View](Docs/Images/standalone-app-ui-2.png)
-
-- 📊 **Visual Charts**: Instantly visualize disk usage with beautiful interactive Pie, Donut, Bar, and Sunburst charts.
-- 🗂️ **Deep Scanning**: Scan any drive or folder to see exact byte-for-byte size analysis.
-- 📋 **Sortable Data**: View Name, Size, Allocated Size, Items count, and Modified dates.
-- ⬅️ **Navigation**: Fully integrated back-and-forth history, plus an interactive breadcrumb bar.
-- 📂 **Integration**: Double-click any folder to drill down, or double-click any file to seamlessly reveal it in Windows Explorer.
-- 🔒 **Safe**: Read-only tool with absolutely no delete functionality—your data is safe.
 
 ---
 
