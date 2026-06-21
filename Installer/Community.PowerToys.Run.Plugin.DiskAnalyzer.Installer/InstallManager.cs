@@ -93,8 +93,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
         {
             log("\nInstalling PowerToys Run Plugin...");
 
-            string programFiles  = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            string ptRunDir      = Path.Combine(programFiles, "PowerToys", "modules", "launcher", "Plugins", "DiskAnalyzer");
+            string localAppData  = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string ptRunDir      = Path.Combine(localAppData, "PowerToys", "PowerToys Run", "Plugins", "DiskAnalyzer");
             string payloadDir    = Path.Combine(extractDir, "Plugin");
             string settingsFile  = Path.Combine(ptRunDir, "settings.json");
             string? settingsBackup = null;
@@ -130,6 +130,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
             {
                 try { File.Delete(statusFile); } catch { }
             }
+            string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             string ptExe = Path.Combine(programFiles, "PowerToys", "PowerToys.exe");
 
             File.WriteAllText(copyScript,
