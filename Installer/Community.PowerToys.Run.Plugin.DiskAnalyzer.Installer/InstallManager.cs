@@ -8,6 +8,43 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
 {
     public static class InstallManager
     {
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true, CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+        private static extern bool MoveFileEx(string lpExistingFileName, string? lpNewFileName, uint dwFlags);
+
+        private const uint MOVEFILE_DELAY_UNTIL_REBOOT = 0x00000004;
+
+        private static void ScheduleDeleteOnReboot(string path)
+        {
+            try
+            {
+                MoveFileEx(path, null, MOVEFILE_DELAY_UNTIL_REBOOT);
+            }
+            catch { }
+        }
+
+        private static bool IsPackageInstalled(string packageName)
+        {
+            try
+            {
+                var psi = new ProcessStartInfo("powershell.exe",
+                    $"-NoProfile -ExecutionPolicy Bypass -Command \"Get-AppxPackage -Name '{packageName}'\"")
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true
+                };
+                using var p = Process.Start(psi);
+                if (p == null) return false;
+                string stdout = p.StandardOutput.ReadToEnd();
+                p.WaitForExit(10000);
+                return !string.IsNullOrWhiteSpace(stdout);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public static void PerformInstall(bool isCleanInstall, bool installPlugin, bool installCmdPal, bool installApp, Action<string> log)
         {
             if (!installPlugin && !installCmdPal && !installApp)
@@ -26,7 +63,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
                 // Extract embedded payload zip
                 var assembly = Assembly.GetExecutingAssembly();
                 string resourceName = "Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer.payload.zip";
-                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                using (Stream? stream = assembly.GetManifestResourceStream(resourceName))
                 {
                     if (stream == null) throw new Exception("Payload zip not found inside the installer executable.");
                     using (var archive = new ZipArchive(stream))
@@ -60,7 +97,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
             string ptRunDir      = Path.Combine(programFiles, "PowerToys", "modules", "launcher", "Plugins", "DiskAnalyzer");
             string payloadDir    = Path.Combine(extractDir, "Plugin");
             string settingsFile  = Path.Combine(ptRunDir, "settings.json");
-            string settingsBackup = null;
+            string? settingsBackup = null;
 
             if (!Directory.Exists(payloadDir))
             {
@@ -88,22 +125,43 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
 
             // Write a copy script and run it via a scheduled task (runs as SYSTEM — bypasses Program Files lock)
             string copyScript = Path.Combine(Path.GetTempPath(), "da_plugin_copy.ps1");
-            string restartLine = "";
+            string statusFile = Path.Combine(Path.GetTempPath(), "da_install_status.txt");
+            if (File.Exists(statusFile))
+            {
+                try { File.Delete(statusFile); } catch { }
+            }
             string ptExe = Path.Combine(programFiles, "PowerToys", "PowerToys.exe");
-            if (File.Exists(ptExe))
-                restartLine = $"Start-Process '{ptExe}'";
 
             File.WriteAllText(copyScript,
                 $"$src = '{payloadDir}'\r\n" +
                 $"$dst = '{ptRunDir}'\r\n" +
+                $"$status = '{statusFile}'\r\n" +
+                "Set-Content -Path $status -Value 'Started'\r\n" +
                 "if (!(Test-Path $dst)) { New-Item -ItemType Directory -Path $dst -Force | Out-Null }\r\n" +
                 "Get-ChildItem -Path $src -Recurse | ForEach-Object {\r\n" +
                 "    $rel = $_.FullName.Substring($src.Length + 1)\r\n" +
                 "    $target = Join-Path $dst $rel\r\n" +
-                "    if ($_.PSIsContainer) { New-Item -ItemType Directory -Path $target -Force | Out-Null }\r\n" +
-                "    else { Copy-Item -Path $_.FullName -Destination $target -Force }\r\n" +
+                "    if ($_.PSIsContainer) {\r\n" +
+                "        if (!(Test-Path $target)) { New-Item -ItemType Directory -Path $target -Force | Out-Null }\r\n" +
+                "    } else {\r\n" +
+                "        if (Test-Path $target) {\r\n" +
+                "            try {\r\n" +
+                "                Copy-Item -Path $_.FullName -Destination $target -Force\r\n" +
+                "            } catch {\r\n" +
+                "                $oldPath = $target + '.' + [Guid]::NewGuid().ToString('N').Substring(0,8) + '.old'\r\n" +
+                "                try {\r\n" +
+                "                    Rename-Item -Path $target -NewName [System.IO.Path]::GetFileName($oldPath) -Force\r\n" +
+                "                    Copy-Item -Path $_.FullName -Destination $target -Force\r\n" +
+                "                } catch {\r\n" +
+                "                    # Failed to rename or copy\r\n" +
+                "                }\r\n" +
+                "            }\r\n" +
+                "        } else {\r\n" +
+                "            Copy-Item -Path $_.FullName -Destination $target -Force\r\n" +
+                "        }\r\n" +
+                "    }\r\n" +
                 "}\r\n" +
-                $"{restartLine}\r\n"
+                "Set-Content -Path $status -Value 'Done'\r\n"
             );
 
             // Use schtasks to run as SYSTEM (elevated, no UAC needed since we're already admin)
@@ -112,11 +170,31 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
             RunCmd("schtasks", $"/Run /TN \"{taskName}\"", log);
 
             log("Copying plugin files...");
-            System.Threading.Thread.Sleep(4000); // wait for scheduled task to run
+            
+            // Loop checking status
+            int elapsed = 0;
+            while (elapsed < 15000) // 15 seconds max
+            {
+                if (File.Exists(statusFile))
+                {
+                    try
+                    {
+                        string content = File.ReadAllText(statusFile).Trim();
+                        if (content == "Done")
+                        {
+                            break;
+                        }
+                    }
+                    catch { }
+                }
+                System.Threading.Thread.Sleep(500);
+                elapsed += 500;
+            }
 
             RunCmd("schtasks", $"/Delete /F /TN \"{taskName}\"", log);
 
             try { File.Delete(copyScript); } catch { }
+            try { if (File.Exists(statusFile)) File.Delete(statusFile); } catch { }
 
             // Verify copy
             string mainDll = Path.Combine(ptRunDir, "Community.PowerToys.Run.Plugin.DiskAnalyzer.dll");
@@ -136,7 +214,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
                 log("Warning: Plugin DLL not found after copy. Check that the installer ran as Administrator.");
             }
 
-            // Restart PowerToys
+            // Restart PowerToys (runs in user session since the installer runs in the user session)
             log("Restarting PowerToys...");
             if (File.Exists(ptExe))
             {
@@ -158,35 +236,62 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
             }
 
             // Import certificate if present alongside the MSIX
-            string cerPath = Path.Combine(Path.GetDirectoryName(msixPath), "ValleySoft.cer");
-            if (File.Exists(cerPath))
+            string? dirName = Path.GetDirectoryName(msixPath);
+            if (dirName != null)
             {
-                RunPowerShell($"Import-Certificate -FilePath '{cerPath}' -CertStoreLocation Cert:\\LocalMachine\\TrustedPeople", log, silent: true);
+                string cerPath = Path.Combine(dirName, "ValleySoft.cer");
+                if (File.Exists(cerPath))
+                {
+                    RunPowerShell($"Import-Certificate -FilePath '{cerPath}' -CertStoreLocation Cert:\\LocalMachine\\TrustedPeople", log, silent: true);
+                }
             }
 
-            // Step 1: Remove any existing package with the same publisher to avoid 0x80073CFB
+            // Step 1: Remove any existing package with the same publisher/package name to avoid 0x80073CFB
+            string packageName = componentName.Contains("Standalone") ? "B66E5954-FDAC-43E7-B4F4-EC969822E519" : "DiskAnalyzerExtension";
             log("Checking for existing installation...");
-            string removeCmd =
-                "$existing = Get-AppxPackage | Where-Object { $_.Publisher -like '*ValleySoft*' -and ($_.Name -like '*DiskAnalyzer*' -or $_.Name -like '*B66E5954*') }; " +
-                "if ($existing) { foreach ($p in $existing) { Remove-AppxPackage -Package $p.PackageFullName -ErrorAction SilentlyContinue } }";
-            
-            // Only remove the matching component, not everything
-            if (componentName.Contains("Standalone"))
+            if (IsPackageInstalled(packageName))
             {
-                removeCmd = "Get-AppxPackage | Where-Object { $_.Publisher -like '*ValleySoft*' -and $_.Name -notlike '*Extension*' } | ForEach-Object { Remove-AppxPackage -Package $_.PackageFullName -ErrorAction SilentlyContinue }";
-            }
-            else if (componentName.Contains("Command Palette"))
-            {
-                removeCmd = "Get-AppxPackage -Name '*DiskAnalyzerExtension*' | ForEach-Object { Remove-AppxPackage -Package $_.PackageFullName -ErrorAction SilentlyContinue }";
-            }
+                log($"Existing {componentName} package found. Uninstalling...");
+                string removeCmd = $"Get-AppxPackage -Name '{packageName}' | Remove-AppxPackage";
+                RunPowerShell(removeCmd, log, silent: true);
 
-            RunPowerShell(removeCmd, log, silent: true);
-            System.Threading.Thread.Sleep(1500);
+                // Wait and validate it is gone
+                int checkRetries = 10;
+                while (checkRetries-- > 0 && IsPackageInstalled(packageName))
+                {
+                    System.Threading.Thread.Sleep(500);
+                }
+
+                if (IsPackageInstalled(packageName))
+                {
+                    log($"Warning: Failed to uninstall existing {componentName} via standard user command. Attempting all-users package removal...");
+                    RunPowerShell($"Get-AppxPackage -Name '{packageName}' -AllUsers | Remove-AppxPackage -AllUsers", log, silent: true);
+
+                    checkRetries = 10;
+                    while (checkRetries-- > 0 && IsPackageInstalled(packageName))
+                    {
+                        System.Threading.Thread.Sleep(500);
+                    }
+                }
+
+                if (IsPackageInstalled(packageName))
+                {
+                    log($"Error: Could not uninstall old package ID for {componentName}. The installation may fail.");
+                }
+                else
+                {
+                    log("Old package uninstalled successfully.");
+                }
+            }
+            else
+            {
+                log("No existing installation found.");
+            }
 
             // Step 2: Install fresh
             log($"Deploying {componentName}...");
             string installCmd = $"Add-AppxPackage -Path '{msixPath}'";
-            
+
             var result = RunPowerShellWithResult(installCmd, log);
             if (result.exitCode == 0)
             {
@@ -225,7 +330,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
                     RedirectStandardError = true
                 };
                 using var p = Process.Start(psi);
-                p.WaitForExit(10000);
+                p?.WaitForExit(10000);
             }
             catch (Exception ex)
             {
@@ -233,12 +338,12 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
             }
         }
 
-        private static void RunPowerShell(string command, Action<string> log, bool silent = false)
+        private static void RunPowerShell(string command, Action<string>? log, bool silent = false)
         {
             RunPowerShellWithResult(command, silent ? null : log);
         }
 
-        private static (int exitCode, string error) RunPowerShellWithResult(string command, Action<string> log)
+        private static (int exitCode, string error) RunPowerShellWithResult(string command, Action<string>? log)
         {
             try
             {
@@ -251,6 +356,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
                     RedirectStandardError = true
                 };
                 using var p = Process.Start(psi);
+                if (p == null) return (-1, "Failed to start PowerShell process");
                 string stdout = p.StandardOutput.ReadToEnd();
                 string stderr = p.StandardError.ReadToEnd();
                 p.WaitForExit(30000);

@@ -4,8 +4,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="ValleySoft Disk Analyzer" Height="620" Width="1000"
         WindowStartupLocation="CenterScreen"
-        Background="#F0F0F0"
-        Foreground="Black">
+        Background="{DynamicResource WindowBackground}"
+        Foreground="{DynamicResource WindowForeground}">
 
     <Window.Resources>
         <!-- Force button to always look the same regardless of dark/light mode -->
@@ -26,7 +26,7 @@
                                 CornerRadius="4"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
-                                              TextElement.Foreground="{TemplateBinding Foreground}"/>
+                                               TextElement.Foreground="{TemplateBinding Foreground}"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -50,22 +50,22 @@
 
         <!-- TreeView item style to fix dark-mode highlight text -->
         <Style TargetType="TreeViewItem">
-            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
         </Style>
 
         <!-- DataGrid column header style -->
         <Style TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="#EBEBEB"/>
-            <Setter Property="Foreground" Value="#222222"/>
+            <Setter Property="Background" Value="{DynamicResource GridHeaderBg}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Padding" Value="8,6"/>
-            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource GridHeaderBorder}"/>
             <Setter Property="BorderThickness" Value="0,0,1,1"/>
         </Style>
 
         <!-- DataGrid row style -->
         <Style TargetType="DataGridRow">
-            <Setter Property="Foreground" Value="#111111"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
         </Style>
     </Window.Resources>
 
@@ -119,19 +119,17 @@
                 <!-- Toolbar -->
                 <Border Grid.Row="0" Background="{DynamicResource ToolbarBackground}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1,1,1,0" Padding="8,4">
                     <StackPanel Orientation="Horizontal">
-                        <Button x:Name="BackButton" Margin="0,0,8,0" Padding="8,4" Click="Back_Click" IsEnabled="{Binding ElementName=RootWindow, Path=CanGoBack}"
-                                Background="{DynamicResource ButtonBg}" BorderBrush="{DynamicResource ButtonBorder}" Foreground="{DynamicResource TextPrimary}">
+                        <Button x:Name="BackButton" Margin="0,0,8,0" Padding="8,4" Click="Back_Click" IsEnabled="{Binding ElementName=RootWindow, Path=CanGoBack}">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="⬅" Margin="0,0,4,0" Foreground="{DynamicResource TextPrimary}"/>
-                                <TextBlock Text="Back" Foreground="{DynamicResource TextPrimary}"/>
+                                <TextBlock Text="⬅" Margin="0,0,4,0"/>
+                                <TextBlock Text="Back"/>
                             </StackPanel>
                         </Button>
                         
-                        <Button Margin="0,0,8,0" Padding="8,4" Click="Refresh_Click"
-                                Background="{DynamicResource ButtonBg}" BorderBrush="{DynamicResource ButtonBorder}" Foreground="{DynamicResource TextPrimary}">
+                        <Button Margin="0,0,8,0" Padding="8,4" Click="Refresh_Click">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="🔄" Margin="0,0,4,0" Foreground="{DynamicResource TextPrimary}"/>
-                                <TextBlock Text="Refresh" Foreground="{DynamicResource TextPrimary}"/>
+                                <TextBlock Text="🔄" Margin="0,0,4,0"/>
+                                <TextBlock Text="Refresh"/>
                             </StackPanel>
                         </Button>
                         

@@ -66,17 +66,24 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
 
                 try
                 {
-                    using (System.Diagnostics.Process proc = System.Diagnostics.Process.Start(psi))
+                    using (System.Diagnostics.Process? proc = System.Diagnostics.Process.Start(psi))
                     {
-                        proc.WaitForExit();
-                        if (proc.ExitCode == 0)
+                        if (proc != null)
                         {
-                            LogMessage("Success: PowerToys installed successfully.");
-                            Dispatcher.Invoke(CheckPrerequisites);
+                            proc.WaitForExit();
+                            if (proc.ExitCode == 0)
+                            {
+                                LogMessage("Success: PowerToys installed successfully.");
+                                Dispatcher.Invoke(CheckPrerequisites);
+                            }
+                            else
+                            {
+                                LogMessage("Failed to install PowerToys. Try manually installing from Microsoft Store.");
+                            }
                         }
                         else
                         {
-                            LogMessage("Failed to install PowerToys. Try manually installing from Microsoft Store.");
+                            LogMessage("Failed to start winget process.");
                         }
                     }
                 }

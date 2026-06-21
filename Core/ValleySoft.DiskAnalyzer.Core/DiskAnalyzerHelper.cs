@@ -202,7 +202,16 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                         var sub = subDirs[i];
                         try
                         {
-                            var (size, allocated, fileCount, folderCount) = CalculateDirectorySize(sub.FullName, int.MaxValue, includeHidden);
+                            long size = 0;
+                            long allocated = 0;
+                            int fileCount = 0;
+                            int folderCount = 0;
+
+                            if ((sub.Attributes & FileAttributes.ReparsePoint) == 0)
+                            {
+                                (size, allocated, fileCount, folderCount) = CalculateDirectorySize(sub.FullName, int.MaxValue, includeHidden);
+                            }
+
                             var item = new DiskItemInfo
                             {
                                 Name = sub.Name,
@@ -392,8 +401,17 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     var sub = subDirs[i];
                     try
                     {
-                        // Size must always be fully recursive regardless of display depth
-                        var (size, allocated, fileCount, folderCount) = CalculateDirectorySize(sub.FullName, int.MaxValue, includeHidden);
+                        long size = 0;
+                        long allocated = 0;
+                        int fileCount = 0;
+                        int folderCount = 0;
+
+                        if ((sub.Attributes & FileAttributes.ReparsePoint) == 0)
+                        {
+                            // Size must always be fully recursive regardless of display depth
+                            (size, allocated, fileCount, folderCount) = CalculateDirectorySize(sub.FullName, int.MaxValue, includeHidden);
+                        }
+
                         folderItems[i] = new DiskItemInfo
                         {
                             Name = sub.Name,
