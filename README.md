@@ -68,12 +68,6 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 ![GUI — Alternate View](Docs/Images/standalone-app-ui-2.png)
 
-### Command Palette Extension
-
-![CmdPal - Screenshot 1](Docs/Images/cmdpal-screenshot-1.png)
-![CmdPal - Screenshot 2](Docs/Images/cmdpal-screenshot-2.png)
-![CmdPal - Screenshot 3](Docs/Images/cmdpal-screenshot-3.png)
-
 ### PowerToys Run Plugin
 
 ![Help commands overview](Docs/Images/ptrun-help-commands.png)
@@ -85,6 +79,12 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 ![Scanning top-level folders on C:](Docs/Images/ptrun-top-folders.png)
 
 ![Scanning C:\WINDOWS folder](Docs/Images/ptrun-folder-scan.png)
+
+### Command Palette Extension
+
+![CmdPal - Screenshot 1](Docs/Images/cmdpal-screenshot-1.png)
+![CmdPal - Screenshot 2](Docs/Images/cmdpal-screenshot-2.png)
+![CmdPal - Screenshot 3](Docs/Images/cmdpal-screenshot-3.png)
 
 ---
 
