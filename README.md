@@ -26,7 +26,7 @@ This project ships three tools, bundled into two easy installations:
 ## Features
 
 ### Standalone App (WinUI 3)
-- 📊 **Visual Charts**: Instantly visualize disk usage with beautiful interactive Pie, Donut, Bar, and Sunburst charts
+- 📊 **Visual Charts**: Instantly visualize disk usage with a beautiful colored Bar Chart
 - 🗂️ **Deep Scanning**: Scan any drive or folder to see exact byte-for-byte size analysis
 - 📋 **Sortable Data**: View Name, Size, Allocated Size, Items count, and Modified dates
 - ⬅️ **Navigation**: Fully integrated back-and-forth history, plus an interactive breadcrumb bar
@@ -265,7 +265,7 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 ### v1.3.0 — 2026-06-21
 
 #### Added
-- ✨ **New**: **Fully featured Standalone WinUI 3 App** with interactive Visual Charts (Pie/Bar/Donut/Sunburst) for deeper disk analysis!
+- ✨ **New**: **Fully featured Standalone WinUI 3 App** with a beautiful visual Bar Chart for deeper disk analysis!
 - 📦 **New**: **Unified Installer** features a flawless 1-click Clean Install mode, automatically purging old DLLs from `%LOCALAPPDATA%` to prevent version conflicts.
 - 📦 **New**: **Unified the Command Palette Extension and Standalone App into a single MSIX package** for seamless Microsoft Store distribution.
 - 🏷️ **New**: Completely separated and distinct display names for the Standalone App, Command Palette Extension, and PowerToys Run plugin to eliminate confusion.

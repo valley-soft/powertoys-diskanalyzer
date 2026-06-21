@@ -63,7 +63,7 @@ This release includes three tools, bundled into two easy installations:
 ### Changes in v1.3.0
 
 #### Added
-* **Fully featured Standalone WinUI 3 App** with interactive Visual Charts (Pie/Bar/Donut/Sunburst) for deeper disk analysis!
+* **Fully featured Standalone WinUI 3 App** with a beautiful visual Bar Chart for deeper disk analysis!
 * **Unified Installer** features a flawless 1-click Clean Install mode, automatically purging old DLLs from `%LOCALAPPDATA%` to prevent version conflicts.
 * Completely separated and distinct display names for the Standalone App, Command Palette Extension, and PowerToys Run plugin to eliminate confusion.
 * **Unified the Command Palette Extension and Standalone App into a single MSIX package** for seamless Microsoft Store distribution.
