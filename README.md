@@ -260,6 +260,33 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 
 ---
 
+## Roadmap & Release Schedule
+
+**Target Cadence: Bi-Weekly (Every other week)**
+
+### v1.4.0 (Target: 2 weeks from now)
+**Focus: Expanded Visualizations & Data Export**
+- **Interactive Pie & Donut Charts:** Bringing the much-requested circular charts to the Standalone App.
+- **Export Capabilities:** Export the current view's data to `.csv` or `.json` for external tracking.
+- **File Type Grouping:** Grouping to show usage by file extension (e.g., `.mp4`, `.zip`, `.exe`).
+
+### v1.5.0 (Target: 4 weeks from now)
+**Focus: System Integration & Workflow**
+- **Windows Explorer Context Menu:** Right-click any folder in Windows and select "Analyze with ValleySoft".
+- **Global "Top 100 Largest Files" View:** A dedicated tab that scans the entire drive for absolute largest files.
+
+### v1.6.0 (Target: 6 weeks from now)
+**Focus: Advanced Data Representation**
+- **Sunburst / Treemap Charts:** Advanced, multi-layered visual charts.
+- **Custom Theming:** Explicit Light/Dark mode toggles and customizable accent colors.
+
+### v1.7.0 (Target: 8 weeks from now)
+**Focus: Actionable Management**
+- **Built-in File Management:** Safely delete files, send to Recycle Bin, or move files directly from within the Standalone App.
+- **"Large Old Files" Filter:** Automatically flag huge files that haven't been opened or modified in over a year.
+
+---
+
 ## Version History
 
 ### v1.3.0 — 2026-06-21
