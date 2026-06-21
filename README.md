@@ -14,10 +14,11 @@ A [PowerToys Run](https://aka.ms/PowerToysOverview) plugin **and** a native Wind
 
 ## Components
 
-This project ships two separate tools that work together:
+This project ships three separate tools that work together:
 
 | Component | Where it appears | How to trigger |
 |-----------|-----------------|----------------|
+| **Standalone App (WinUI 3)** | Start Menu | Launch from Start Menu |
 | **PowerToys Run Plugin** | PowerToys Run (`Alt+Space`) and Command Palette (labeled *DiskAnalyzer (PowerToys Run)*) | Type `ds` keyword |
 | **Command Palette Extension** | Windows Command Palette (labeled *ValleySoft Disk Analyzer*) | Open CmdPal and type a command directly |
 

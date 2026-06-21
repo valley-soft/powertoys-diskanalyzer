@@ -2,7 +2,8 @@
 
 ### Components
 
-This release includes two separate tools:
+This release includes three separate tools:
+- **Standalone App (WinUI 3)** — fully featured GUI window with interactive Visual Charts!
 - **PowerToys Run Plugin** (ds keyword in Alt+Space) — labeled *DiskAnalyzer (PowerToys Run)* in Command Palette
 - **Command Palette Extension** (MSIX) — labeled *DiskAnalyzer* in Command Palette, no keyword needed
 
