@@ -530,7 +530,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 
             foreach (var drive in drives)
             {
-                var usedBytes = drive.TotalSize - drive.TotalFreeSpace;
+                var usedBytes = drive.TotalSize - drive.AvailableFreeSpace;
                 var allocatedBytes = usedBytes; // Drives: used bytes = allocated bytes (no P/Invoke on directory path)
                 var usedPercent = (double)usedBytes / drive.TotalSize * 100;
                 var bar = DiskAnalyzerHelper.CreateProgressBar(usedPercent);

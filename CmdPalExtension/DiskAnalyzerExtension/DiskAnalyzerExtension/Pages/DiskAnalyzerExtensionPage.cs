@@ -197,7 +197,7 @@ namespace DiskAnalyzerExtension
         // ── FOLDER SCAN ───────────────────────────────────────────────────────
         private IListItem[] FolderScanItems(string path)
         {
-            var results = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.ScanDirectory(path, 1, false);
+            var results = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.ScanDirectory(path, 1, true);
             if (results.Count == 0)
                 return new[] { PlaceholderItem($"No items found in '{path}'") };
 
@@ -238,7 +238,7 @@ namespace DiskAnalyzerExtension
                 items.Add(new ListItem(primaryCmd)
                 {
                     Title        = $"{(isFile ? "📄" : "📁")} {item.Name}",
-                    Subtitle     = $"{bar} {Fmt(item.SizeBytes)}  ({pct:F1}%)",
+                    Subtitle     = $"{bar} {Fmt(item.SizeBytes)}  ({pct:F1}%)  Allocated: {Fmt(item.AllocatedSizeBytes)}",
                     Icon         = new IconInfo("\ue71b"),
                     MoreCommands = moreCommands.ToArray(),
                 });
@@ -252,7 +252,7 @@ namespace DiskAnalyzerExtension
             if (!System.IO.Directory.Exists(path))
                 return new[] { PlaceholderItem($"Path not found: {path}") };
 
-            var results   = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.GetTopFolders(path, 20, 1, false);
+            var results   = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.GetTopFolders(path, 20, 1, true);
             var totalSize = results.Sum(f => f.SizeBytes);
 
             var items = new List<IListItem>
@@ -294,7 +294,7 @@ namespace DiskAnalyzerExtension
             if (!System.IO.Directory.Exists(path))
                 return new[] { PlaceholderItem($"Path not found: {path}") };
 
-            var results = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.FindLargestFiles(path, 20, false);
+            var results = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.FindLargestFiles(path, 20, true);
             if (results.Count == 0)
                 return new[] { PlaceholderItem($"No files found in '{path}'") };
 
@@ -314,7 +314,7 @@ namespace DiskAnalyzerExtension
                 items.Add(new ListItem(new MyOpenExplorerCommand(capturedPath, true))
                 {
                     Title        = $"📄 {item.Name}",
-                    Subtitle     = $"{Fmt(item.SizeBytes)}  –  {capturedPath}",
+                    Subtitle     = $"{Fmt(item.SizeBytes)}  Allocated: {Fmt(item.AllocatedSizeBytes)}  –  {capturedPath}",
                     Icon         = new IconInfo("\ue71b"),
                     MoreCommands = new CommandContextItem[]
                     {
@@ -335,7 +335,7 @@ namespace DiskAnalyzerExtension
             if (!System.IO.Directory.Exists(path))
                 return new[] { PlaceholderItem($"Path not found: {path}") };
 
-            var results   = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.FindFilesByExtension(path, ext, 20, false);
+            var results   = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.FindFilesByExtension(path, ext, 20, true);
             if (results.Count == 0)
                 return new[] { PlaceholderItem($"No {ext} files found in '{path}'") };
 
@@ -356,7 +356,7 @@ namespace DiskAnalyzerExtension
                 items.Add(new ListItem(new MyOpenExplorerCommand(capturedPath, true))
                 {
                     Title        = $"📄 {item.Name}",
-                    Subtitle     = $"{Fmt(item.SizeBytes)}  –  {capturedPath}",
+                    Subtitle     = $"{Fmt(item.SizeBytes)}  Allocated: {Fmt(item.AllocatedSizeBytes)}  –  {capturedPath}",
                     Icon         = new IconInfo("\ue71b"),
                     MoreCommands = new CommandContextItem[]
                     {
@@ -374,7 +374,7 @@ namespace DiskAnalyzerExtension
             if (!System.IO.Directory.Exists(path))
                 return new[] { PlaceholderItem($"Path not found: {path}") };
 
-            var results = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.FindEmptyFolders(path, 30, false);
+            var results = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.FindEmptyFolders(path, 30, true);
             if (results.Count == 0)
                 return new[] { PlaceholderItem($"No empty folders found in '{path}'") };
 

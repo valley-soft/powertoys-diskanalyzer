@@ -19,7 +19,7 @@ namespace ValleySoft_DiskAnalyzer_App
         private string _currentPath = string.Empty;
         private string _sortColumn = "Size";
         private bool _sortAscending = false;
-        private bool _showHiddenFiles = false;
+        private bool _showHiddenFiles = true;
         private System.Threading.CancellationTokenSource? _navigationCts;
 
         public MainPage()
@@ -187,8 +187,8 @@ namespace ValleySoft_DiskAnalyzer_App
                         IsFile = false,
                         SizeBytes = d.TotalSize - d.AvailableFreeSpace,
                         FormattedSize = DiskAnalyzerHelper.FormatSize(d.TotalSize - d.AvailableFreeSpace),
-                        AllocatedSizeBytes = d.TotalSize,
-                        FormattedAllocated = DiskAnalyzerHelper.FormatSize(d.TotalSize),
+                        AllocatedSizeBytes = d.TotalSize - d.AvailableFreeSpace,
+                        FormattedAllocated = DiskAnalyzerHelper.FormatSize(d.TotalSize - d.AvailableFreeSpace),
                         FileCount = 0,
                         FolderCount = 0,
                         ParentPercentage = d.TotalSize > 0 ? (double)(d.TotalSize - d.AvailableFreeSpace) / d.TotalSize * 100.0 : 0,
