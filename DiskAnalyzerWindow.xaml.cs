@@ -173,11 +173,11 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                             Name = drive.Name,
                             FullPath = drive.Name,
                             FormattedSize = DiskAnalyzerHelper.FormatSize(used),
-                            FormattedAllocated = DiskAnalyzerHelper.FormatSize(drive.TotalSize),
+                            FormattedAllocated = DiskAnalyzerHelper.FormatSize(used),
                             ItemCount = 0,
                             LastModified = DateTime.MinValue,
                             SizeBytes = used,
-                            AllocatedSizeBytes = drive.TotalSize,
+                            AllocatedSizeBytes = used,
                             IsFile = false,
                             IconSource = IconUtilities.GetIcon(drive.Name, true)
                         };

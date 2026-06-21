@@ -41,7 +41,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         // Settings
         private int _maxResults = 15;
         private int _maxDepth = 1;
-        private bool _includeHiddenFiles = false;
+        private bool _includeHiddenFiles = true;
         private bool _showPercentage = true;
 
         public void Init(PluginInitContext context)
@@ -531,7 +531,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             foreach (var drive in drives)
             {
                 var usedBytes = drive.TotalSize - drive.TotalFreeSpace;
-                var allocatedBytes = DiskAnalyzerHelper.GetAllocatedSize(drive.Name, usedBytes); // Rough estimation for drive
+                var allocatedBytes = usedBytes; // Drives: used bytes = allocated bytes (no P/Invoke on directory path)
                 var usedPercent = (double)usedBytes / drive.TotalSize * 100;
                 var bar = DiskAnalyzerHelper.CreateProgressBar(usedPercent);
 
@@ -593,7 +593,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 new Result
                 {
                     Title = $"\U0001F4C1 {path} \u2014 Total: {DiskAnalyzerHelper.FormatSize(parentSize)} (Allocated: {DiskAnalyzerHelper.FormatSize(parentAllocated)})",
-                    SubTitle = $"{items.Count(i => !i.IsFile)} folders, {items.Count(i => i.IsFile)} files scanned",
+                    SubTitle = $"{items.Count(i => !i.IsFile)} folders, {items.Count(i => i.IsFile)} files scanned" +
+                               (!_includeHiddenFiles ? " \u26A0\uFE0F Hidden files excluded \u2014 enable in Settings for accurate totals" : ""),
                     IcoPath = _iconPath,
                     Score = 10000,
                     ContextData = new DiskItemInfo
@@ -751,7 +752,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 new Result
                 {
                     Title = $"\U0001F4CA Top folders in: {path} \u2014 Total: {DiskAnalyzerHelper.FormatSize(totalSize)} (Allocated: {DiskAnalyzerHelper.FormatSize(totalAllocated)})",
-                    SubTitle = $"{folders.Count} top-level subfolders scanned",
+                    SubTitle = $"{folders.Count} top-level subfolders scanned" +
+                               (!_includeHiddenFiles ? " \u26A0\uFE0F Hidden files excluded" : ""),
                     IcoPath = _iconPath,
                     Score = 10000,
                     ContextData = new DiskItemInfo
