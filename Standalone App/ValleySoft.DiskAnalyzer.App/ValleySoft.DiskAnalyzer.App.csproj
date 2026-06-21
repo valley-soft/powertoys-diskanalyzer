@@ -82,5 +82,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\ValleySoft.DiskAnalyzer.Core\ValleySoft.DiskAnalyzer.Core.csproj" />
+    <ProjectReference Include="..\..\CmdPalExtension\DiskAnalyzerExtension\DiskAnalyzerExtension\DiskAnalyzerExtension.csproj" />
   </ItemGroup>
 </Project>

@@ -71,8 +71,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
                 }
 
                 if (installPlugin) InstallPowerToysPlugin(tempDir, isCleanInstall, log);
-                if (installCmdPal) InstallMsix(Path.Combine(tempDir, "ValleySoft.CmdPal.msix"), "Command Palette Extension", log);
-                if (installApp)    InstallMsix(Path.Combine(tempDir, "ValleySoft.StandaloneApp.msix"), "Standalone App", log);
+                if (installCmdPal || installApp) InstallMsix(Path.Combine(tempDir, "ValleySoft.UnifiedApp.msix"), "Unified App & Extension", log);
 
                 log("\nINSTALLATION COMPLETE!");
             }
@@ -251,7 +250,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
             }
 
             // Step 1: Remove any existing package with the same publisher/package name to avoid 0x80073CFB
-            string packageName = componentName.Contains("Standalone") ? "B66E5954-FDAC-43E7-B4F4-EC969822E519" : "DiskAnalyzerExtension";
+            string packageName = "ValleySoft.ValleySoftDiskAnalyzer";
             log("Checking for existing installation...");
             if (IsPackageInstalled(packageName))
             {

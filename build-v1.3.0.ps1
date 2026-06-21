@@ -56,29 +56,13 @@ foreach ($Arch in $Architectures) {
     Write-Host "[1/4] Building PowerToys Run plugin ($Arch)..."
     dotnet publish $PluginProject -c Release -p:Platform=$Arch -o "temp_payload\Plugin"
 
-    # ── 2. Build CmdPal MSIX extension ─────────────────────────────────────
+    # CmdPal logic has been merged into the unified Standalone App package.
+
+
+
+    # ── 3. Build Unified App & CmdPal MSIX ───────────────────────────────────────
     Write-Host ""
-    Write-Host "[2/4] Building Command Palette MSIX extension ($Arch)..."
-    Push-Location $CmdPalDir
-    try {
-        dotnet publish "DiskAnalyzerExtension.csproj" -c Release -r $WinArch `
-            -p:GenerateAppxPackageOnBuild=true -p:PackageCertificatePassword=password 2>&1 | Write-Host
-    } finally {
-        Pop-Location
-    }
-
-    $msixSearchCmdPal = Get-ChildItem -Path "$CmdPalDir\AppPackages" -Filter "*.msix" -Recurse -ErrorAction SilentlyContinue |
-                  Where-Object { $_.FullName -like "*$Arch*" } |
-                  Sort-Object LastWriteTime -Descending |
-                  Select-Object -First 1
-
-    if ($msixSearchCmdPal) {
-        Copy-Item -Path $msixSearchCmdPal.FullName -Destination "temp_payload\ValleySoft.CmdPal.msix"
-    }
-
-    # ── 3. Build Standalone App MSIX ───────────────────────────────────────
-    Write-Host ""
-    Write-Host "[3/4] Building Standalone WinUI 3 App MSIX ($Arch)..."
+    Write-Host "[3/4] Building Unified App & CmdPal MSIX ($Arch)..."
     Push-Location $StandaloneDir
     try {
         dotnet publish "ValleySoft.DiskAnalyzer.App.csproj" -c Release -r $WinArch `
@@ -93,7 +77,7 @@ foreach ($Arch in $Architectures) {
                   Select-Object -First 1
 
     if ($msixSearchApp) {
-        Copy-Item -Path $msixSearchApp.FullName -Destination "temp_payload\ValleySoft.StandaloneApp.msix"
+        Copy-Item -Path $msixSearchApp.FullName -Destination "temp_payload\ValleySoft.UnifiedApp.msix"
     }
 
     # ── 4. Package unified payload for installer ───────────────────────────
