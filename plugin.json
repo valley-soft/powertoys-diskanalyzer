@@ -2,7 +2,7 @@
       "ID": "B4F2E8A1C3D64F7E9A1B2C3D4E5F6A7B",
       "ActionKeyword": "ds",
       "IsGlobal": false,
-      "Name": "ValleySoft Disk Analyzer",
+      "Name": "ValleySoft Disk Analyzer (Runs Plug-in)",
       "Author": "ValleySoft",
       "Version": "1.3.0",
       "Language": "csharp",

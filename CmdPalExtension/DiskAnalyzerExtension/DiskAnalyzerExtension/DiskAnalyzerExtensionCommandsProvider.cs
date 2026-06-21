@@ -24,7 +24,7 @@ public partial class DiskAnalyzerExtensionCommandsProvider : CommandProvider
 
     public DiskAnalyzerExtensionCommandsProvider()
     {
-        DisplayName = "ValleySoft Disk Analyzer";
+        DisplayName = "ValleySoft Disk Analyzer (command Pallete)";
         Icon        = SafeIcon("Assets\\DiskAnalyzerLight.png");
     }
 
@@ -51,7 +51,7 @@ public partial class DiskAnalyzerExtensionCommandsProvider : CommandProvider
                 catch { }
             }))
             {
-                Title = "ValleySoft Disk Analyzer GUI",
+                Title = "ValleySoft Disk Analyzer (Standalone App)",
                 Subtitle = "Launch standalone graphical window",
                 Icon = new IconInfo("\uE7B8")
             }

@@ -18,7 +18,7 @@
   <mp:PhoneIdentity PhoneProductId="B66E5954-FDAC-43E7-B4F4-EC969822E519" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>ValleySoft Disk Analyzer</DisplayName>
+    <DisplayName>ValleySoft Disk Analyzer (Standalone App)</DisplayName>
     <PublisherDisplayName>ValleySoft</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -37,7 +37,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="ValleySoft Disk Analyzer"
+        DisplayName="ValleySoft Disk Analyzer (Standalone App)"
         Description="Analyze disk space usage and find large files or empty folders."
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"

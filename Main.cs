@@ -19,7 +19,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
     public class Main : IPlugin, IDelayedExecutionPlugin, IContextMenu, ISettingProvider, IDisposable
     {
         public static string PluginID => "B4F2E8A1C3D64F7E9A1B2C3D4E5F6A7B";
-        public string Name => "ValleySoft Disk Analyzer";
+        public string Name => "ValleySoft Disk Analyzer (Runs Plug-in)";
         public string Description => "Analyze disk space usage like TreeSize. Scan folders, find large files, and view drive info.";
 
         // Fix #5: Command name constants â€” no more magic strings
@@ -427,7 +427,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             {
                 new Result
                 {
-                    Title = "ValleySoft Disk Analyzer \u2014 TreeSize-like disk usage tool",
+                    Title = "ValleySoft Disk Analyzer (Runs Plug-in) \u2014 TreeSize-like disk usage tool",
                     SubTitle = "Type a path, 'drives', 'largest <path>', or 'top <path>'",
                     IcoPath = _iconPath,
                     Score = 1000,
