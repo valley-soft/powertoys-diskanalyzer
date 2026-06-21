@@ -201,6 +201,10 @@ Open PowerToys Run (`Alt+Space`) and type `ds` followed by a command.
 
 Open the Windows Command Palette and click **ValleySoft Disk Analyzer** (or search for it). Then type directly:
 
+![CmdPal - Screenshot 1](Docs/Images/cmdpal-screenshot-1.png)
+![CmdPal - Screenshot 2](Docs/Images/cmdpal-screenshot-2.png)
+![CmdPal - Screenshot 3](Docs/Images/cmdpal-screenshot-3.png)
+
 | Command | Description |
 |---------|-------------|
 | `drives` | List all drives with used / free / total space |
