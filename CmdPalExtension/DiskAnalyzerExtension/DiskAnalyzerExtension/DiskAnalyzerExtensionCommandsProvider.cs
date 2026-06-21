@@ -37,6 +37,23 @@ public partial class DiskAnalyzerExtensionCommandsProvider : CommandProvider
                 Title    = DisplayName,
                 Subtitle = "Analyze disk space usage",
                 Icon     = Icon,
+            },
+            new ListItem(new MyAnonymousCommand(() => 
+            {
+                try
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "ValleySoft.DiskAnalyzer.exe",
+                        UseShellExecute = true
+                    });
+                }
+                catch { }
+            }))
+            {
+                Title = "ValleySoft Disk Analyzer GUI",
+                Subtitle = "Launch standalone graphical window",
+                Icon = new IconInfo("\uE7B8")
             }
         };
     }

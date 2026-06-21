@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Community.PowerToys.Run.Plugin.DiskAnalyzer;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
@@ -273,7 +274,7 @@ namespace DiskAnalyzerExtension
                 items.Add(new ListItem(new MySetModeCommand(this, PageMode.Scanning, capturedPath))
                 {
                     Title        = $"📁 {item.Name}",
-                    Subtitle     = $"{bar} {Fmt(item.SizeBytes)}  ({pct:F1}%)  –  {item.ItemCount} items",
+                    Subtitle     = $"{DiskAnalyzerHelper.FormatSize(item.SizeBytes)} ({pct:F1}%) | Allocated: {DiskAnalyzerHelper.FormatSize(item.AllocatedSizeBytes)} | Items: {item.FileCount + item.FolderCount} | {item.FullPath}",
                     Icon         = new IconInfo("\ue71b"),
                     MoreCommands = new CommandContextItem[]
                     {

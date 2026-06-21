@@ -12,12 +12,12 @@
 
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <EnableMsixTooling>true</EnableMsixTooling>
-    <PackageCertificateKeyFile>NewKey.pfx</PackageCertificateKeyFile>
-    
+    <PackageCertificateKeyFile>..\..\..\ValleySoft.pfx</PackageCertificateKeyFile>
+    <PackageCertificatePassword>password</PackageCertificatePassword>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <DefineConstants>$(DefineConstants);CMD_PAL</DefineConstants>
-    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+    <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
   </PropertyGroup>
 
   <ItemGroup>
@@ -51,8 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\..\DiskAnalyzerHelper.cs" Link="DiskAnalyzerHelper.cs" />
-    <Compile Include="..\..\..\DiskItemInfo.cs" Link="DiskItemInfo.cs" />
+    <ProjectReference Include="..\..\..\Core\ValleySoft.DiskAnalyzer.Core\ValleySoft.DiskAnalyzer.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -86,7 +85,7 @@
   -->
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
-    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+    <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -100,7 +99,7 @@
 
     <!-- When publishing trimmed, make sure to treat trimming warnings as build errors -->
     <ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
-    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+    <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -113,18 +112,17 @@
     <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
     <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
     <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
-    <PackageCertificateThumbprint>
-    </PackageCertificateThumbprint>
-    <PackageCertificateKeyFile>ValleySoft.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>..\..\..\ValleySoft.pfx</PackageCertificateKeyFile>
+    <PackageCertificatePassword>password</PackageCertificatePassword>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'!='Debug'">
     <!-- In Release builds, trimming is enabled by default. 
          feel free to disable this if needed -->
-    <PublishTrimmed>true</PublishTrimmed>
+    <PublishTrimmed>false</PublishTrimmed>
 
     <!-- In release, also ignore the aforementioned ILLink warning -->
     <ILLinkTreatWarningsAsErrors>false</ILLinkTreatWarningsAsErrors>
-    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+    <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
   </PropertyGroup>
 </Project>

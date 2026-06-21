@@ -11,10 +11,10 @@
   <Identity
     Name="DiskAnalyzerExtension"
     Publisher="CN=ValleySoft"
-    Version="1.2.0.0" />
+    Version="1.3.0.0" />
 
   <Properties>
-    <DisplayName>ValleySoft Disk Analyzer</DisplayName>
+    <DisplayName>ValleySoft Disk Analyzer (Command Palette)</DisplayName>
     <PublisherDisplayName>ValleySoft</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -33,8 +33,8 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="DiskAnalyzer"
-        Description="Disk space analyzer for Command Palette — v1.2.0 by Thet Naing Saw"
+        DisplayName="ValleySoft Disk Analyzer (Command Palette)"
+        Description="Disk space analyzer for Command Palette — v1.3.0 by Thet Naing Saw"
         BackgroundColor="transparent"
         AppListEntry="none"
         Square150x150Logo="Assets\Square150x150Logo.png"

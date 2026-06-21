@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ValleySoft.DiskAnalyzer.App (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ValleySoft.DiskAnalyzer.App (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

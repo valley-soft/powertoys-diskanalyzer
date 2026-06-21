@@ -19,7 +19,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
     public class Main : IPlugin, IDelayedExecutionPlugin, IContextMenu, ISettingProvider, IDisposable
     {
         public static string PluginID => "B4F2E8A1C3D64F7E9A1B2C3D4E5F6A7B";
-        public string Name => "DiskAnalyzer";
+        public string Name => "ValleySoft Disk Analyzer";
         public string Description => "Analyze disk space usage like TreeSize. Scan folders, find large files, and view drive info.";
 
         // Fix #5: Command name constants â€” no more magic strings
@@ -88,13 +88,19 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                         Score = 1000,
                         Action = _ =>
                         {
-                            // If no path given after 'gui', pass null so LoadAllDrives() is called
                             var path = search.Length > 3 ? search[3..].Trim().Trim('"') : null;
-                            Application.Current.Dispatcher.Invoke(() =>
+                            try
                             {
-                                var window = new DiskAnalyzerWindow(path);
-                                window.Show();
-                            });
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    var window = new DiskAnalyzerWindow(_context?.API?.GetCurrentTheme() ?? Theme.Light, path);
+                                    window.Show();
+                                });
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Error($"Failed to launch WPF GUI: {ex.Message}", GetType());
+                            }
                             return true;
                         }
                     }
@@ -140,19 +146,20 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 // "largest <path>" â€” find largest files
                 if (search.StartsWith(CmdLargest, StringComparison.OrdinalIgnoreCase))
                 {
-                    var path = search[8..].Trim().Trim('"');
+                    var path = search.Length > 8 ? search[8..].Trim().Trim('"') : string.Empty;
                     results = GetLargestFilesResults(path);
                 }
                 // "top <path>" â€” top subdirectories by size
                 else if (search.StartsWith(CmdTop, StringComparison.OrdinalIgnoreCase))
                 {
-                    var path = search[4..].Trim().Trim('"');
+                    var path = search.Length > 4 ? search[4..].Trim().Trim('"') : string.Empty;
                     results = GetTopFoldersResults(path);
                 }
                 // "ext <path> <ext>" â€” find largest files by extension
                 else if (search.StartsWith(CmdExt, StringComparison.OrdinalIgnoreCase))
                 {
-                    var parts = search[4..].Trim().Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+                    var argString = search.Length > 4 ? search[4..].Trim() : string.Empty;
+                    var parts = argString.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
                     if (parts.Length == 2)
                     {
                         var path = parts[0].Trim('"');
@@ -167,7 +174,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 // "empty <path>" â€” find empty folders
                 else if (search.StartsWith(CmdEmpty, StringComparison.OrdinalIgnoreCase))
                 {
-                    var path = search[6..].Trim().Trim('"');
+                    var path = search.Length > 6 ? search[6..].Trim().Trim('"') : string.Empty;
                     results = GetEmptyFoldersResults(path);
                 }
                 // Direct path â€” scan the directory
@@ -766,7 +773,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 results.Add(new Result
                 {
                     Title = $"\U0001F4C1 {folder.Name} \u2014 {DiskAnalyzerHelper.FormatSize(folder.SizeBytes)} ({pct:F1}%)",
-                    SubTitle = $"{bar} Allocated: {DiskAnalyzerHelper.FormatSize(folder.AllocatedSizeBytes)} | Items: {folder.ItemCount} | {folder.FullPath}",
+                    SubTitle = $"{bar} Allocated: {DiskAnalyzerHelper.FormatSize(folder.AllocatedSizeBytes)} | Items: {folder.FileCount + folder.FolderCount} | {folder.FullPath}",
                     IcoPath = _iconPath,
                     Score = 10000 - rank,
                     ContextData = folder,

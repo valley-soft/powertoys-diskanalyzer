@@ -1,4 +1,4 @@
-﻿bin/
+bin/
 obj/
 out/
 *.user
@@ -8,4 +8,10 @@ out/
 # Build artifacts
 *.zip
 publish/
+temp_inspect/
+temp_payload/
+temp_x64_payload/
+%TEMP%/
+*.pfx
+*.cer
  

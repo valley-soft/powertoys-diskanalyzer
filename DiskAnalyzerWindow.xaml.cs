@@ -3,34 +3,57 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.ComponentModel;
+using ManagedCommon;
 
 namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 {
-    public partial class DiskAnalyzerWindow : Window
+    public partial class DiskAnalyzerWindow : Window, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler? PropertyChanged;
         public ObservableCollection<FolderNode> RootFolders { get; set; } = new ObservableCollection<FolderNode>();
+        public bool CanGoBack => _history.Count > 0;
 
         // Navigation history for back button
         private readonly Stack<string> _history = new Stack<string>();
+        private CancellationTokenSource? _scanCts;
         private string? _currentPath;
+        private Theme _theme;
 
-        public DiskAnalyzerWindow(string? rootPath)
+        public DiskAnalyzerWindow(Theme theme, string? rootPath = null)
         {
+            _theme = theme;
+            ApplyTheme(theme);
+
             InitializeComponent();
             DataContext = this;
 
-            if (string.IsNullOrWhiteSpace(rootPath))
+            if (!string.IsNullOrEmpty(rootPath) && Directory.Exists(rootPath))
             {
-                _ = LoadAllDrivesAsync();
+                _ = LoadTreeAsync(rootPath);
+                NavigateTo(rootPath);
             }
             else
             {
-                _ = LoadTreeAsync(rootPath);
+                _ = LoadAllDrivesAsync();
             }
+        }
+
+        private void ApplyTheme(Theme theme)
+        {
+            string themeName = (theme == Theme.Dark || theme == Theme.HighContrastBlack) ? "Dark" : "Light";
+            var dict = new ResourceDictionary
+            {
+                Source = new Uri($"pack://application:,,,/Community.PowerToys.Run.Plugin.DiskAnalyzer;component/Themes/{themeName}.xaml")
+            };
+            this.Resources.MergedDictionaries.Clear();
+            this.Resources.MergedDictionaries.Add(dict);
         }
 
         private async Task LoadAllDrivesAsync()
@@ -43,7 +66,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 
                 foreach (var drive in drives)
                 {
-                    var node = new FolderNode { Name = drive.Name, FullPath = drive.Name };
+                    var node = new FolderNode { Name = drive.Name, FullPath = drive.Name, IconSource = IconUtilities.GetIcon(drive.Name, true) };
                     // Dummy child so the expand arrow shows
                     node.Children.Add(new FolderNode { Name = "Loading...", FullPath = "" });
                     RootFolders.Add(node);
@@ -53,6 +76,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             {
                 MessageBox.Show($"Error loading drives: {ex.Message}");
             }
+            
+            NavigateTo("This PC", addToHistory: false);
         }
 
         private async Task LoadTreeAsync(string path)
@@ -60,7 +85,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             RootFolders.Clear();
             try
             {
-                var rootNode = new FolderNode { Name = path, FullPath = path };
+                var rootNode = new FolderNode { Name = path, FullPath = path, IconSource = IconUtilities.GetIcon(path, true) };
                 rootNode.Children.Add(new FolderNode { Name = "Loading...", FullPath = "" });
                 RootFolders.Add(rootNode);
 
@@ -87,7 +112,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     {
                         if ((d.Attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
                             continue;
-                        var node = new FolderNode { Name = d.Name, FullPath = d.FullName };
+                        var node = new FolderNode { Name = d.Name, FullPath = d.FullName, IconSource = IconUtilities.GetIcon(d.FullName, true) };
                         node.Children.Add(new FolderNode { Name = "Loading...", FullPath = "" });
                         result.Add(node);
                     }
@@ -98,7 +123,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             return result.OrderBy(n => n.Name).ToList();
         }
 
-        private async void TreeViewItem_Expanded(object sender, RoutedEventArgs e)
+        private async void FolderTree_Expanded(object sender, RoutedEventArgs e)
         {
             if (e.OriginalSource is TreeViewItem tvi && tvi.DataContext is FolderNode node)
             {
@@ -127,12 +152,46 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 
             _currentPath = path;
             CurrentPathText.Text = path;
-            BackButton.IsEnabled = _history.Count > 0;
+            if (BackButton != null) BackButton.IsEnabled = _history.Count > 0;
             _ = LoadGridDataAsync(path);
         }
 
         private async Task LoadGridDataAsync(string path)
         {
+            if (path == "This PC" || string.IsNullOrWhiteSpace(path))
+            {
+                ItemsGrid.ItemsSource = null;
+                StatusText.Text = "Loading drives...";
+                try
+                {
+                    var drives = await Task.Run(() => DriveInfo.GetDrives().Where(d => d.IsReady).ToList());
+                    var viewModels = drives.Select(drive =>
+                    {
+                        var used = drive.TotalSize - drive.AvailableFreeSpace;
+                        return new GridItemViewModel
+                        {
+                            Name = drive.Name,
+                            FullPath = drive.Name,
+                            FormattedSize = DiskAnalyzerHelper.FormatSize(used),
+                            FormattedAllocated = DiskAnalyzerHelper.FormatSize(drive.TotalSize),
+                            ItemCount = 0,
+                            LastModified = DateTime.MinValue,
+                            SizeBytes = used,
+                            AllocatedSizeBytes = drive.TotalSize,
+                            IsFile = false,
+                            IconSource = IconUtilities.GetIcon(drive.Name, true)
+                        };
+                    }).ToList();
+                    ItemsGrid.ItemsSource = viewModels;
+                    StatusText.Text = $"{viewModels.Count} drive(s) found  •  Double-click a drive to drill down";
+                }
+                catch (Exception ex)
+                {
+                    StatusText.Text = $"Error: {ex.Message}";
+                }
+                return;
+            }
+
             ItemsGrid.ItemsSource = null;
             StatusText.Text = $"Scanning {path}...";
 
@@ -143,15 +202,16 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 var viewModels = items
                     .Select(i => new GridItemViewModel
                     {
-                        Name = i.IsFile ? i.Name : "📁 " + i.Name,
+                        Name = i.Name,
                         FullPath = i.FullPath,
                         FormattedSize = DiskAnalyzerHelper.FormatSize(i.SizeBytes),
                         FormattedAllocated = DiskAnalyzerHelper.FormatSize(i.AllocatedSizeBytes),
-                        ItemCount = i.ItemCount,
+                        ItemCount = i.FileCount + i.FolderCount,
                         LastModified = i.LastModified,
                         SizeBytes = i.SizeBytes,
                         AllocatedSizeBytes = i.AllocatedSizeBytes,
                         IsFile = i.IsFile,
+                        IconSource = IconUtilities.GetIcon(i.FullPath, !i.IsFile)
                     })
                     .OrderByDescending(v => v.SizeBytes)
                     .ToList();
@@ -194,7 +254,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 var prev = _history.Pop();
                 _currentPath = prev;
                 CurrentPathText.Text = prev;
-                BackButton.IsEnabled = _history.Count > 0;
+                if (BackButton != null) BackButton.IsEnabled = _history.Count > 0;
                 _ = LoadGridDataAsync(prev);
             }
         }
@@ -218,12 +278,26 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 NavigateTo(dialog.FolderName);
             }
         }
+
+        private void ThemeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ThemeComboBox?.SelectedItem is ComboBoxItem item && item.Tag is string tag)
+            {
+                if (tag == "Light")
+                    ApplyTheme(Theme.Light);
+                else if (tag == "Dark")
+                    ApplyTheme(Theme.Dark);
+                else
+                    ApplyTheme(_theme); // System (PowerToys default)
+            }
+        }
     }
 
     public class FolderNode
     {
         public string Name { get; set; } = "";
         public string FullPath { get; set; } = "";
+        public ImageSource? IconSource { get; set; }
         public ObservableCollection<FolderNode> Children { get; set; } = new ObservableCollection<FolderNode>();
     }
 
@@ -235,8 +309,12 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         public string FormattedAllocated { get; set; } = "";
         public int ItemCount { get; set; }
         public DateTime LastModified { get; set; }
+        /// <summary>Returns a formatted date string, or empty for drives (DateTime.MinValue).</summary>
+        public string FormattedDate =>
+            LastModified == DateTime.MinValue ? "" : LastModified.ToString("M/d/yyyy h:mm:ss tt");
         public long SizeBytes { get; set; }
         public long AllocatedSizeBytes { get; set; }
         public bool IsFile { get; set; }
+        public ImageSource? IconSource { get; set; }
     }
 }
