@@ -64,19 +64,12 @@ This release includes three tools, bundled into two easy installations:
 ### Changes in v1.3.1
 
 #### Added
-* **Fully featured Standalone WinUI 3 App** with a beautiful visual Bar Chart for deeper disk analysis!
-* **Unified Installer** features a flawless 1-click Clean Install mode, automatically purging old DLLs from `%LOCALAPPDATA%` to prevent version conflicts.
-* Completely separated and distinct display names for the Standalone App, Command Palette Extension, and PowerToys Run plugin to eliminate confusion.
-* **Unified the Command Palette Extension and Standalone App into a single MSIX package** for seamless Microsoft Store distribution.
+* **"Always Run as Administrator"** toggle added to the Standalone App's File menu. It automatically saves your preference and natively relaunches the app via UAC!
+* **Live UI Streaming**: The Standalone App now populates folders incrementally in real-time as the scan progresses, similar to TreeSize Free.
 
 #### Changed
-* Upgraded the Core project and shared logic to **.NET 10.0** for maximum performance and modern API support.
-* Extracted the shared core scanning engine into a perfectly synchronized standard, improving accuracy and maintainability.
-* Deeply cleaned the repository, permanently ignoring and removing old legacy build artifacts (e.g. `/AppPackages`, `obj`, `bin`).
+* **Extreme Performance Optimization**: Refactored the core scanning engine to eliminate blocking array allocations and bypass heavy P/Invoke and string operations. SSD scanning speeds have been radically improved, completely resolving UI hangs and slow scans.
+* **Admin Integration**: Restructured the app manifests so that elevated privileges are optional via the UI toggle instead of forcing UAC prompts on every launch.
 
 #### Fixed
-* **PowerToys Run `AssemblyLoadContext` bug completely resolved!** Core logic is now natively compiled directly into the plugin instead of using `ProjectReference`, fixing all load failures.
-* **Standalone App sizes and calculations** rigorously synced with Windows Explorer to ensure accurate byte-for-byte size reporting.
-* Resolved hidden files straggler toggles in XAML and WPF; hidden system files are now properly counted and interactable.
-* Fixed severe junction point infinite loop bugs in the directory scanner.
-* Fixed mojibake text corruption in several source code files.
+* **Command Palette Bug Fixes**: Fixed a critical COM marshalling bug that caused the Command Palette to crash when rendering the extension items. Also eliminated duplicate ghost entries caused by identity changes!
