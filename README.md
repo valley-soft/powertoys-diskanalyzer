@@ -65,6 +65,9 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 ![GUI — View Menu](Docs/Images/standalone-app-view-menu.png)
 
+![GUI — Run as Administrator](Docs/Images/standalone-app-run-as-admin.png)
+*Note: Enabling the "Always Run as Administrator" toggle is only required the first time. The app will automatically save your preference for all future launches!*
+
 ![GUI — Alternate View](Docs/Images/standalone-app-ui-2.png)
 
 ### PowerToys Run Plugin
