@@ -37,6 +37,83 @@ namespace ValleySoft_DiskAnalyzer_App
                     System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop), "crash_mainpage.txt"),
                     ex.ToString());
             }
+
+            try
+            {
+                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                bool alwaysAdmin = localSettings.Values["AlwaysRunAsAdmin"] as bool? ?? false;
+                RunAsAdminToggle.IsChecked = alwaysAdmin;
+                RunAsAdminToggle.IsEnabled = !IsAdministrator(); // Disable if already running as admin
+                if (IsAdministrator())
+                {
+                    RunAsAdminToggle.IsChecked = true;
+                }
+            }
+            catch { }
+        }
+
+        private static bool IsAdministrator()
+        {
+            using (System.Security.Principal.WindowsIdentity identity = System.Security.Principal.WindowsIdentity.GetCurrent())
+            {
+                System.Security.Principal.WindowsPrincipal principal = new System.Security.Principal.WindowsPrincipal(identity);
+                return principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+            }
+        }
+
+        private async void RunAsAdmin_Click(object sender, RoutedEventArgs e)
+        {
+            bool wantsAdmin = RunAsAdminToggle.IsChecked;
+            try
+            {
+                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                localSettings.Values["AlwaysRunAsAdmin"] = wantsAdmin;
+            }
+            catch { }
+
+            if (wantsAdmin && !IsAdministrator())
+            {
+                var dialog = new ContentDialog
+                {
+                    Title = "Restart Required",
+                    Content = "The application needs to restart to apply Administrator privileges. Restart now?",
+                    PrimaryButtonText = "Restart",
+                    CloseButtonText = "Later",
+                    XamlRoot = this.XamlRoot
+                };
+                
+                var result = await dialog.ShowAsync();
+                if (result == ContentDialogResult.Primary)
+                {
+                    RestartAsAdmin();
+                }
+            }
+        }
+
+        private void RestartAsAdmin()
+        {
+            var startInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                UseShellExecute = true,
+                WorkingDirectory = System.Environment.CurrentDirectory,
+                FileName = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? "ValleySoft.DiskAnalyzer.exe",
+                Verb = "runas"
+            };
+            try
+            {
+                System.Diagnostics.Process.Start(startInfo);
+                Application.Current.Exit();
+            }
+            catch
+            {
+                // User cancelled UAC
+                RunAsAdminToggle.IsChecked = false;
+                try
+                {
+                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["AlwaysRunAsAdmin"] = false;
+                }
+                catch { }
+            }
         }
 
         private void ResultsGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)
@@ -318,13 +395,12 @@ private async Task NavigateToFolderAsync(string path)
             SetLoading(true);
             try
             {
-                var items = await Task.Run(() => DiskAnalyzerHelper.ScanDirectory(path, 1, _showHiddenFiles), token);
-                if (token.IsCancellationRequested) return;
-
-                long parentSize = items.Sum(i => i.SizeBytes);
-
-                foreach (var item in items)
+                // Stream results to the UI as they are scanned
+                ResultsGrid.ItemsSource = _currentItems;
+                var progress = new Progress<DiskItemInfo>(async item => 
                 {
+                    if (token.IsCancellationRequested) return;
+
                     var vm = new GridItemViewModel
                     {
                         Name = item.Name,
@@ -333,17 +409,35 @@ private async Task NavigateToFolderAsync(string path)
                         FormattedAllocated = DiskAnalyzerHelper.FormatSize(item.AllocatedSizeBytes),
                         FileCount = item.FileCount,
                         FolderCount = item.FolderCount,
-                        ParentPercentage = parentSize > 0 ? (item.SizeBytes * 100.0 / parentSize) : 0,
+                        ParentPercentage = 0, // Calculated after scan finishes
                         FreeSpaceBytes = 0,
                         FormattedFreeSpace = "",
                         LastModified = item.LastModified,
                         SizeBytes = item.SizeBytes,
                         AllocatedSizeBytes = item.AllocatedSizeBytes,
                         IsFile = item.IsFile,
-                        IconSource = !item.IsFile ? await IconUtilities.GetIconAsync(item.FullPath, true) : null
+                        IconSource = null
                     };
+
                     _currentItems.Add(vm);
+                    
+                    if (!item.IsFile)
+                    {
+                        try { vm.IconSource = await IconUtilities.GetIconAsync(item.FullPath, true); } catch { }
+                    }
+                });
+
+                var items = await Task.Run(() => DiskAnalyzerHelper.ScanDirectory(path, 1, _showHiddenFiles, progress), token);
+                if (token.IsCancellationRequested) return;
+
+                long parentSize = items.Sum(i => i.SizeBytes);
+
+                // Update percentages after all items have been scanned
+                foreach (var vm in _currentItems.ToList())
+                {
+                    vm.ParentPercentage = parentSize > 0 ? (vm.SizeBytes * 100.0 / parentSize) : 0;
                 }
+                
                 SortData();
             }
             catch (Exception)

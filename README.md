@@ -1,6 +1,6 @@
 # DiskAnalyzer — PowerToys Run Plugin & Command Palette Extension
 
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.3.1-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 [![Microsoft Store](https://img.shields.io/badge/Microsoft_Store-Available-0078D7?logo=windows&logoColor=white)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/valley-soft/powertoys-diskanalyzer)
 [![PowerToys](https://img.shields.io/badge/PowerToys-v0.97.0+-orange.svg)](https://github.com/microsoft/PowerToys)
@@ -99,7 +99,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 ### Standalone App (WinUI 3) & Command Palette Extension (Unified MSIX)
 
-1. Download **`ValleySoft.DiskAnalyzer.App_1.3.0.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`ValleySoft.DiskAnalyzer.App_1.3.1.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Double-click** the `.msix` file — Windows will launch the installer
 3. Click **Install**
 4. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
@@ -119,7 +119,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 #### Method 1 — Standalone Installer (Recommended)
 
-1. Download **`DiskAnalyzerInstaller-v1.3.0-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`DiskAnalyzerInstaller-v1.3.1-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Exit PowerToys completely** — Right-click the PowerToys icon in the system tray → **Exit**
 3. **Run the installer** — it will automatically extract and copy plugin files to:
    ```
@@ -151,7 +151,7 @@ Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 ```powershell
 git clone https://github.com/valley-soft/powertoys-diskanalyzer.git
 cd powertoys-diskanalyzer
-.\build-v1.3.0.ps1
+.\build-v1.3.1.ps1
 # Installers and MSIX packages appear in out\
 ```
 
@@ -255,7 +255,7 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 | `Images/` | Plugin icon assets (`DiskAnalyzerLight.png` / `DiskAnalyzerDark.png`) |
 | `CmdPalExtension/` | Native Command Palette MSIX extension project |
 | `Installer/` | Single-file native installer source |
-| `build-v1.3.0.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX + Standalone MSIX for x64 & ARM64 |
+| `build-v1.3.1.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX + Standalone MSIX for x64 & ARM64 |
 | `out/` | Final output directory for all generated artifacts |
 
 ---
@@ -267,6 +267,16 @@ Looking to see what's coming next? Check out our official **[Project Roadmap](RO
 ---
 
 ## Version History
+
+### v1.3.1 — 2026-06-24
+
+#### Added
+- ✨ **New**: Added an **"Always Run as Administrator"** toggle to the Standalone App's File menu, which automatically saves your preference and natively relaunches the app via UAC.
+- ✨ **New**: **Live UI Streaming** — The Standalone App now populates folders incrementally in real-time as the scan progresses, exactly like TreeSize Free!
+
+#### Changed
+- 🚀 **Extreme Performance Optimization**: Refactored the core scanning engine to eliminate blocking array allocations and bypass millions of heavy P/Invoke and string operations. SSD scanning speeds have been radically improved, effectively resolving UI hangs and slow scans.
+- 🛡️ **Admin Integration**: Restructured the app manifests so that elevated privileges are optional via the UI toggle instead of forcing UAC prompts on every launch.
 
 ### v1.3.0 — 2026-06-21
 

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-06-24
+
+### Added
+- **"Always Run as Administrator"** toggle to the Standalone App's File menu. It saves your preference and natively relaunches the app via UAC.
+- **Live UI Streaming**: The Standalone App now populates folders incrementally in real-time as the scan progresses, similar to TreeSize Free.
+
+### Changed
+- **Extreme Performance Optimization**: Refactored the core scanning engine to eliminate blocking array allocations and bypass heavy P/Invoke and string operations. SSD scanning speeds have been radically improved, completely resolving UI hangs and slow scans.
+- **Admin Integration**: Restructured the app manifests so that elevated privileges are optional via the UI toggle instead of forcing UAC prompts on every launch.
+
 ## [1.3.0] - 2026-06-21
 
 ### Added

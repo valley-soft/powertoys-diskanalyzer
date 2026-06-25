@@ -26,6 +26,8 @@
             <MenuBarItem Title="File">
                 <MenuFlyoutItem Text="Select Directory..." Icon="Folder" Click="BrowseButton_Click"/>
                 <MenuFlyoutSeparator/>
+                <ToggleMenuFlyoutItem Text="Always Run as Administrator" Click="RunAsAdmin_Click" x:Name="RunAsAdminToggle"/>
+                <MenuFlyoutSeparator/>
                 <MenuFlyoutItem Text="Exit" Icon="Cancel" Click="ExitMenu_Click"/>
             </MenuBarItem>
             <MenuBarItem Title="Scan">

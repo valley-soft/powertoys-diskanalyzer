@@ -249,46 +249,46 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
                 }
             }
 
-            // Step 1: Remove any existing package with the same publisher/package name to avoid 0x80073CFB
-            string packageName = "ValleySoft.ValleySoftDiskAnalyzer";
-            log("Checking for existing installation...");
-            if (IsPackageInstalled(packageName))
+            // Step 1: Remove any existing packages with known legacy or current names to avoid 0x80073CFB and duplicate entries
+            string[] packageNames = new[] { "ValleySoft.ValleySoftDiskAnalyzer", "DiskAnalyzerExtension", "B66E5954-FDAC-43E7-B4F4-EC969822E519" };
+            log("Checking for existing installations to clean...");
+            
+            foreach (string pkg in packageNames)
             {
-                log($"Existing {componentName} package found. Uninstalling...");
-                string removeCmd = $"Get-AppxPackage -Name '{packageName}' | Remove-AppxPackage";
-                RunPowerShell(removeCmd, log, silent: true);
-
-                // Wait and validate it is gone
-                int checkRetries = 10;
-                while (checkRetries-- > 0 && IsPackageInstalled(packageName))
+                if (IsPackageInstalled(pkg))
                 {
-                    System.Threading.Thread.Sleep(500);
-                }
+                    log($"Existing '{pkg}' package found. Uninstalling...");
+                    string removeCmd = $"Get-AppxPackage -Name '{pkg}' | Remove-AppxPackage";
+                    RunPowerShell(removeCmd, log, silent: true);
 
-                if (IsPackageInstalled(packageName))
-                {
-                    log($"Warning: Failed to uninstall existing {componentName} via standard user command. Attempting all-users package removal...");
-                    RunPowerShell($"Get-AppxPackage -Name '{packageName}' -AllUsers | Remove-AppxPackage -AllUsers", log, silent: true);
-
-                    checkRetries = 10;
-                    while (checkRetries-- > 0 && IsPackageInstalled(packageName))
+                    // Wait and validate it is gone
+                    int checkRetries = 10;
+                    while (checkRetries-- > 0 && IsPackageInstalled(pkg))
                     {
                         System.Threading.Thread.Sleep(500);
                     }
-                }
 
-                if (IsPackageInstalled(packageName))
-                {
-                    log($"Error: Could not uninstall old package ID for {componentName}. The installation may fail.");
+                    if (IsPackageInstalled(pkg))
+                    {
+                        log($"Warning: Failed to uninstall '{pkg}' via standard command. Attempting all-users removal...");
+                        RunPowerShell($"Get-AppxPackage -Name '{pkg}' -AllUsers | Remove-AppxPackage -AllUsers", log, silent: true);
+
+                        checkRetries = 10;
+                        while (checkRetries-- > 0 && IsPackageInstalled(pkg))
+                        {
+                            System.Threading.Thread.Sleep(500);
+                        }
+                    }
+
+                    if (IsPackageInstalled(pkg))
+                    {
+                        log($"Error: Could not uninstall old package ID '{pkg}'.");
+                    }
+                    else
+                    {
+                        log($"Old package '{pkg}' uninstalled successfully.");
+                    }
                 }
-                else
-                {
-                    log("Old package uninstalled successfully.");
-                }
-            }
-            else
-            {
-                log("No existing installation found.");
             }
 
             // Step 2: Install fresh

@@ -194,12 +194,11 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 // Fix #2: EnumerateDirectories instead of GetDirectories — lazy, no full array load
                 try
                 {
-                    var subDirs = dirInfo.EnumerateDirectories("*", options).ToArray();
-                    var folderItems = new DiskItemInfo[subDirs.Length];
+                    var subDirs = dirInfo.EnumerateDirectories("*", options);
+                    var folderItems = new System.Collections.Concurrent.ConcurrentBag<DiskItemInfo>();
 
-                    Parallel.For(0, subDirs.Length, i =>
+                    Parallel.ForEach(subDirs, sub =>
                     {
-                        var sub = subDirs[i];
                         try
                         {
                             long size = 0;
@@ -223,7 +222,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                                 FolderCount = folderCount,
                                 LastModified = sub.LastWriteTime,
                             };
-                            folderItems[i] = item;
+                            folderItems.Add(item);
                             progress?.Report(item);
                         }
                         catch (Exception ex)
@@ -240,12 +239,12 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                                 FolderCount = 0,
                                 LastModified = sub.LastWriteTime,
                             };
-                            folderItems[i] = item;
+                            folderItems.Add(item);
                             progress?.Report(item);
                         }
                     });
 
-                    items.AddRange(folderItems.Where(f => f != null));
+                    items.AddRange(folderItems);
                 }
                 catch (Exception ex)
                 {
@@ -255,6 +254,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 // Fix #2: EnumerateFiles instead of GetFiles — lazy, no full array load
                 try
                 {
+                    int fileCount = 0;
                     foreach (var file in dirInfo.EnumerateFiles("*", options))
                     {
                         try
@@ -271,7 +271,12 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                                 LastModified = file.LastWriteTime,
                             };
                             items.Add(item);
-                            progress?.Report(item);
+                            
+                            // Throttle UI updates to prevent flooding the message queue
+                            if (++fileCount % 100 == 0)
+                            {
+                                progress?.Report(item);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -304,11 +309,20 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             {
                 var options = CreateOptions(includeHidden, recurse: true, maxDepth: int.MaxValue);
                 
+                long minSize = 0;
+                int currentCount = 0;
+
                 var enumerable = new System.IO.Enumeration.FileSystemEnumerable<(long size, bool isDir, FileAttributes attrs, string fullPath, string name, DateTime modified)>(
                     path,
                     (ref System.IO.Enumeration.FileSystemEntry entry) => (entry.Length, entry.IsDirectory, entry.Attributes, entry.ToFullPath(), entry.FileName.ToString(), entry.LastWriteTimeUtc.LocalDateTime),
                     options)
                 {
+                    ShouldIncludePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => 
+                    {
+                        if (entry.IsDirectory) return false;
+                        if (Interlocked.CompareExchange(ref currentCount, 0, 0) < maxResults) return true;
+                        return entry.Length > Interlocked.Read(ref minSize);
+                    },
                     ShouldRecursePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => (entry.Attributes & FileAttributes.ReparsePoint) == 0
                 };
 
@@ -322,17 +336,12 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                         }));
 
                 object lockObj = new object();
-                long minSize = 0;
-                int currentCount = 0;
 
-                enumerable.AsParallel().ForAll(file =>
+                foreach (var file in enumerable)
                 {
-                    if (file.isDir) return;
                     try
                     {
                         long size = file.size;
-                        if (Interlocked.CompareExchange(ref currentCount, 0, 0) >= maxResults && size <= Interlocked.Read(ref minSize)) return;
-
                         long allocated = GetAllocatedSize(file.fullPath, size, file.attrs);
                         lock (lockObj)
                         {
@@ -349,7 +358,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     {
                         LogHelper.Debug($"Skipping file {file.name}: {ex.Message}", typeof(DiskAnalyzerHelper));
                     }
-                });
+                }
 
                 files = topFiles
                     .OrderByDescending(f => f.Size)
@@ -393,12 +402,11 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 var options = CreateOptions(includeHidden, recurse: false);
 
                 // Fix #2: EnumerateDirectories instead of GetDirectories
-                var subDirs = dirInfo.EnumerateDirectories("*", options).ToArray();
-                var folderItems = new DiskItemInfo[subDirs.Length];
+                var subDirs = dirInfo.EnumerateDirectories("*", options);
+                var folderItems = new System.Collections.Concurrent.ConcurrentBag<DiskItemInfo>();
 
-                Parallel.For(0, subDirs.Length, i =>
+                Parallel.ForEach(subDirs, sub =>
                 {
-                    var sub = subDirs[i];
                     try
                     {
                         long size = 0;
@@ -412,7 +420,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                             (size, allocated, fileCount, folderCount) = CalculateDirectorySize(sub.FullName, int.MaxValue, includeHidden);
                         }
 
-                        folderItems[i] = new DiskItemInfo
+                        folderItems.Add(new DiskItemInfo
                         {
                             Name = sub.Name,
                             FullPath = sub.FullName,
@@ -422,12 +430,12 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                             FileCount = fileCount,
                             FolderCount = folderCount,
                             LastModified = sub.LastWriteTime,
-                        };
+                        });
                     }
                     catch (Exception ex)
                     {
                         LogHelper.Warn($"Error calculating size for {sub.FullName}: {ex.Message}", typeof(DiskAnalyzerHelper));
-                        folderItems[i] = new DiskItemInfo
+                        folderItems.Add(new DiskItemInfo
                         {
                             Name = sub.Name,
                             FullPath = sub.FullName,
@@ -437,12 +445,11 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                             FileCount = 0,
                             FolderCount = 0,
                             LastModified = sub.LastWriteTime,
-                        };
+                        });
                     }
                 });
 
                 folders = folderItems
-                    .Where(f => f != null)
                     .OrderByDescending(f => f.SizeBytes)
                     .Take(maxResults)
                     .ToList();
@@ -469,12 +476,20 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 var dirInfo = new DirectoryInfo(path);
                 if (!dirInfo.Exists) return files;
 
+                long minSize = 0;
+                int currentCount = 0;
+
                 var enumerable = new System.IO.Enumeration.FileSystemEnumerable<(long size, bool isDir, FileAttributes attrs, string fullPath, string name, DateTime modified)>(
                     path,
                     (ref System.IO.Enumeration.FileSystemEntry entry) => (entry.Length, entry.IsDirectory, entry.Attributes, entry.ToFullPath(), entry.FileName.ToString(), entry.LastWriteTimeUtc.LocalDateTime),
                     options)
                 {
-                    ShouldIncludePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => !entry.IsDirectory && entry.FileName.ToString().EndsWith(extension, StringComparison.OrdinalIgnoreCase),
+                    ShouldIncludePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => 
+                    {
+                        if (entry.IsDirectory || !entry.FileName.EndsWith(extension, StringComparison.OrdinalIgnoreCase)) return false;
+                        if (Interlocked.CompareExchange(ref currentCount, 0, 0) < maxResults) return true;
+                        return entry.Length > Interlocked.Read(ref minSize);
+                    },
                     ShouldRecursePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => (entry.Attributes & FileAttributes.ReparsePoint) == 0
                 };
                 
@@ -487,16 +502,12 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                         }));
 
                 object lockObj = new object();
-                long minSize = 0;
-                int currentCount = 0;
 
-                enumerable.AsParallel().ForAll(file =>
+                foreach (var file in enumerable)
                 {
                     try
                     {
                         long size = file.size;
-                        if (Interlocked.CompareExchange(ref currentCount, 0, 0) >= maxResults && size <= Interlocked.Read(ref minSize)) return;
-
                         long allocated = GetAllocatedSize(file.fullPath, size, file.attrs);
                         lock (lockObj)
                         {
@@ -513,7 +524,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     {
                         LogHelper.Debug($"Skipping file {file.name}: {ex.Message}", typeof(DiskAnalyzerHelper));
                     }
-                });
+                }
 
                 files = topFiles
                     .OrderByDescending(f => f.Size)
@@ -554,6 +565,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     (ref System.IO.Enumeration.FileSystemEntry entry) => (entry.IsDirectory, entry.ToFullPath(), entry.FileName.ToString(), entry.LastWriteTimeUtc.LocalDateTime),
                     options)
                 {
+                    ShouldIncludePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => entry.IsDirectory,
                     ShouldRecursePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => (entry.Attributes & FileAttributes.ReparsePoint) == 0
                 };
 
@@ -619,7 +631,15 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 
                 var enumerable = new System.IO.Enumeration.FileSystemEnumerable<(long size, bool isDir, FileAttributes attrs, string fullPath)>(
                     path,
-                    (ref System.IO.Enumeration.FileSystemEntry entry) => (entry.Length, entry.IsDirectory, entry.Attributes, entry.ToFullPath()),
+                    (ref System.IO.Enumeration.FileSystemEntry entry) => 
+                    {
+                        string p = null;
+                        if (!entry.IsDirectory && (entry.Attributes & (FileAttributes.Compressed | FileAttributes.SparseFile)) != 0 && (entry.Attributes & FileAttributes.ReparsePoint) == 0)
+                        {
+                            p = entry.ToFullPath();
+                        }
+                        return (entry.Length, entry.IsDirectory, entry.Attributes, p);
+                    },
                     options)
                 {
                     ShouldIncludePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => true,

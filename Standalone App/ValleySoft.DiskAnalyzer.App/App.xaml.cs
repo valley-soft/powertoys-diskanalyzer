@@ -36,7 +36,37 @@ public partial class App : Application
 
     protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
+        try
+        {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            bool alwaysAdmin = localSettings.Values["AlwaysRunAsAdmin"] as bool? ?? false;
+            
+            if (alwaysAdmin && !IsAdministrator())
+            {
+                var startInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    UseShellExecute = true,
+                    WorkingDirectory = System.Environment.CurrentDirectory,
+                    FileName = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? "ValleySoft.DiskAnalyzer.exe",
+                    Verb = "runas"
+                };
+                System.Diagnostics.Process.Start(startInfo);
+                System.Environment.Exit(0);
+                return;
+            }
+        }
+        catch { }
+
         m_window = new MainWindow();
         m_window.Activate();
+    }
+
+    private static bool IsAdministrator()
+    {
+        using (System.Security.Principal.WindowsIdentity identity = System.Security.Principal.WindowsIdentity.GetCurrent())
+        {
+            System.Security.Principal.WindowsPrincipal principal = new System.Security.Principal.WindowsPrincipal(identity);
+            return principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+        }
     }
 }
