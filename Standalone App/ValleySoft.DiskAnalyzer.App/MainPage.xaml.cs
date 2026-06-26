@@ -43,10 +43,17 @@ namespace ValleySoft_DiskAnalyzer_App
                 var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
                 bool alwaysAdmin = localSettings.Values["AlwaysRunAsAdmin"] as bool? ?? false;
                 RunAsAdminToggle.IsChecked = alwaysAdmin;
-                RunAsAdminToggle.IsEnabled = !IsAdministrator(); // Disable if already running as admin
-                if (IsAdministrator())
+
+                bool showWarning = localSettings.Values["ShowAdminWarning"] as bool? ?? true;
+                ShowAdminWarningToggle.IsChecked = showWarning;
+                
+                if (showWarning && !IsAdministrator())
                 {
-                    RunAsAdminToggle.IsChecked = true;
+                    AdminWarningBar.IsOpen = true;
+                }
+                else
+                {
+                    AdminWarningBar.IsOpen = false;
                 }
             }
             catch { }
@@ -114,6 +121,41 @@ namespace ValleySoft_DiskAnalyzer_App
                 }
                 catch { }
             }
+        }
+
+        private void ShowAdminWarning_Click(object sender, RoutedEventArgs e)
+        {
+            bool showWarning = ShowAdminWarningToggle.IsChecked;
+            try
+            {
+                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                localSettings.Values["ShowAdminWarning"] = showWarning;
+            }
+            catch { }
+
+            if (showWarning && !IsAdministrator())
+            {
+                AdminWarningBar.IsOpen = true;
+            }
+            else
+            {
+                AdminWarningBar.IsOpen = false;
+            }
+        }
+
+        private void RestartAsAdminInfoBar_Click(object sender, RoutedEventArgs e)
+        {
+            RestartAsAdmin();
+        }
+
+        private void ViewHelp_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(HelpPage));
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(AboutPage));
         }
 
         private void ResultsGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)

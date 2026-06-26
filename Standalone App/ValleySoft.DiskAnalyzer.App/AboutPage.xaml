@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="ValleySoft_DiskAnalyzer_App.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer>
+        <Grid Padding="24,24,24,64" MaxWidth="1000" HorizontalAlignment="Left">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="16" Margin="0,0,0,24">
+                <Button Style="{ThemeResource NavigationBackButtonNormalStyle}" Click="BackButton_Click" VerticalAlignment="Center" ToolTipService.ToolTip="Go back"/>
+                <TextBlock Text="About" Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center" />
+            </StackPanel>
+
+            <!-- About Content -->
+            <StackPanel Grid.Row="1" Spacing="24" Width="600" HorizontalAlignment="Center" Margin="0,48,0,0">
+                <Image Source="Assets/StoreLogo.png" Width="128" Height="128" HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                
+                <TextBlock Text="ValleySoft Disk Analyzer" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Center" FontWeight="SemiBold" />
+                <TextBlock Text="Version 1.3.2" Style="{ThemeResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                
+                <TextBlock Text="A lightning-fast, modern disk usage analyzer built for Windows 11. Visualize your storage, find large files instantly, and free up space with ease." 
+                           TextWrapping="Wrap" 
+                           TextAlignment="Center" 
+                           Margin="0,12,0,24" />
+
+                <StackPanel Spacing="12" HorizontalAlignment="Center">
+                    <HyperlinkButton Content="GitHub Repository" NavigateUri="https://github.com/valley-soft/powertoys-diskanalyzer" HorizontalAlignment="Center" />
+                    <HyperlinkButton Content="Report an Issue" NavigateUri="https://github.com/valley-soft/powertoys-diskanalyzer/issues" HorizontalAlignment="Center" />
+                </StackPanel>
+
+                <TextBlock Text="© 2026 ValleySoft. All rights reserved." 
+                           Foreground="{ThemeResource TextFillColorTertiaryBrush}" 
+                           HorizontalAlignment="Center" 
+                           Margin="0,48,0,0" />
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] - 2026-06-26
+
+### Added
+- **Professional Help Page**: Completely redesigned the Standalone App's Help & Features section using a native WinUI `NavigationView` for a premium, Windows 11 Settings-style experience.
+- **About Page**: Added a dedicated About page featuring the app version, copyright, and direct GitHub links.
+- **New Icons**: Updated the "View Help" menu icon to a professional `Library` icon.
+
+### Fixed
+- **Admin Toggle Logic**: Fixed a bug where the "Always Run as Administrator" toggle was incorrectly disabled and forced to appear checked while elevated, preventing users from switching back to standard user mode.
+
 ## [1.3.1] - 2026-06-24
 
 ### Added

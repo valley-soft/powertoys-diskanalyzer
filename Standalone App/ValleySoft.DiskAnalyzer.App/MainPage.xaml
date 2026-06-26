@@ -27,6 +27,7 @@
                 <MenuFlyoutItem Text="Select Directory..." Icon="Folder" Click="BrowseButton_Click"/>
                 <MenuFlyoutSeparator/>
                 <ToggleMenuFlyoutItem Text="Always Run as Administrator" Click="RunAsAdmin_Click" x:Name="RunAsAdminToggle"/>
+                <ToggleMenuFlyoutItem Text="Show warning when running as user" Click="ShowAdminWarning_Click" x:Name="ShowAdminWarningToggle" IsChecked="True"/>
                 <MenuFlyoutSeparator/>
                 <MenuFlyoutItem Text="Exit" Icon="Cancel" Click="ExitMenu_Click"/>
             </MenuBarItem>
@@ -45,32 +46,45 @@
                     <MenuFlyoutItem Text="Dark" Tag="Dark" Click="ThemeMenuItem_Click"/>
                 </MenuFlyoutSubItem>
             </MenuBarItem>
+            <MenuBarItem Title="Help">
+                <MenuFlyoutItem Text="View Help" Icon="Library" Click="ViewHelp_Click"/>
+                <MenuFlyoutSeparator/>
+                <MenuFlyoutItem Text="About Disk Analyzer" Click="About_Click"/>
+            </MenuBarItem>
         </MenuBar>
 
-        <Grid Grid.Row="1" ColumnSpacing="12" Margin="0,0,0,12">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="200" />
-            </Grid.ColumnDefinitions>
-            
-            <BreadcrumbBar x:Name="PathBreadcrumbBar" Grid.Column="0" VerticalAlignment="Center" ItemClicked="PathBreadcrumbBar_ItemClicked">
-                <BreadcrumbBar.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="16" FontWeight="SemiBold" />
-                    </DataTemplate>
-                </BreadcrumbBar.ItemTemplate>
-            </BreadcrumbBar>
+        <StackPanel Grid.Row="1" Spacing="12" Margin="0,0,0,12">
+            <InfoBar x:Name="AdminWarningBar" Severity="Warning" Title="Running as user" Message="Administrator privileges are required to properly scan protected system directories, other user profiles, and hidden system files for an accurate representation of hard drive usage." IsOpen="False" CornerRadius="8">
+                <InfoBar.ActionButton>
+                    <Button Content="Restart as Administrator" Click="RestartAsAdminInfoBar_Click" />
+                </InfoBar.ActionButton>
+            </InfoBar>
 
-            <Button Grid.Column="1" x:Name="BackButton" Click="BackButton_Click" IsEnabled="False" Height="40" Padding="16,0">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <FontIcon Glyph="&#xE72B;" FontSize="14" />
-                    <TextBlock Text="Back" />
-                </StackPanel>
-            </Button>
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="200" />
+                </Grid.ColumnDefinitions>
+                
+                <BreadcrumbBar x:Name="PathBreadcrumbBar" Grid.Column="0" VerticalAlignment="Center" ItemClicked="PathBreadcrumbBar_ItemClicked">
+                    <BreadcrumbBar.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" FontSize="16" FontWeight="SemiBold" />
+                        </DataTemplate>
+                    </BreadcrumbBar.ItemTemplate>
+                </BreadcrumbBar>
 
-            <TextBox x:Name="FilterBox" Grid.Column="2" PlaceholderText="Filter (e.g. *.mp4)" VerticalAlignment="Center" Margin="12,0,0,0" TextChanged="FilterBox_TextChanged" />
-        </Grid>
+                <Button Grid.Column="1" x:Name="BackButton" Click="BackButton_Click" IsEnabled="False" Height="40" Padding="16,0">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE72B;" FontSize="14" />
+                        <TextBlock Text="Back" />
+                    </StackPanel>
+                </Button>
+
+                <TextBox x:Name="FilterBox" Grid.Column="2" PlaceholderText="Filter (e.g. *.mp4)" VerticalAlignment="Center" Margin="12,0,0,0" TextChanged="FilterBox_TextChanged" />
+            </Grid>
+        </StackPanel>
         
         <ProgressBar x:Name="ScanProgressBar" Grid.Row="2" IsIndeterminate="True" Visibility="Collapsed" VerticalAlignment="Top" Margin="0,-4,0,0" Canvas.ZIndex="10"/>
 

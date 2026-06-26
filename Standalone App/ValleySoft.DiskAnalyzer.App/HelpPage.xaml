@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="ValleySoft_DiskAnalyzer_App.HelpPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <NavigationView x:Name="HelpNavView"
+                        IsBackButtonVisible="Visible"
+                        IsBackEnabled="True"
+                        BackRequested="HelpNavView_BackRequested"
+                        PaneDisplayMode="Left"
+                        ItemInvoked="HelpNavView_ItemInvoked"
+                        Header="Help &amp; Features"
+                        IsSettingsVisible="False">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Tag="Scanning" Content="Scanning &amp; Admin" Icon="Scan" />
+                <NavigationViewItem Tag="Filtering" Content="Filtering &amp; Search" Icon="Find" />
+                <NavigationViewItem Tag="Navigation" Content="Navigation" Icon="MapDrive" />
+                <NavigationViewItem Tag="ViewOptions" Content="View Options" Icon="View" />
+            </NavigationView.MenuItems>
+
+            <ScrollViewer>
+                <Grid Padding="24" MaxWidth="1000" HorizontalAlignment="Left" x:Name="ContentGrid">
+                    <!-- Scanning Section -->
+                    <StackPanel x:Name="ScanningSection" Spacing="16" Visibility="Visible">
+                        <TextBlock Text="Scanning &amp; Administrator Mode" Style="{ThemeResource TitleTextBlockStyle}" />
+                        <TextBlock Text="When you select a directory to scan, the app traverses all subfolders and files to calculate their true size on disk." TextWrapping="Wrap" Style="{ThemeResource BodyTextBlockStyle}"/>
+                        <TextBlock Text="Important:" FontWeight="Bold" Margin="0,12,0,0"/>
+                        <TextBlock Text="Windows heavily protects certain system folders (like C:\Windows or C:\Program Files). If you scan your drive as a standard user, these folders will show 0 bytes because the app is denied access. To get a 100% accurate representation of your hard drive, toggle the 'Always Run as Administrator' setting in the File menu. This restarts the app with elevated privileges, allowing it to scan everything." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    </StackPanel>
+
+                    <!-- Filtering Section -->
+                    <StackPanel x:Name="FilteringSection" Spacing="16" Visibility="Collapsed">
+                        <TextBlock Text="Fast Filtering &amp; Searching" Style="{ThemeResource TitleTextBlockStyle}" />
+                        <TextBlock Text="The filter box at the top right is a powerful tool to narrow down your view instantly." TextWrapping="Wrap" Style="{ThemeResource BodyTextBlockStyle}"/>
+                        <TextBlock Text="• Type a word (e.g. 'cache') to only show folders and files containing that word." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock Text="• Type an extension (e.g. '*.mp4' or '*.log') to isolate only those specific file types across your entire drive!" TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock Text="The pie chart and data grid will dynamically update to reflect only the filtered results." TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <!-- Navigation Section -->
+                    <StackPanel x:Name="NavigationSection" Spacing="16" Visibility="Collapsed">
+                        <TextBlock Text="Navigation &amp; Drill-Down" Style="{ThemeResource TitleTextBlockStyle}" />
+                        <TextBlock Text="You don't need to rescan to explore folders!" TextWrapping="Wrap" Style="{ThemeResource BodyTextBlockStyle}"/>
+                        <TextBlock Text="Simply double-click on any folder in the Data Grid (or right-click the Pie Chart) to 'drill down' into that specific folder. The Breadcrumb Bar at the top will track your location." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock Text="Use the Back button or click directly on a breadcrumb item to instantly jump back up the directory tree." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    </StackPanel>
+
+                    <!-- ViewOptions Section -->
+                    <StackPanel x:Name="ViewOptionsSection" Spacing="16" Visibility="Collapsed">
+                        <TextBlock Text="View Options &amp; File Context" Style="{ThemeResource TitleTextBlockStyle}" />
+                        <TextBlock Text="The 'View' menu offers options to tailor your experience:" TextWrapping="Wrap" Style="{ThemeResource BodyTextBlockStyle}"/>
+                        <TextBlock Text="• Show Hidden Files: Toggle this off to ignore system-hidden files (like pagefile.sys or hiberfil.sys)." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock Text="• Expand/Collapse Root Folders: Quickly expand all folders in the grid to see sub-items without clicking." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock Text="• Right-Click Menu: You can right-click any file or folder in the grid and select 'Open in File Explorer' to immediately launch Windows Explorer at that exact location." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </NavigationView>
+    </Grid>
+</Page>

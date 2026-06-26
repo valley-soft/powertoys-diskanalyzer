@@ -1,6 +1,6 @@
 # DiskAnalyzer — PowerToys Run Plugin & Command Palette Extension
 
-[![Version](https://img.shields.io/badge/version-1.3.1-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.3.3-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 [![Microsoft Store](https://img.shields.io/badge/Microsoft_Store-Available-0078D7?logo=windows&logoColor=white)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/valley-soft/powertoys-diskanalyzer)
 [![PowerToys](https://img.shields.io/badge/PowerToys-v0.97.0+-orange.svg)](https://github.com/microsoft/PowerToys)
@@ -63,12 +63,14 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 ![GUI — Visual Chart Analysis](Docs/Images/standalone-app-visual-chart.png)
 
-![GUI — View Menu](Docs/Images/standalone-app-view-menu.png)
-
 ![GUI — Run as Administrator](Docs/Images/standalone-app-run-as-admin.png)
 *Note: Enabling the "Always Run as Administrator" toggle is only required the first time. The app will automatically save your preference for all future launches!*
 
-![GUI — Alternate View](Docs/Images/standalone-app-ui-2.png)
+![GUI — Administrator Banner](Docs/Images/standalone-app-runas-admin-banner.png)
+
+![GUI — Professional Help & Features Navigation](Docs/Images/standalone-app-help-page.png)
+
+![GUI — About Page](Docs/Images/standalone-app-about-page.png)
 
 ### PowerToys Run Plugin
 
@@ -102,7 +104,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 ### Standalone App (WinUI 3) & Command Palette Extension (Unified MSIX)
 
-1. Download **`ValleySoft.DiskAnalyzer.App_1.3.1.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`ValleySoft.DiskAnalyzer.App_1.3.3.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Double-click** the `.msix` file — Windows will launch the installer
 3. Click **Install**
 4. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
@@ -122,7 +124,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 #### Method 1 — Standalone Installer (Recommended)
 
-1. Download **`DiskAnalyzerInstaller-v1.3.1-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`DiskAnalyzerInstaller-v1.3.3-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Exit PowerToys completely** — Right-click the PowerToys icon in the system tray → **Exit**
 3. **Run the installer** — it will automatically extract and copy plugin files to:
    ```
@@ -154,7 +156,7 @@ Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 ```powershell
 git clone https://github.com/valley-soft/powertoys-diskanalyzer.git
 cd powertoys-diskanalyzer
-.\build-v1.3.1.ps1
+.\build-v1.3.3.ps1
 # Installers and MSIX packages appear in out\
 ```
 
