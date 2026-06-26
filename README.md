@@ -346,6 +346,13 @@ Looking to see what's coming next? Check out our official **[Project Roadmap](RO
 
 ---
 
+## Contact
+
+For support, feedback, or business inquiries, please reach out via email:
+**📧 valleysoftdev29@gmail.com**
+
+---
+
 ## License
 
 [MIT](https://opensource.org/licenses/MIT) © [ValleySoft](https://github.com/valley-soft)

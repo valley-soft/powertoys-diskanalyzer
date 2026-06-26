@@ -36,6 +36,7 @@
                 <StackPanel Spacing="12" HorizontalAlignment="Center">
                     <HyperlinkButton Content="GitHub Repository" NavigateUri="https://github.com/valley-soft/powertoys-diskanalyzer" HorizontalAlignment="Center" />
                     <HyperlinkButton Content="Report an Issue" NavigateUri="https://github.com/valley-soft/powertoys-diskanalyzer/issues" HorizontalAlignment="Center" />
+                    <HyperlinkButton Content="Contact Support (valleysoftdev29@gmail.com)" NavigateUri="mailto:valleysoftdev29@gmail.com" HorizontalAlignment="Center" />
                 </StackPanel>
 
                 <TextBlock Text="© 2026 ValleySoft. All rights reserved." 
