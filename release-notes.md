@@ -29,7 +29,7 @@ This release includes three tools, bundled into two easy installations:
 
 ### Installation — Standalone App & Command Palette Extension (Unified MSIX)
 
-1. Download **`ValleySoft.DiskAnalyzer.App_1.3.1.0_x64.msix`** (or `arm64`) from the assets below.
+1. Download **`ValleySoft.DiskAnalyzer.App_1.3.3.0_x64.msix`** (or `arm64`) from the assets below.
 2. Double-click the `.msix` file and click **Install**.
 3. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
 
@@ -44,7 +44,7 @@ This release includes three tools, bundled into two easy installations:
 
 ### Installation — PowerToys Run Plugin
 
-1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.3.1-x64.exe`** (or `arm64`)
+1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.3.3-x64.exe`** (or `arm64`)
 2. Exit PowerToys (right-click tray icon → Exit)
 3. Run the installer — it will flawlessly clean install to `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer`
 4. Restart PowerToys and enable the plugin in Settings → PowerToys Run → Plugins
@@ -62,15 +62,12 @@ This release includes three tools, bundled into two easy installations:
 | `ds empty C:\` | Find empty folders |
 | `ds gui` | Open the standalone GUI window |
 
-### Changes in v1.3.1
+### Changes in v1.3.3
 
 #### Added
-* **"Always Run as Administrator"** toggle added to the Standalone App's File menu. It automatically saves your preference and natively relaunches the app via UAC!
-* **Live UI Streaming**: The Standalone App now populates folders incrementally in real-time as the scan progresses, similar to TreeSize Free.
-
-#### Changed
-* **Extreme Performance Optimization**: Refactored the core scanning engine to eliminate blocking array allocations and bypass heavy P/Invoke and string operations. SSD scanning speeds have been radically improved, completely resolving UI hangs and slow scans.
-* **Admin Integration**: Restructured the app manifests so that elevated privileges are optional via the UI toggle instead of forcing UAC prompts on every launch.
+- **Professional Help Page**: Completely redesigned the Standalone App's Help & Features section using a native WinUI `NavigationView` for a premium, Windows 11 Settings-style experience.
+- **About Page**: Added a dedicated About page featuring the app version, copyright, and direct GitHub links.
+- **New Icons**: Updated the "View Help" menu icon to a professional `Library` icon.
 
 #### Fixed
-* **Command Palette Bug Fixes**: Fixed a critical COM marshalling bug that caused the Command Palette to crash when rendering the extension items. Also eliminated duplicate ghost entries caused by identity changes!
+- **Admin Toggle Logic**: Fixed a bug where the "Always Run as Administrator" toggle was incorrectly disabled and forced to appear checked while elevated, preventing users from switching back to standard user mode.
