@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ValleySoft Disk Analyzer - Professional Storage Management</title>
-    <!-- We use the native system font stack, but include Inter as a solid fallback for non-Windows devices -->
+    <title>ValleySoft Disk Analyzer - PowerToys & Standalone</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +28,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            /* Prioritize Segoe UI Variable for Windows 11, fallback to Inter/system fonts */
             font-family: "Segoe UI Variable", "Segoe UI", "Inter", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -41,7 +39,6 @@
             line-height: 1.6;
         }
 
-        /* Utility */
         .container {
             max-width: 1100px;
             margin: 0 auto;
@@ -55,6 +52,10 @@
             align-items: center;
             padding: 24px 0;
             border-bottom: 1px solid var(--border-subtle);
+            background-color: var(--bg-base);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .logo {
@@ -91,47 +92,99 @@
             color: var(--text-primary);
         }
 
-        /* Hero Section */
-        .hero {
-            padding: 100px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* Header Intro */
+        .site-intro {
             text-align: center;
-            border-bottom: 1px solid var(--border-subtle);
+            padding: 60px 0 40px;
         }
 
-        .version-pill {
+        .site-intro h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+
+        .site-intro p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Segmented Tab Control */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 60px;
+            position: sticky;
+            top: 80px;
+            z-index: 90;
+        }
+
+        .tab-list {
+            display: inline-flex;
             background-color: var(--bg-layer-1);
             border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 4px;
+            gap: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            backdrop-filter: blur(20px);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
             color: var(--text-secondary);
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 0.85rem;
+            padding: 10px 24px;
+            font-size: 0.95rem;
             font-weight: 600;
-            margin-bottom: 24px;
-            letter-spacing: 0.5px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            letter-spacing: -1.5px;
-            margin-bottom: 20px;
+        .tab-btn:hover {
             color: var(--text-primary);
-            max-width: 800px;
-            line-height: 1.1;
+            background-color: rgba(255, 255, 255, 0.05);
         }
 
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            max-width: 650px;
-            margin-bottom: 40px;
+        .tab-btn.active {
+            background-color: var(--border-strong);
+            color: var(--text-primary);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Tab Content Areas */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Common Section Layouts */
+        .hero-screenshot {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 60px;
+            display: block;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
         }
 
         .cta-group {
             display: flex;
+            justify-content: center;
             gap: 16px;
             margin-bottom: 60px;
         }
@@ -143,15 +196,14 @@
             padding: 12px 24px;
             font-size: 1rem;
             font-weight: 600;
-            border-radius: 4px; /* Native Windows rounded corners */
+            border-radius: 4px;
             text-decoration: none;
-            transition: background-color 0.15s ease, border-color 0.15s ease;
+            transition: all 0.15s ease;
         }
 
         .btn-primary {
             background-color: var(--accent-blue);
             color: #ffffff;
-            border: 1px solid transparent;
         }
 
         .btn-primary:hover {
@@ -169,32 +221,15 @@
             border-color: var(--border-strong);
         }
 
-        .hero-screenshot {
-            width: 100%;
-            max-width: 900px;
-            border-radius: 8px;
-            border: 1px solid var(--border-subtle);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-        }
-
-        /* Walkthrough Section */
-        .walkthrough {
-            padding: 100px 0;
-        }
-
         .feature-block {
             display: flex;
             align-items: center;
             gap: 80px;
-            margin-bottom: 120px;
+            margin-bottom: 100px;
         }
 
         .feature-block:nth-child(even) {
             flex-direction: row-reverse;
-        }
-
-        .feature-block:last-child {
-            margin-bottom: 0;
         }
 
         .feature-text {
@@ -202,7 +237,7 @@
         }
         
         .feature-label {
-            color: var(--text-tertiary);
+            color: var(--accent-blue);
             text-transform: uppercase;
             letter-spacing: 1px;
             font-size: 0.8rem;
@@ -212,11 +247,10 @@
         }
 
         .feature-text h2 {
-            font-size: 2.25rem;
+            font-size: 2rem;
             font-weight: 700;
             letter-spacing: -0.5px;
             margin-bottom: 20px;
-            color: var(--text-primary);
         }
 
         .feature-text p {
@@ -237,71 +271,47 @@
             display: block;
         }
 
-        /* Stats/Principles Section */
-        .principles {
+        /* Install Instructions Box */
+        .install-box {
             background-color: var(--bg-layer-1);
-            border-top: 1px solid var(--border-subtle);
-            border-bottom: 1px solid var(--border-subtle);
-            padding: 80px 0;
+            border: 1px solid var(--border-strong);
+            border-radius: 8px;
+            padding: 40px;
+            margin-top: 60px;
+            margin-bottom: 60px;
         }
 
-        .principles-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-        }
-
-        .principle-item {
-            padding-left: 20px;
-            border-left: 2px solid var(--border-strong);
-        }
-
-        .principle-item h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--text-primary);
-        }
-
-        .principle-item p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-
-        /* Install Section */
-        .install {
-            padding: 100px 0;
-            text-align: center;
-        }
-
-        .install h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 30px;
+        .install-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
         }
 
         .code-block {
             background-color: #000000;
-            border: 1px solid var(--border-strong);
-            padding: 20px 24px;
+            border: 1px solid #333;
+            padding: 16px 20px;
             border-radius: 6px;
             font-family: "Consolas", monospace;
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #d4d4d4;
-            display: inline-block;
-            text-align: left;
+            display: block;
+            margin-bottom: 20px;
+            overflow-x: auto;
         }
         
         .code-block .comment {
             color: #6a9955;
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
-        .code-block .prompt {
+        .step-list {
+            margin-left: 20px;
             color: var(--text-secondary);
-            margin-right: 12px;
-            user-select: none;
+        }
+
+        .step-list li {
+            margin-bottom: 10px;
         }
 
         /* Footer */
@@ -310,6 +320,7 @@
             border-top: 1px solid var(--border-subtle);
             color: var(--text-secondary);
             font-size: 0.9rem;
+            margin-top: 60px;
         }
 
         .footer-content {
@@ -326,7 +337,6 @@
         .footer-links a {
             color: var(--text-secondary);
             text-decoration: none;
-            transition: color 0.2s ease;
         }
 
         .footer-links a:hover {
@@ -334,17 +344,16 @@
             text-decoration: underline;
         }
 
-        /* Responsive */
         @media (max-width: 900px) {
-            .hero h1 { font-size: 2.75rem; }
+            .site-intro h1 { font-size: 2.5rem; }
             .feature-block, .feature-block:nth-child(even) {
                 flex-direction: column;
                 gap: 40px;
             }
-            .principles-grid { grid-template-columns: 1fr; }
-            .cta-group { flex-direction: column; width: 100%; max-width: 300px; }
+            .cta-group { flex-direction: column; width: 100%; max-width: 300px; margin: 0 auto 60px; }
             .btn { width: 100%; justify-content: center; }
             .footer-content { flex-direction: column; gap: 20px; text-align: center; }
+            .tab-list { flex-direction: column; width: 100%; max-width: 300px; }
         }
     </style>
 </head>
@@ -360,20 +369,35 @@
                     <circle cx="17" cy="7" r="1" />
                     <circle cx="17" cy="17" r="1" />
                 </svg>
-                ValleySoft Disk Analyzer
+                ValleySoft
             </a>
             <div class="nav-links">
-                <a href="#features">Features</a>
                 <a href="https://github.com/valley-soft/powertoys-diskanalyzer" target="_blank">Source</a>
+                <a href="privacy.html">Privacy</a>
                 <a href="support.html">Support</a>
             </div>
         </nav>
 
-        <!-- Hero -->
-        <section class="hero">
-            <div class="version-pill">Version 1.3.4</div>
-            <h1>See exactly what's taking up your disk space.</h1>
-            <p>A natively built, lightning-fast storage analyzer for Windows. Integrated directly into the PowerToys Command Palette for the ultimate power user experience.</p>
+        <!-- Intro -->
+        <section class="site-intro">
+            <h1>Disk Analyzer</h1>
+            <p>A lightning-fast, native Windows storage analyzer available in three powerful formats. Choose the integration that best fits your workflow.</p>
+        </section>
+
+        <!-- Segmented Tab Control -->
+        <div class="tab-container">
+            <div class="tab-list">
+                <button class="tab-btn active" onclick="switchTab('standalone')">Standalone App</button>
+                <button class="tab-btn" onclick="switchTab('cmdpal')">Command Palette</button>
+                <button class="tab-btn" onclick="switchTab('ptrun')">PowerToys Run</button>
+            </div>
+        </div>
+
+        <!-- ==============================================
+             TAB 1: STANDALONE APP
+             ============================================== -->
+        <div id="standalone" class="tab-content active">
+            <img src="Images/standalone-app-ui.png" alt="Standalone App Interface" class="hero-screenshot">
             
             <div class="cta-group">
                 <a href="https://apps.microsoft.com/" target="_blank" class="btn btn-primary">
@@ -382,85 +406,132 @@
                     </svg>
                     Download from Microsoft Store
                 </a>
-                <a href="https://github.com/valley-soft/powertoys-diskanalyzer" target="_blank" class="btn btn-secondary">
-                    View on GitHub
+            </div>
+
+            <div class="feature-block">
+                <div class="feature-text">
+                    <span class="feature-label">The Full Experience</span>
+                    <h2>Dedicated Window. Total Control.</h2>
+                    <p>The Standalone App gives you the maximum amount of screen real estate to analyze your drives. Experience a gorgeous, natively compiled Windows 11 interface built entirely on WinUI 3.</p>
+                </div>
+                <div class="feature-image">
+                    <img src="Images/gui-drive-overview.png" alt="Drive Overview">
+                </div>
+            </div>
+
+            <div class="feature-block">
+                <div class="feature-text">
+                    <span class="feature-label">Visual Analytics</span>
+                    <h2>Chart your storage instantly.</h2>
+                    <p>Stop reading text and start visualizing. The Standalone App generates crisp, highly responsive charts that breakdown your drive's composition at a single glance.</p>
+                </div>
+                <div class="feature-image">
+                    <img src="Images/standalone-app-visual-chart.png" alt="Visual Charts">
+                </div>
+            </div>
+
+            <div class="install-box">
+                <h3>Installation (Standalone)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">You can download the compiled MSIX bundle directly from the Microsoft Store, or install it rapidly via the Windows Package Manager (Winget).</p>
+                
+                <div class="code-block">
+                    <span class="comment"># Open PowerShell or Command Prompt and run:</span>
+                    winget install ValleySoft.DiskAnalyzer
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================================
+             TAB 2: COMMAND PALETTE
+             ============================================== -->
+        <div id="cmdpal" class="tab-content">
+            <img src="Images/cmdpal-screenshot-1.png" alt="Command Palette Interface" class="hero-screenshot">
+            
+            <div class="cta-group">
+                <a href="https://github.com/valley-soft/powertoys-diskanalyzer/releases" target="_blank" class="btn btn-primary">
+                    Download Extension
                 </a>
             </div>
 
-            <img src="Images/standalone-app-ui.png" alt="Disk Analyzer Interface" class="hero-screenshot">
-        </section>
-    </div>
-
-    <!-- Features -->
-    <section id="features" class="walkthrough container">
-        
-        <div class="feature-block">
-            <div class="feature-text">
-                <span class="feature-label">Drill Down</span>
-                <h2>Find the exact folders eating your storage.</h2>
-                <p>No more guessing why your C: drive is full. Disk Analyzer maps your entire directory structure hierarchically.</p>
-                <p>Double-click any row to instantly drill down into subdirectories, revealing massive caches, forgotten video files, and bloated dependencies.</p>
+            <div class="feature-block">
+                <div class="feature-text">
+                    <span class="feature-label">Native Win 11 Integration</span>
+                    <h2>Keyboard-first storage analysis.</h2>
+                    <p>Built directly for the new Windows 11 Command Palette. Simply type `>` to invoke Disk Analyzer globally without ever leaving your keyboard.</p>
+                </div>
+                <div class="feature-image">
+                    <img src="Images/cmdpal-screenshot-2.png" alt="Command Palette Deep Search">
+                </div>
             </div>
-            <div class="feature-image">
-                <img src="Images/gui-drive-overview.png" alt="Folder Hierarchy Overview">
+
+            <div class="install-box">
+                <h3>Installation (Command Palette)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">The Command Palette extension runs as a background COM Server. You must register it manually.</p>
+                
+                <ul class="step-list">
+                    <li>Download the latest `DiskAnalyzerExtension.zip` from GitHub Releases.</li>
+                    <li>Extract the contents to a permanent location (e.g., `C:\Program Files\DiskAnalyzerExtension`).</li>
+                    <li>Open PowerShell as Administrator in that folder and run:</li>
+                </ul>
+                <div class="code-block" style="margin-top: 15px;">
+                    .\DiskAnalyzerExtension.exe -RegisterProcessAsComServer
+                </div>
             </div>
         </div>
 
-        <div class="feature-block">
-            <div class="feature-text">
-                <span class="feature-label">Keyboard First</span>
-                <h2>Integrated directly into your workflow.</h2>
-                <p>Are you a keyboard warrior? Disk Analyzer is available as a native extension for the PowerToys Command Palette.</p>
-                <p>Hit your shortcut, type `>`, and begin navigating and analyzing your drives without ever taking your hands off the keys.</p>
+        <!-- ==============================================
+             TAB 3: POWERTOYS RUN
+             ============================================== -->
+        <div id="ptrun" class="tab-content">
+            <img src="Images/ptrun-top-folders.png" alt="PowerToys Run Interface" class="hero-screenshot">
+            
+            <div class="cta-group">
+                <a href="https://github.com/valley-soft/powertoys-diskanalyzer/releases" target="_blank" class="btn btn-primary">
+                    Download Plugin
+                </a>
             </div>
-            <div class="feature-image">
-                <img src="Images/cmdpal-screenshot-1.png" alt="Command Palette Integration">
+
+            <div class="feature-block">
+                <div class="feature-text">
+                    <span class="feature-label">Classic Integration</span>
+                    <h2>The ultimate PowerToys Run plugin.</h2>
+                    <p>If you prefer the classic `Alt + Space` PowerToys Run experience, this plugin drops right in. Filter by size, find empty folders, and drill down directly from the search bar.</p>
+                </div>
+                <div class="feature-image">
+                    <img src="Images/ptrun-advanced-commands.png" alt="PowerToys Run Advanced Commands">
+                </div>
+            </div>
+
+            <div class="feature-block">
+                <div class="feature-text">
+                    <span class="feature-label">Full GUI Access</span>
+                    <h2>Jump to the GUI anytime.</h2>
+                    <p>The PowerToys Run plugin isn't just a search bar tool. It ships with a fully functional embedded GUI that you can launch at any time for deeper graphical analysis.</p>
+                </div>
+                <div class="feature-image">
+                    <img src="Images/gui-drill-down.png" alt="Embedded GUI">
+                </div>
+            </div>
+
+            <div class="install-box">
+                <h3>Installation (PowerToys Run)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">Install the plugin directly into your PowerToys local app data directory.</p>
+                
+                <ul class="step-list">
+                    <li>Download `PowerToysRun-DiskAnalyzer.zip` from GitHub Releases.</li>
+                    <li>Close PowerToys entirely (right-click the tray icon and select Exit).</li>
+                    <li>Extract the folder into:</li>
+                </ul>
+                <div class="code-block" style="margin-top: 15px;">
+                    %LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins
+                </div>
+                <ul class="step-list">
+                    <li>Start PowerToys and ensure "Disk Analyzer" is enabled in the Run settings.</li>
+                </ul>
             </div>
         </div>
 
-        <div class="feature-block">
-            <div class="feature-text">
-                <span class="feature-label">Visualize</span>
-                <h2>Understand your data at a glance.</h2>
-                <p>Text tables can only tell you so much. Disk Analyzer generates crisp, highly responsive charts that visualize your drive's composition.</p>
-                <p>Identify which specific applications or system folders are hoarding your capacity with absolute clarity.</p>
-            </div>
-            <div class="feature-image">
-                <img src="Images/standalone-app-visual-chart.png" alt="Visual Analytics Chart">
-            </div>
-        </div>
-
-    </section>
-
-    <!-- Principles -->
-    <section class="principles">
-        <div class="container principles-grid">
-            <div class="principle-item">
-                <h3>Native Performance</h3>
-                <p>Written in C# using native Windows APIs. We bypass bloated abstractions to scan massive physical drives and PCIe SSDs in a matter of seconds.</p>
-            </div>
-            <div class="principle-item">
-                <h3>Absolute Privacy</h3>
-                <p>Zero telemetry, zero internet connections, and zero tracking. Your file system metadata is processed entirely offline and never leaves your device.</p>
-            </div>
-            <div class="principle-item">
-                <h3>Standard User Security</h3>
-                <p>Operates cleanly without requiring Administrator privileges. Standard Microsoft Store security policies are strictly respected by default.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Install -->
-    <section class="install container">
-        <h2>Ready to reclaim your space?</h2>
-        <div class="code-block">
-            <span class="comment"># Install directly via the Windows Package Manager</span><br>
-            <span class="prompt">&gt;</span>winget install ValleySoft.DiskAnalyzer
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <div class="container">
+        <!-- Footer -->
         <footer>
             <div class="footer-content">
                 <div class="copyright">
@@ -475,5 +546,22 @@
         </footer>
     </div>
 
+    <!-- Tab Logic -->
+    <script>
+        function switchTab(tabId) {
+            // Update Buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update Content
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            // Scroll to top of tabs for mobile convenience
+            document.querySelector('.tab-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
 </body>
 </html>
