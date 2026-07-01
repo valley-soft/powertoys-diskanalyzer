@@ -15,6 +15,7 @@
             --primary-gradient: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
             --text-primary: #ffffff;
             --text-secondary: #a0a5b5;
+            --accent: #4facfe;
         }
 
         * {
@@ -29,18 +30,19 @@
             color: var(--text-primary);
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
-            overflow: hidden;
+            overflow-x: hidden;
             position: relative;
+            padding: 40px 0;
         }
 
         /* Animated Background Blobs */
         .blob {
-            position: absolute;
+            position: fixed;
             border-radius: 50%;
             filter: blur(100px);
-            opacity: 0.5;
+            opacity: 0.3;
             z-index: -1;
             animation: float 20s infinite ease-in-out alternate;
         }
@@ -70,9 +72,8 @@
         }
 
         .container {
-            width: 90%;
-            max-width: 600px;
-            padding: 40px;
+            width: 95%;
+            max-width: 850px;
             z-index: 10;
         }
 
@@ -82,23 +83,23 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--card-border);
             border-radius: 24px;
-            padding: 50px 40px;
-            text-align: center;
+            padding: 60px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .glass-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(255, 255, 255, 0.15);
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--card-border);
         }
 
         .logo-container {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 24px;
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
             background: var(--primary-gradient);
-            border-radius: 20px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -106,86 +107,140 @@
         }
 
         .logo-container svg {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             fill: white;
         }
 
         h1 {
             font-size: 2.5rem;
             font-weight: 800;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             background: linear-gradient(to right, #ffffff, #a0a5b5);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: -0.5px;
         }
 
-        p {
-            font-size: 1.1rem;
+        .meta-info {
             color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 40px;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-info span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .content {
+            text-align: left;
+            line-height: 1.7;
+            color: #d0d4e0;
+        }
+
+        .content h2 {
+            font-size: 1.5rem;
+            color: white;
+            margin: 40px 0 16px 0;
+            font-weight: 600;
+        }
+        
+        .content h2:first-child {
+            margin-top: 0;
+        }
+
+        .content p {
+            margin-bottom: 20px;
             font-weight: 300;
         }
 
-        .support-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px 36px;
+        .content ul {
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        .content li {
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .highlight-box {
+            background: rgba(79, 172, 254, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 30px 0;
+        }
+        
+        .highlight-box h3 {
+            color: var(--accent);
             font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        
+        .highlight-box p {
+            margin-bottom: 0;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 30px 0;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 16px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
             font-weight: 600;
-            color: white;
-            background: var(--primary-gradient);
-            border: none;
-            border-radius: 100px;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.2);
-            gap: 12px;
         }
 
-        .support-btn:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 15px 25px rgba(79, 172, 254, 0.4);
+        td {
+            font-weight: 300;
         }
 
-        .support-btn:active {
-            transform: translateY(1px);
+        tr:last-child td {
+            border-bottom: none;
         }
 
-        .support-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
-            transition: transform 0.3s ease;
-        }
-
-        .support-btn:hover svg {
-            transform: translateX(4px);
-        }
-        
         .footer {
-            margin-top: 30px;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid var(--card-border);
+            text-align: center;
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.3);
-        }
-        
-        .footer a {
             color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-        
-        .footer a:hover {
-            color: white;
         }
 
-        @media (max-width: 480px) {
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .glass-card { padding: 40px 25px; }
             h1 { font-size: 2rem; }
-            .glass-card { padding: 40px 20px; }
         }
     </style>
 </head>
@@ -195,26 +250,160 @@
 
     <div class="container">
         <div class="glass-card">
-            <div class="logo-container">
-                <!-- Lock Icon -->
-                <svg viewBox="0 0 24 24">
-                    <path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM9 6C9 4.34 10.34 3 12 3C13.66 3 15 4.34 15 6V8H9V6ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17Z" />
-                </svg>
+            
+            <div class="header">
+                <div class="logo-container">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM9 6C9 4.34 10.34 3 12 3C13.66 3 15 4.34 15 6V8H9V6ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17Z" />
+                    </svg>
+                </div>
+                <h1>Privacy Policy</h1>
+                <div class="meta-info">
+                    <span><strong>Effective Date:</strong> June 14, 2026</span>
+                    <span><strong>Publisher:</strong> ValleySoft</span>
+                    <span><strong>Developer:</strong> Thet Naing Saw</span>
+                </div>
             </div>
-            
-            <h1>Privacy Policy</h1>
-            <p style="margin-bottom: 20px;"><strong>ValleySoft Disk Analyzer</strong> respects your privacy and is committed to protecting it. Our application is designed to function entirely offline.</p>
-            <p><strong>We do not collect, access, store, or transmit any personal information, telemetry, usage data, or file contents.</strong> All disk scanning and analysis occurs locally on your machine and never leaves your device.</p>
-            
-            <a href="mailto:valleysoftdev29@gmail.com" class="support-btn">
-                Contact Support
-                <svg viewBox="0 0 24 24">
-                    <path d="M20 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z" />
-                </svg>
-            </a>
-            
+
+            <div class="content">
+                <div class="highlight-box">
+                    <h3>Privacy at a Glance</h3>
+                    <p>ValleySoft Disk Analyzer does <strong>not collect, store, transmit, or share any personal data</strong>. All disk analysis runs entirely on your device. No internet connection is made. No account is required.</p>
+                </div>
+
+                <h2>1. Introduction</h2>
+                <p>Thank you for using <strong>ValleySoft Disk Analyzer</strong>, a PowerToys Command Palette extension for Windows developed and published by <strong>ValleySoft</strong>. ValleySoft Disk Analyzer helps you analyze and visualize local disk usage directly on your Windows device — showing you drive names, sizes, used space, and free space in a clear, intuitive interface.</p>
+                <p>This Privacy Policy explains what information ValleySoft Disk Analyzer does and does not access, how the app works, and your rights as a user. We are committed to being fully transparent: this is a privacy-first application, and we have deliberately designed it so that your data never leaves your device.</p>
+                <p>By using ValleySoft Disk Analyzer, you agree to the terms described in this policy. If you have any questions, please contact us at the details provided in Section 8.</p>
+
+                <h2>2. Information We Collect</h2>
+                <p><strong>We collect no personal information whatsoever.</strong></p>
+                <p>ValleySoft Disk Analyzer does not collect, request, access, store, or transmit any of the following:</p>
+                <ul>
+                    <li>Your name, email address, or any other personal identifiers</li>
+                    <li>Location data</li>
+                    <li>Usage statistics or behavioral analytics</li>
+                    <li>Device identifiers, hardware IDs, or IP addresses</li>
+                    <li>File names, folder contents, or any other file system data beyond disk-level capacity figures</li>
+                    <li>Crash reports or diagnostic telemetry</li>
+                    <li>Cookies or persistent tracking tokens of any kind</li>
+                </ul>
+                <p>The only information the app reads is your local drive metadata — specifically drive letters, total capacity, used space, and free space — and this information is accessed solely for display within the app interface on your device. It is never transmitted anywhere.</p>
+
+                <h2>3. How the App Works</h2>
+                <p>ValleySoft Disk Analyzer operates as a <strong>PowerToys Command Palette extension</strong> for Windows. Here is what happens when you use the app:</p>
+                <ul>
+                    <li>You open the PowerToys Command Palette and launch ValleySoft Disk Analyzer.</li>
+                    <li>The app queries your local operating system for drive information — such as drive names (e.g., C:, D:), total disk size, used space, and free space — using standard Windows system APIs.</li>
+                    <li>This information is displayed visually within the Command Palette interface.</li>
+                    <li>When you close the Command Palette, the session data is discarded.</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <h3>No Internet Connection Required or Used</h3>
+                    <p>ValleySoft Disk Analyzer makes no network requests of any kind. It does not connect to the internet, does not contact any external server, and does not communicate with any remote service — not even for update checks, licensing, or error reporting. All processing happens exclusively on your local machine.</p>
+                </div>
+
+                <h2>4. Data Storage</h2>
+                <p>ValleySoft Disk Analyzer does <strong>not persistently store any data</strong>. Specifically:</p>
+                <ul>
+                    <li>No files are written to your disk by the app for data collection or logging purposes.</li>
+                    <li>No databases, user profiles, or preference files containing personal data are created.</li>
+                    <li>Disk usage figures displayed in the interface exist only in memory for the duration of your current session and are discarded when you close the Command Palette.</li>
+                    <li>No data is ever uploaded to any cloud service, remote server, or third-party platform.</li>
+                </ul>
+                <p>Any application settings or preferences saved by the PowerToys framework (such as window position or display preferences) are handled entirely by Microsoft PowerToys — not by ValleySoft — and do not involve personal data.</p>
+
+                <h2>5. Third-Party Services</h2>
+                <p>ValleySoft Disk Analyzer <strong>does not integrate with or use any third-party services</strong>. This includes, but is not limited to:</p>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Examples</th>
+                                <th>Used by Disk Analyzer?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Analytics platforms</td>
+                                <td>Google Analytics, Mixpanel, Amplitude</td>
+                                <td><strong>No</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Crash reporting</td>
+                                <td>Sentry, Crashlytics, AppCenter</td>
+                                <td><strong>No</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Advertising networks</td>
+                                <td>Google Ads, Meta Audience Network</td>
+                                <td><strong>No</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Cloud storage / sync</td>
+                                <td>OneDrive, Dropbox, Firebase</td>
+                                <td><strong>No</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Authentication</td>
+                                <td>Microsoft Account, Google Sign-In</td>
+                                <td><strong>No</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Telemetry / diagnostics</td>
+                                <td>Windows telemetry SDKs, HockeyApp</td>
+                                <td><strong>No</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <p>ValleySoft Disk Analyzer runs exclusively within the Microsoft PowerToys framework. Any data handling performed by PowerToys itself is governed by <strong>Microsoft's own Privacy Statement</strong>, which is separate from this policy and outside the control of ValleySoft.</p>
+
+                <h2>6. Children's Privacy</h2>
+                <p>ValleySoft Disk Analyzer is a general-purpose utility application available to all ages. Because the app collects <strong>no personal information from any user</strong>, it poses no privacy risk to users of any age group, including children under the age of 13.</p>
+                <p>ValleySoft does not knowingly collect, solicit, or retain personal information from children. Since the application does not collect data from anyone, no special age-verification or parental consent mechanisms are necessary. If you believe we have inadvertently received any personal information from a child, please contact us immediately via our <a href="https://github.com/valley-soft/powertoys-diskanalyzer/issues" target="_blank">issue tracker</a> and we will address your concern promptly.</p>
+
+                <h2>7. Changes to This Privacy Policy</h2>
+                <p>ValleySoft may update this Privacy Policy from time to time. If we make changes, we will update the <strong>Effective Date</strong> at the top of this document and, where appropriate, publish the revised policy in the Microsoft Store listing and on our public repository.</p>
+                <p>We encourage you to review this policy periodically. Because ValleySoft Disk Analyzer does not collect your contact information, we are unable to notify you directly of changes — so please check the listing or repository if you want to stay informed. Continued use of ValleySoft Disk Analyzer after any changes to this policy are published constitutes your acceptance of the updated terms.</p>
+
+                <h2>8. Contact Us</h2>
+                <p>If you have any questions, concerns, or feedback regarding this Privacy Policy or the ValleySoft Disk Analyzer application, please do not hesitate to reach out. We are happy to help.</p>
+
+                <div class="table-container">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><strong>Developer</strong></td>
+                                <td>Thet Naing Saw</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Publisher</strong></td>
+                                <td>ValleySoft</td>
+                            </tr>
+                            <tr>
+                                <td><strong>GitHub</strong></td>
+                                <td><a href="https://github.com/valley-soft/powertoys-diskanalyzer/issues" target="_blank">github.com/valley-soft/powertoys-diskanalyzer/issues</a></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Location</strong></td>
+                                <td>Spring Valley, CA, United States</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Platform</strong></td>
+                                <td>Microsoft Store</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <div class="footer">
-                <a href="https://github.com/valley-soft/powertoys-diskanalyzer" target="_blank">View on GitHub</a>
+                <p>This document was prepared by Thet Naing Saw for submission to the Microsoft Store and public hosting.</p>
             </div>
         </div>
     </div>
