@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changelog - ValleySoft Disk Analyzer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #1c1c1c;
+            --bg-layer-1: #242424;
+            --bg-layer-2: #2d2d2d;
+            --border-subtle: #3a3a3a;
+            --border-strong: #4a4a4a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --accent-blue: #0078d4;
+            --badge-added: #2ea043;
+            --badge-fixed: #d29922;
+            --badge-changed: #388bfd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI Variable", "Segoe UI", "Inter", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        /* Header */
+        .page-header {
+            padding: 80px 0 40px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 60px;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        /* Timeline / Releases */
+        .release {
+            margin-bottom: 60px;
+            background: var(--bg-layer-1);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 30px;
+        }
+
+        .release-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 1px solid var(--border-strong);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .release-version {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .release-date {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .release-section {
+            margin-bottom: 20px;
+        }
+
+        .release-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag.added { background-color: rgba(46, 160, 67, 0.15); color: #3fb950; border: 1px solid rgba(46, 160, 67, 0.4); }
+        .tag.fixed { background-color: rgba(210, 153, 34, 0.15); color: #d29922; border: 1px solid rgba(210, 153, 34, 0.4); }
+        .tag.changed { background-color: rgba(56, 139, 253, 0.15); color: #58a6ff; border: 1px solid rgba(56, 139, 253, 0.4); }
+
+        .release-list {
+            list-style-type: disc;
+            margin-left: 24px;
+            color: var(--text-secondary);
+        }
+
+        .release-list li {
+            margin-bottom: 8px;
+        }
+        
+        .release-list li strong {
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav>
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 4H4C2.89 4 2 4.89 2 6V18C2 19.11 2.89 20 4 20H20C21.11 20 22 19.11 22 18V6C22 4.89 21.11 4 20 4ZM20 18H4V16H20V18ZM20 14H4V10H20V14ZM20 8H4V6H20V8Z" />
+                    <circle cx="17" cy="12" r="1" />
+                    <circle cx="17" cy="7" r="1" />
+                    <circle cx="17" cy="17" r="1" />
+                </svg>
+                ValleySoft
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Products</a>
+                <a href="history.html">Changelog</a>
+                <a href="about.html">About</a>
+                <a href="support.html">Support</a>
+            </div>
+        </nav>
+
+        <header class="page-header">
+            <h1>Release History</h1>
+            <p>Track the evolution of Disk Analyzer. All notable changes, fixes, and improvements.</p>
+        </header>
+
+        <!-- v1.3.3 -->
+        <div class="release">
+            <div class="release-header">
+                <div class="release-version">v1.3.3</div>
+                <div class="release-date">June 26, 2026</div>
+            </div>
+            
+            <div class="release-section">
+                <span class="tag added">Added</span>
+                <ul class="release-list">
+                    <li><strong>Professional Help Page</strong>: Completely redesigned the Standalone App's Help & Features section using a native WinUI <code>NavigationView</code> for a premium, Windows 11 Settings-style experience.</li>
+                    <li><strong>About Page</strong>: Added a dedicated About page featuring the app version, copyright, and direct GitHub links.</li>
+                    <li><strong>New Icons</strong>: Updated the "View Help" menu icon to a professional <code>Library</code> icon.</li>
+                </ul>
+            </div>
+            <div class="release-section">
+                <span class="tag fixed">Fixed</span>
+                <ul class="release-list">
+                    <li><strong>Admin Toggle Logic</strong>: Fixed a bug where the "Always Run as Administrator" toggle was incorrectly disabled and forced to appear checked while elevated.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- v1.3.1 -->
+        <div class="release">
+            <div class="release-header">
+                <div class="release-version">v1.3.1</div>
+                <div class="release-date">June 24, 2026</div>
+            </div>
+            
+            <div class="release-section">
+                <span class="tag added">Added</span>
+                <ul class="release-list">
+                    <li><strong>"Always Run as Administrator"</strong> toggle added to the Standalone App's File menu. It saves your preference and natively relaunches the app via UAC.</li>
+                    <li><strong>Live UI Streaming</strong>: The Standalone App now populates folders incrementally in real-time as the scan progresses, similar to TreeSize Free.</li>
+                </ul>
+            </div>
+            <div class="release-section">
+                <span class="tag changed">Changed</span>
+                <ul class="release-list">
+                    <li><strong>Extreme Performance Optimization</strong>: Refactored the core scanning engine to eliminate blocking array allocations and bypass heavy P/Invoke and string operations.</li>
+                    <li><strong>Admin Integration</strong>: Restructured the app manifests so that elevated privileges are optional via the UI toggle instead of forcing UAC prompts on every launch.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- v1.3.0 -->
+        <div class="release">
+            <div class="release-header">
+                <div class="release-version">v1.3.0</div>
+                <div class="release-date">June 21, 2026</div>
+            </div>
+            
+            <div class="release-section">
+                <span class="tag added">Added</span>
+                <ul class="release-list">
+                    <li><strong>Fully featured Standalone WinUI 3 App</strong> with a beautiful visual Bar Chart for deeper disk analysis!</li>
+                    <li><strong>Unified Installer</strong> features a flawless 1-click Clean Install mode, automatically purging old DLLs to prevent version conflicts.</li>
+                    <li>Completely separated and distinct display names for the Standalone App, Command Palette Extension, and PowerToys Run plugin.</li>
+                    <li><strong>Unified the Command Palette Extension and Standalone App into a single MSIX package</strong> for seamless Microsoft Store distribution.</li>
+                </ul>
+            </div>
+            <div class="release-section">
+                <span class="tag changed">Changed</span>
+                <ul class="release-list">
+                    <li>Upgraded the Core project and shared logic to <strong>.NET 10.0</strong> for maximum performance.</li>
+                    <li>Deeply cleaned the repository, permanently ignoring and removing old legacy build artifacts.</li>
+                </ul>
+            </div>
+            <div class="release-section">
+                <span class="tag fixed">Fixed</span>
+                <ul class="release-list">
+                    <li><strong>PowerToys Run AssemblyLoadContext bug completely resolved!</strong> Core logic is now natively compiled directly into the plugin.</li>
+                    <li>Standalone App sizes and calculations rigorously synced with Windows Explorer to ensure accurate byte-for-byte size reporting.</li>
+                    <li>Fixed severe junction point infinite loop bugs in the directory scanner.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- v1.2.0 -->
+        <div class="release">
+            <div class="release-header">
+                <div class="release-version">v1.2.0</div>
+                <div class="release-date">June 14, 2026</div>
+            </div>
+            <div class="release-section">
+                <span class="tag added">Added</span>
+                <ul class="release-list">
+                    <li>Native <strong>Command Palette MSIX Extension</strong>.</li>
+                    <li>Async background scanning with live <em>Scanning…</em> placeholder.</li>
+                    <li>Standalone GUI window (<code>ds gui</code>) with full drive/folder tree explorer.</li>
+                    <li>ARM64 support — separate installer and MSIX for ARM64 devices.</li>
+                </ul>
+            </div>
+            <div class="release-section">
+                <span class="tag fixed">Fixed</span>
+                <ul class="release-list">
+                    <li>Disk used space calculation now perfectly matches Windows Explorer.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- v1.1.0 -->
+        <div class="release">
+            <div class="release-header">
+                <div class="release-version">v1.1.0</div>
+                <div class="release-date">June 10, 2026</div>
+            </div>
+            <div class="release-section">
+                <span class="tag added">Added</span>
+                <ul class="release-list">
+                    <li>"Allocated on Disk" size metrics to scan results.</li>
+                    <li>Parallel processing for deep directory scans to improve performance.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- v1.0.0 -->
+        <div class="release">
+            <div class="release-header">
+                <div class="release-version">v1.0.0</div>
+                <div class="release-date">May 15, 2026</div>
+            </div>
+            <div class="release-section">
+                <span class="tag added">Added</span>
+                <ul class="release-list">
+                    <li>Initial release of DiskAnalyzer for PowerToys Run.</li>
+                    <li>List drives with used / free / total space.</li>
+                    <li>Browse folder sizes ranked by largest.</li>
+                    <li>Recursive largest file/folder search.</li>
+                    <li>Cloud folder support (iCloud, OneDrive).</li>
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 ValleySoft. Crafted for Windows.</p>
+            <p style="margin-top: 10px;">
+                <a href="privacy.html" style="color: var(--text-secondary); text-decoration: none; margin-right: 15px;">Privacy Policy</a>
+                <a href="https://github.com/valley-soft" target="_blank" style="color: var(--text-secondary); text-decoration: none;">GitHub</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

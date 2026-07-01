@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - ValleySoft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #1c1c1c;
+            --bg-layer-1: #242424;
+            --bg-layer-2: #2d2d2d;
+            --border-subtle: #3a3a3a;
+            --border-strong: #4a4a4a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --accent-blue: #0078d4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI Variable", "Segoe UI", "Inter", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        /* Content */
+        .page-header {
+            padding: 80px 0 40px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 60px;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .content-section {
+            margin-bottom: 60px;
+        }
+
+        .content-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-strong);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .content-section p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .principles-list {
+            list-style: none;
+            margin-top: 30px;
+        }
+
+        .principles-list li {
+            background: var(--bg-layer-1);
+            border: 1px solid var(--border-subtle);
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .principles-list h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--accent-blue);
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav>
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 4H4C2.89 4 2 4.89 2 6V18C2 19.11 2.89 20 4 20H20C21.11 20 22 19.11 22 18V6C22 4.89 21.11 4 20 4ZM20 18H4V16H20V18ZM20 14H4V10H20V14ZM20 8H4V6H20V8Z" />
+                    <circle cx="17" cy="12" r="1" />
+                    <circle cx="17" cy="7" r="1" />
+                    <circle cx="17" cy="17" r="1" />
+                </svg>
+                ValleySoft
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Products</a>
+                <a href="history.html">Changelog</a>
+                <a href="about.html">About</a>
+                <a href="support.html">Support</a>
+            </div>
+        </nav>
+
+        <header class="page-header">
+            <h1>Crafting Native Utilities.</h1>
+            <p>Building lightning-fast tools for Windows Power Users.</p>
+        </header>
+
+        <section class="content-section">
+            <h2>Our Mission</h2>
+            <p>ValleySoft was founded with a singular focus: to build deeply integrated, highly performant software for the modern Windows ecosystem.</p>
+            <p>In a software landscape dominated by bloated electron apps and slow web wrappers, we believe that native code still matters. We build tools that feel like they belong natively inside the operating system—tools that launch instantly, respect your battery life, and seamlessly plug into platforms like the Windows Command Palette and PowerToys.</p>
+        </section>
+
+        <section class="content-section">
+            <h2>Our Core Principles</h2>
+            <ul class="principles-list">
+                <li>
+                    <h3>1. Bare-Metal Performance</h3>
+                    <p>We write our software in C# utilizing native Windows APIs and WinUI 3. We obsess over milliseconds, memory allocation, and multi-threading so that when you ask your computer to do something, it happens instantly.</p>
+                </li>
+                <li>
+                    <h3>2. Absolute Privacy</h3>
+                    <p>Your data is yours. Period. ValleySoft applications are designed from the ground up to operate 100% offline. We do not include telemetry, we do not phone home, and we do not track your usage. Our tools analyze your system entirely locally.</p>
+                </li>
+                <li>
+                    <h3>3. Power User Workflows</h3>
+                    <p>We build tools for users who keep their hands on the keyboard. Whether it's through the Command Palette, PowerToys Run, or advanced CLI arguments, we design interfaces that prioritize speed and efficiency above all else.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section class="content-section">
+            <h2>The Team</h2>
+            <p>ValleySoft is driven by a passionate team of developers based in the United States, dedicated to pushing the boundaries of what native Windows development can achieve.</p>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 ValleySoft. Crafted for Windows.</p>
+            <p style="margin-top: 10px;">
+                <a href="privacy.html" style="color: var(--text-secondary); text-decoration: none; margin-right: 15px;">Privacy Policy</a>
+                <a href="https://github.com/valley-soft" target="_blank" style="color: var(--text-secondary); text-decoration: none;">GitHub</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
