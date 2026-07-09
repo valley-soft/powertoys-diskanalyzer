@@ -10,6 +10,18 @@
 
 A [PowerToys Run](https://aka.ms/PowerToysOverview) plugin **and** a native Windows Command Palette extension that brings **TreeSize-like disk usage analysis** directly into your launcher — plus a full standalone GUI window. Instantly explore drive and folder sizes without leaving your keyboard.
 
+**[🌐 Visit the Official DiskAnalyzer Website](https://valley-soft.github.io/powertoys-diskanalyzer/)**
+
+<div align="center">
+  <img src="docs/Images/standalone-app-ui.png" alt="DiskAnalyzer Hero Screenshot" width="800"/>
+</div>
+
+### 🚀 Install Instantly (Windows 11)
+```powershell
+winget install ValleySoft.DiskAnalyzer
+```
+*Or [download the MSIX directly from the Microsoft Store](https://apps.microsoft.com/detail/9nf073kltvwn).*
+
 ---
 
 ## Components
@@ -59,36 +71,36 @@ This project ships three tools, bundled into two easy installations:
 
 Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalone experience.
 
-![GUI — Main Overview](Docs/Images/standalone-app-ui.png)
+![GUI — Main Overview](docs/Images/standalone-app-ui.png)
 
-![GUI — Visual Chart Analysis](Docs/Images/standalone-app-visual-chart.png)
+![GUI — Visual Chart Analysis](docs/Images/standalone-app-visual-chart.png)
 
-![GUI — Run as Administrator](Docs/Images/standalone-app-run-as-admin.png)
+![GUI — Run as Administrator](docs/Images/standalone-app-run-as-admin.png)
 *Note: Enabling the "Always Run as Administrator" toggle is only required the first time. The app will automatically save your preference for all future launches!*
 
-![GUI — Administrator Banner](Docs/Images/standalone-app-runas-admin-banner.png)
+![GUI — Administrator Banner](docs/Images/standalone-app-runas-admin-banner.png)
 
-![GUI — Professional Help & Features Navigation](Docs/Images/standalone-app-help-page.png)
+![GUI — Professional Help & Features Navigation](docs/Images/standalone-app-help-page.png)
 
-![GUI — About Page](Docs/Images/standalone-app-about-page.png)
+![GUI — About Page](docs/Images/standalone-app-about-page.png)
 
 ### PowerToys Run Plugin
 
-![Help commands overview](Docs/Images/ptrun-help-commands.png)
+![Help commands overview](docs/Images/ptrun-help-commands.png)
 
-![Advanced commands: largest, top, ext, empty](Docs/Images/ptrun-advanced-commands.png)
+![Advanced commands: largest, top, ext, empty](docs/Images/ptrun-advanced-commands.png)
 
 #### Scanning Folders
 
-![Scanning top-level folders on C:](Docs/Images/ptrun-top-folders.png)
+![Scanning top-level folders on C:](docs/Images/ptrun-top-folders.png)
 
-![Scanning C:\WINDOWS folder](Docs/Images/ptrun-folder-scan.png)
+![Scanning C:\WINDOWS folder](docs/Images/ptrun-folder-scan.png)
 
 ### Command Palette Extension
 
-![CmdPal - Screenshot 1](Docs/Images/cmdpal-screenshot-1.png)
-![CmdPal - Screenshot 2](Docs/Images/cmdpal-screenshot-2.png)
-![CmdPal - Screenshot 3](Docs/Images/cmdpal-screenshot-3.png)
+![CmdPal - Screenshot 1](docs/Images/cmdpal-screenshot-1.png)
+![CmdPal - Screenshot 2](docs/Images/cmdpal-screenshot-2.png)
+![CmdPal - Screenshot 3](docs/Images/cmdpal-screenshot-3.png)
 
 ---
 
@@ -256,7 +268,7 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 | `Standalone App/` | WinUI 3 standalone application |
 | `DiskAnalyzerWindow.xaml` / `.cs` | Legacy standalone GUI window (WPF) triggered via `ds gui` |
 | `plugin.json` | PowerToys metadata (name, keyword, version, icons) |
-| `Docs/Images/` | README screenshots |
+| `docs/Images/` | README screenshots |
 | `Images/` | Plugin icon assets (`DiskAnalyzerLight.png` / `DiskAnalyzerDark.png`) |
 | `CmdPalExtension/` | Native Command Palette MSIX extension project |
 | `Installer/` | Single-file native installer source |
