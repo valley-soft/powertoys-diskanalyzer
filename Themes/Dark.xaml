@@ -15,7 +15,7 @@
     <SolidColorBrush x:Key="ButtonBorder" Color="#555555"/>
     <SolidColorBrush x:Key="ButtonDisabledBg" Color="#2A2A2A"/>
     <SolidColorBrush x:Key="ButtonDisabledBorder" Color="#333333"/>
-    <SolidColorBrush x:Key="ButtonDisabledFg" Color="#666666"/>
+    <SolidColorBrush x:Key="ButtonDisabledFg" Color="#888888"/>
     <SolidColorBrush x:Key="ButtonFg" Color="#EEEEEE"/>
     
     <SolidColorBrush x:Key="GridHeaderBg" Color="#333333"/>

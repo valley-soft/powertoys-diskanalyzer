@@ -401,8 +401,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 
                 var options = CreateOptions(includeHidden, recurse: false);
 
-                // Fix #2: EnumerateDirectories instead of GetDirectories
-                var subDirs = dirInfo.EnumerateDirectories("*", options);
+                // Materialize to array to bypass Enumerator lock contention in Parallel.ForEach
+                var subDirs = dirInfo.EnumerateDirectories("*", options).ToArray();
                 var folderItems = new System.Collections.Concurrent.ConcurrentBag<DiskItemInfo>();
 
                 Parallel.ForEach(subDirs, sub =>
@@ -570,8 +570,9 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 };
 
                 var results = new System.Collections.Concurrent.ConcurrentBag<DiskItemInfo>();
+                var directoryItems = enumerable.ToList();
 
-                Parallel.ForEach(enumerable, (item, state) =>
+                Parallel.ForEach(directoryItems, (item, state) =>
                 {
                     if (!item.isDir) return;
                     if (results.Count >= maxResults)

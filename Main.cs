@@ -588,8 +588,26 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             var parentSize = items.Sum(i => i.SizeBytes);
             var parentAllocated = items.Sum(i => i.AllocatedSizeBytes);
 
-            var results = new List<Result>
+            var results = new List<Result>();
+            
+            var parentDir = Directory.GetParent(path);
+            if (parentDir != null)
             {
+                results.Add(new Result
+                {
+                    Title = $"⬅ Up one level to {parentDir.Name}",
+                    SubTitle = $"Return to {parentDir.FullName}",
+                    IcoPath = _iconPath,
+                    Score = 10001,
+                    Action = _ =>
+                    {
+                        _context?.API.ChangeQuery($"ds {parentDir.FullName}", true);
+                        return false;
+                    }
+                });
+            }
+
+            results.Add(
                 new Result
                 {
                     Title = $"\U0001F4C1 {path} \u2014 Total: {DiskAnalyzerHelper.FormatSize(parentSize)} (Allocated: {DiskAnalyzerHelper.FormatSize(parentAllocated)})",
@@ -609,8 +627,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                         System.Diagnostics.Process.Start("explorer.exe", $"\"{path}\"");
                         return true;
                     },
-                },
-            };
+                }
+            );
 
             var sorted = items
                 .OrderByDescending(i => i.SizeBytes)
@@ -623,11 +641,12 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 var pct = parentSize > 0 ? (double)item.SizeBytes / parentSize * 100 : 0;
                 var pctText = _showPercentage ? $" ({pct:F1}%)" : string.Empty;
                 var bar = DiskAnalyzerHelper.CreateMiniBar(pct);
+                var hint = item.IsFile ? "" : " (Press Enter to drill down)";
 
                 results.Add(new Result
                 {
                     Title = $"{icon} {item.Name} \u2014 {DiskAnalyzerHelper.FormatSize(item.SizeBytes)}{pctText}",
-                    SubTitle = $"{bar} Allocated: {DiskAnalyzerHelper.FormatSize(item.AllocatedSizeBytes)} | {item.FullPath}",
+                    SubTitle = $"{bar} Allocated: {DiskAnalyzerHelper.FormatSize(item.AllocatedSizeBytes)} | {item.FullPath}{hint}",
                     IcoPath = _iconPath,
                     Score = 10000 - rank,
                     ContextData = item,
@@ -775,7 +794,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 results.Add(new Result
                 {
                     Title = $"\U0001F4C1 {folder.Name} \u2014 {DiskAnalyzerHelper.FormatSize(folder.SizeBytes)} ({pct:F1}%)",
-                    SubTitle = $"{bar} Allocated: {DiskAnalyzerHelper.FormatSize(folder.AllocatedSizeBytes)} | Items: {folder.FileCount + folder.FolderCount} | {folder.FullPath}",
+                    SubTitle = $"{bar} Allocated: {DiskAnalyzerHelper.FormatSize(folder.AllocatedSizeBytes)} | Items: {folder.FileCount + folder.FolderCount} | {folder.FullPath} (Press Enter to drill down)",
                     IcoPath = _iconPath,
                     Score = 10000 - rank,
                     ContextData = folder,

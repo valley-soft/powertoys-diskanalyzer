@@ -197,24 +197,26 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 
             try
             {
-                var items = await Task.Run(() => DiskAnalyzerHelper.ScanDirectory(path, 1, true));
-
-                var viewModels = items
-                    .Select(i => new GridItemViewModel
-                    {
-                        Name = i.Name,
-                        FullPath = i.FullPath,
-                        FormattedSize = DiskAnalyzerHelper.FormatSize(i.SizeBytes),
-                        FormattedAllocated = DiskAnalyzerHelper.FormatSize(i.AllocatedSizeBytes),
-                        ItemCount = i.FileCount + i.FolderCount,
-                        LastModified = i.LastModified,
-                        SizeBytes = i.SizeBytes,
-                        AllocatedSizeBytes = i.AllocatedSizeBytes,
-                        IsFile = i.IsFile,
-                        IconSource = IconUtilities.GetIcon(i.FullPath, !i.IsFile)
-                    })
-                    .OrderByDescending(v => v.SizeBytes)
-                    .ToList();
+                var viewModels = await Task.Run(() => 
+                {
+                    var items = DiskAnalyzerHelper.ScanDirectory(path, 1, true);
+                    return items
+                        .Select(i => new GridItemViewModel
+                        {
+                            Name = i.Name,
+                            FullPath = i.FullPath,
+                            FormattedSize = DiskAnalyzerHelper.FormatSize(i.SizeBytes),
+                            FormattedAllocated = DiskAnalyzerHelper.FormatSize(i.AllocatedSizeBytes),
+                            ItemCount = i.FileCount + i.FolderCount,
+                            LastModified = i.LastModified,
+                            SizeBytes = i.SizeBytes,
+                            AllocatedSizeBytes = i.AllocatedSizeBytes,
+                            IsFile = i.IsFile,
+                            IconSource = IconUtilities.GetIcon(i.FullPath, !i.IsFile)
+                        })
+                        .OrderByDescending(v => v.SizeBytes)
+                        .ToList();
+                });
 
                 ItemsGrid.ItemsSource = viewModels;
                 StatusText.Text = $"{viewModels.Count} item(s) in {path}  •  Double-click a folder to drill down";

@@ -49,13 +49,10 @@
             <StackPanel>
                 <!-- PowerToys Check -->
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                    <CheckBox x:Name="CheckPlugin" Content="PowerToys Run Plugin" IsChecked="True"/>
+                    <CheckBox x:Name="CheckPlugin" Content="PowerToys Run Plugin" IsChecked="True" IsEnabled="False"/>
                     <TextBlock x:Name="TxtPowerToysMissing" Text="(PowerToys is not installed)" Foreground="#FF5555" Margin="10,5,10,5" Visibility="Collapsed" VerticalAlignment="Center"/>
                     <Button x:Name="BtnInstallPowerToys" Content="Install PowerToys" Background="#4A90E2" Foreground="White" BorderThickness="0" Padding="10,2" Margin="0,2,0,2" Visibility="Collapsed" Click="BtnInstallPowerToys_Click"/>
                 </StackPanel>
-                
-                <CheckBox x:Name="CheckCmdPal" Content="Command Palette Extension" IsChecked="True"/>
-                <CheckBox x:Name="CheckApp" Content="Standalone Desktop App" IsChecked="True"/>
             </StackPanel>
         </GroupBox>
 

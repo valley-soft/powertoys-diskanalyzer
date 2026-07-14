@@ -100,21 +100,13 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
         private async void BtnInstall_Click(object sender, RoutedEventArgs e)
         {
             bool isCleanInstall = true; // Always clean install now
-            bool installPlugin = CheckPlugin.IsChecked == true;
-            bool installCmdPal = CheckCmdPal.IsChecked == true;
-            bool installApp = CheckApp.IsChecked == true;
-
-            if (!installPlugin && !installCmdPal && !installApp)
-            {
-                MessageBox.Show("Please select at least one component to install.", "ValleySoft Disk Analyzer Installer", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
+            bool installPlugin = true;
+            bool installCmdPal = false;
+            bool installApp = false;
 
             // Lock UI
             BtnInstall.IsEnabled = false;
             CheckPlugin.IsEnabled = false;
-            CheckCmdPal.IsEnabled = false;
-            CheckApp.IsEnabled = false;
             RadioClean.IsEnabled = false;
             ProgressBar.Visibility = Visibility.Visible;
             ProgressBar.IsIndeterminate = true;

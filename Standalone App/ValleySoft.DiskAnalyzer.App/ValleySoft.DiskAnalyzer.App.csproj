@@ -14,10 +14,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <DefineConstants>$(DefineConstants);STANDALONE_APP</DefineConstants>
+    <ApplicationVersion>1.3.5.0</ApplicationVersion>
+    <ApplicationDisplayVersion>1.3.5.0</ApplicationDisplayVersion>
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
-    <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
-    <PackageCertificateKeyFile>..\..\ValleySoft.pfx</PackageCertificateKeyFile>
-    <PackageCertificatePassword>password</PackageCertificatePassword>
+    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
   </PropertyGroup>
 
   <ItemGroup>

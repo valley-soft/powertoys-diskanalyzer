@@ -77,15 +77,31 @@ foreach ($Arch in $Architectures) {
                   Select-Object -First 1
 
     if ($msixSearchApp) {
-        Copy-Item -Path $msixSearchApp.FullName -Destination "temp_payload\ValleySoft.UnifiedApp.msix"
+        $msixPath = $msixSearchApp.FullName
+        Write-Host "Signing MSIX using SignTool and Certificate Thumbprint from ValleySoft.cer..."
+        $thumbprint = (Get-PfxCertificate -FilePath "ValleySoft.cer").Thumbprint
+        $signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\signtool.exe"
+        if (Test-Path $signtool) {
+            & $signtool sign /fd SHA256 /a /sha1 $thumbprint $msixPath
+        } else {
+            Write-Host "Warning: signtool.exe not found at $signtool"
+        }
+        
+        # Copy MSIX to final output directory instead of installer payload
+        $appOutputDir = "out\App"
+        if (!(Test-Path $appOutputDir)) { New-Item -ItemType Directory -Path $appOutputDir -Force | Out-Null }
+        Copy-Item -Path $msixPath -Destination "$appOutputDir\ValleySoft.DiskAnalyzer.App_$($Version)_$Arch.msix" -Force
     }
 
-    # ── 4. Package unified payload for installer ───────────────────────────
-    Write-Host ""
-    Write-Host "[4/4] Zipping unified payload for installer..."
     if (Test-Path "ValleySoft.cer") {
-        Copy-Item -Path "ValleySoft.cer" -Destination "temp_payload\ValleySoft.cer" -Force
+        $appOutputDir = "out\App"
+        if (!(Test-Path $appOutputDir)) { New-Item -ItemType Directory -Path $appOutputDir -Force | Out-Null }
+        Copy-Item -Path "ValleySoft.cer" -Destination "$appOutputDir\ValleySoft.cer" -Force
     }
+
+    # ── 4. Package plugin payload for installer ───────────────────────────
+    Write-Host ""
+    Write-Host "[4/4] Zipping plugin payload for installer..."
     if (Test-Path $PayloadZip) { Remove-Item $PayloadZip -Force }
     Compress-Archive -Path "temp_payload\*" -DestinationPath $PayloadZip
 
@@ -110,9 +126,14 @@ foreach ($Arch in $Architectures) {
 # ── Summary ────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "========================================="
-Write-Host "  SUCCESS!                              "
+Write-Host "SUCCESS!"
 Write-Host "========================================="
-Write-Host "Unified Installers (Includes Plugin, CmdPal, Standalone App):"
+Write-Host "PowerToys Run Plugin Installer:"
 Write-Host "  -> out\Installer\ValleySoft.DiskAnalyzerInstaller-v$Version-x64.exe"
 Write-Host "  -> out\Installer\ValleySoft.DiskAnalyzerInstaller-v$Version-arm64.exe"
+Write-Host "Standalone App & Command Palette Extension MSIX:"
+Write-Host "  -> out\App\ValleySoft.DiskAnalyzer.App_$Version-x64.msix"
+Write-Host "  -> out\App\ValleySoft.DiskAnalyzer.App_$Version-arm64.msix"
+Write-Host "Certificate:"
+Write-Host "  -> out\App\ValleySoft.cer"
 Write-Host ""

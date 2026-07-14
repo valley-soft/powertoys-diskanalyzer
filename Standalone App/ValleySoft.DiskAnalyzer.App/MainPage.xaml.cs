@@ -108,7 +108,7 @@ namespace ValleySoft_DiskAnalyzer_App
             };
             try
             {
-                System.Diagnostics.Process.Start(startInfo);
+                using (var process = System.Diagnostics.Process.Start(startInfo)) { }
                 Application.Current.Exit();
             }
             catch
@@ -291,9 +291,25 @@ namespace ValleySoft_DiskAnalyzer_App
 
             var newItems = new List<GridItemViewModel>();
             var rootNodes = new ObservableCollection<FolderNode>();
-            var drives = DriveInfo.GetDrives().Where(d => d.IsReady);
             
-            foreach (var d in drives)
+            var driveData = await Task.Run(() => 
+            {
+                var data = new List<(string Name, long TotalSize, long AvailableFreeSpace)>();
+                foreach (var d in DriveInfo.GetDrives())
+                {
+                    try
+                    {
+                        if (d.IsReady)
+                        {
+                            data.Add((d.Name, d.TotalSize, d.AvailableFreeSpace));
+                        }
+                    }
+                    catch { } // Ignore unready or inaccessible
+                }
+                return data;
+            });
+            
+            foreach (var d in driveData)
             {
                 try
                 {
@@ -411,6 +427,7 @@ namespace ValleySoft_DiskAnalyzer_App
 private async Task NavigateToFolderAsync(string path)
         {
             _navigationCts?.Cancel();
+            _navigationCts?.Dispose();
             _navigationCts = new System.Threading.CancellationTokenSource();
             var token = _navigationCts.Token;
 
@@ -667,6 +684,68 @@ private async Task NavigateToFolderAsync(string path)
             {
                 await NavigateToFolderAsync(node.FullPath);
             }
+        }
+
+        private void DataGrid_OpenInExplorer_Click(object sender, RoutedEventArgs e)
+        {
+            if (ResultsGrid.SelectedItem is GridItemViewModel vm)
+            {
+                try
+                {
+                    System.Diagnostics.Process.Start("explorer.exe", $"/select,\"{vm.FullPath}\"");
+                }
+                catch { }
+            }
+        }
+
+        private void DataGrid_CopyPath_Click(object sender, RoutedEventArgs e)
+        {
+            if (ResultsGrid.SelectedItem is GridItemViewModel vm)
+            {
+                var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
+                dataPackage.SetText(vm.FullPath);
+                Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+            }
+        }
+
+        private void BreadcrumbContainer_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            PathBreadcrumbBar.Visibility = Visibility.Collapsed;
+            EditablePathBox.Visibility = Visibility.Visible;
+            EditablePathBox.Text = _currentPath;
+            EditablePathBox.Focus(FocusState.Programmatic);
+            EditablePathBox.SelectAll();
+        }
+
+        private async void EditablePathBox_KeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                string path = EditablePathBox.Text;
+                if (Directory.Exists(path))
+                {
+                    PathBreadcrumbBar.Visibility = Visibility.Visible;
+                    EditablePathBox.Visibility = Visibility.Collapsed;
+                    await NavigateToFolderAsync(path);
+                }
+                else
+                {
+                    // Invalid path, revert
+                    PathBreadcrumbBar.Visibility = Visibility.Visible;
+                    EditablePathBox.Visibility = Visibility.Collapsed;
+                }
+            }
+            else if (e.Key == Windows.System.VirtualKey.Escape)
+            {
+                PathBreadcrumbBar.Visibility = Visibility.Visible;
+                EditablePathBox.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void EditablePathBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            PathBreadcrumbBar.Visibility = Visibility.Visible;
+            EditablePathBox.Visibility = Visibility.Collapsed;
         }
     }
 

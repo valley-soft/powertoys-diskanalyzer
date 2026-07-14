@@ -15,4 +15,6 @@ temp_x64_payload/
 *.pfx
 *.cer
  
-MicrosoftStore/
+MicrosoftStore/*.msix
+MicrosoftStore/*.msixbundle
+MicrosoftStore/bundle_mapping.txt

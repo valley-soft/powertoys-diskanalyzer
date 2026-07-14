@@ -119,14 +119,14 @@
                 <!-- Toolbar -->
                 <Border Grid.Row="0" Background="{DynamicResource ToolbarBackground}" BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1,1,1,0" Padding="8,4">
                     <StackPanel Orientation="Horizontal">
-                        <Button x:Name="BackButton" Margin="0,0,8,0" Padding="8,4" Click="Back_Click" IsEnabled="{Binding ElementName=RootWindow, Path=CanGoBack}">
+                        <Button x:Name="BackButton" AutomationProperties.Name="Back" Margin="0,0,8,0" Padding="8,4" Click="Back_Click" IsEnabled="{Binding ElementName=RootWindow, Path=CanGoBack}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="⬅" Margin="0,0,4,0" Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"/>
                                 <TextBlock Text="Back" Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"/>
                             </StackPanel>
                         </Button>
                         
-                        <Button Margin="0,0,8,0" Padding="8,4" Click="Refresh_Click">
+                        <Button AutomationProperties.Name="Refresh" Margin="0,0,8,0" Padding="8,4" Click="Refresh_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="🔄" Margin="0,0,4,0" Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"/>
                                 <TextBlock Text="Refresh" Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"/>

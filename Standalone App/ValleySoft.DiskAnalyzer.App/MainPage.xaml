@@ -67,15 +67,18 @@
                     <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
                 
-                <BreadcrumbBar x:Name="PathBreadcrumbBar" Grid.Column="0" VerticalAlignment="Center" ItemClicked="PathBreadcrumbBar_ItemClicked">
-                    <BreadcrumbBar.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}" FontSize="16" FontWeight="SemiBold" />
-                        </DataTemplate>
-                    </BreadcrumbBar.ItemTemplate>
-                </BreadcrumbBar>
+                <Grid Grid.Column="0" Tapped="BreadcrumbContainer_Tapped" Background="Transparent" VerticalAlignment="Center">
+                    <BreadcrumbBar x:Name="PathBreadcrumbBar" ItemClicked="PathBreadcrumbBar_ItemClicked">
+                        <BreadcrumbBar.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontSize="16" FontWeight="SemiBold" />
+                            </DataTemplate>
+                        </BreadcrumbBar.ItemTemplate>
+                    </BreadcrumbBar>
+                    <TextBox x:Name="EditablePathBox" Visibility="Collapsed" KeyDown="EditablePathBox_KeyDown" LostFocus="EditablePathBox_LostFocus" PlaceholderText="Enter path..." />
+                </Grid>
 
-                <Button Grid.Column="1" x:Name="BackButton" Click="BackButton_Click" IsEnabled="False" Height="40" Padding="16,0">
+                <Button Grid.Column="1" x:Name="BackButton" AutomationProperties.Name="Back" Click="BackButton_Click" IsEnabled="False" Height="40" Padding="16,0">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE72B;" FontSize="14" />
                         <TextBlock Text="Back" />
@@ -134,6 +137,12 @@
                             CanUserResizeColumns="True"
                             CanUserSortColumns="True"
                             Sorting="ResultsGrid_Sorting">
+                            <controls:DataGrid.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Open in Explorer" Click="DataGrid_OpenInExplorer_Click" />
+                                    <MenuFlyoutItem Text="Copy Path" Click="DataGrid_CopyPath_Click" />
+                                </MenuFlyout>
+                            </controls:DataGrid.ContextFlyout>
                             <controls:DataGrid.Columns>
                                 <controls:DataGridTemplateColumn Header="Name" Tag="Name" Width="*">
                                     <controls:DataGridTemplateColumn.CellTemplate>
