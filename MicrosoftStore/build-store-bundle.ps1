@@ -49,7 +49,10 @@ if (Test-Path "$StandaloneDir\bin\Release") {
 $ManifestPath = "$StandaloneDir\Package.appxmanifest"
 $ManifestBackup = "$StandaloneDir\Package.appxmanifest.bak"
 Copy-Item $ManifestPath $ManifestBackup
-(Get-Content $ManifestPath) -replace '<rescap:Capability Name="allowElevation" />', '' | Set-Content $ManifestPath
+$manifestContent = Get-Content $ManifestPath -Raw
+$manifestContent = $manifestContent -replace '<rescap:Capability Name="allowElevation" />', ''
+$manifestContent = $manifestContent -replace 'Publisher="CN=ValleySoft"', 'Publisher="CN=609617EB-B04D-404E-B0F3-720FF360003B"'
+$manifestContent | Set-Content $ManifestPath
 
 $msixPaths = @()
 
