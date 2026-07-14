@@ -285,6 +285,33 @@ Looking to see what's coming next? Check out our official **[Project Roadmap](RO
 
 ## Version History
 
+### v1.3.5 — 2026-07-13
+
+#### Added
+- ✨ **New**: Added a right-click context menu to the scan grid (Open in Explorer, Copy Path).
+- ✨ **New**: Added an editable address bar (double-click the breadcrumbs to type or paste any directory path).
+- ✨ **New**: Added an "Up one level" option and keyboard shortcuts to the Command Palette extension.
+
+#### Fixed
+- 📦 **Fixed**: Completely separated the PowerToys Run Plugin (.exe installer) from the Standalone App and Command Palette (.msix) to prevent conflicts.
+- 🛠️ **Fixed**: Resolved manual MSIX installation certificate verification errors (`0x800B010A`).
+- 🚀 **Fixed**: Restored smooth, continuous real-time progress updates in the scanning grid.
+- 🛠️ **Fixed**: Fixed random application crashes when scanning deep or highly complex folder trees.
+- 🚀 **Fixed**: Prevented startup UI freezes by moving drive scans and icon loading to background threads.
+- 🧹 **Fixed**: Fixed resource cleanup bugs to prevent memory leaks during long scan sessions.
+- 🛡️ **Fixed**: Removed unnecessary app permission requirements for improved security and privacy.
+- ♿ **Fixed**: Added screen-reader tags to navigation buttons.
+
+### v1.3.3 — 2026-06-26
+
+#### Added
+- ✨ **New**: Completely redesigned the Standalone App's Help & Features section using a native WinUI `NavigationView` for a premium experience.
+- ✨ **New**: Added a dedicated About page featuring the app version, copyright, and direct GitHub links.
+- ✨ **New**: Updated navigation icons.
+
+#### Fixed
+- 🛠️ **Fixed**: Fixed a bug where the "Always Run as Administrator" toggle was incorrectly disabled when running elevated.
+
 ### v1.3.1 — 2026-06-24
 
 #### Added

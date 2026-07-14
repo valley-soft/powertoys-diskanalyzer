@@ -210,11 +210,22 @@
             </div>
             
             <div class="release-section">
+                <span class="tag added">Added</span>
+                <ul class="release-list">
+                    <li><strong>Right-Click Context Menu</strong>: Right-click any row in the scan grid to instantly open in File Explorer or copy the file path.</li>
+                    <li><strong>Editable Address Bar</strong>: Double-click the breadcrumb trail to type or paste directory paths directly.</li>
+                    <li><strong>Command Palette Navigation</strong>: Keyboard navigation improvements including an "Up one level" shortcut and on-screen keyboard hints.</li>
+                </ul>
+            </div>
+            <div class="release-section">
                 <span class="tag fixed">Fixed</span>
                 <ul class="release-list">
-                    <li><strong>Decoupled Installation Process</strong>: Completely separated the PowerToys Run Plugin (EXE Installer) from the Standalone WinUI App and Command Palette Extension (MSIX Package) to ensure clean, side-by-side sideloading.</li>
-                    <li><strong>Certificate Sideloading Signature Mismatches</strong>: Fixed local build scripts to sign packaged Appx deployments using the exact distributed public certificate, solving verification failures.</li>
-                    <li><strong>Dynamic Scanning Progression</strong>: Reverted folder scanning progress-marshaling throttling to restore smooth, real-time UI updates in the standalone WinUI window.</li>
+                    <li><strong>Decoupled Installation Setup</strong>: Separated the PowerToys Run plugin (.exe) and standalone app installer (.msix) to prevent conflicts during manual installation.</li>
+                    <li><strong>Package Signature Errors</strong>: Fixed manual MSIX installation certificate mismatch errors (0x800B010A).</li>
+                    <li><strong>Smooth Real-Time Scanning</strong>: Restored continuous progress updates in the scan grid.</li>
+                    <li><strong>Scan Crashes & Freezes</strong>: Solved random crashes when scanning complex directories, and moved drive information checks to background threads to prevent UI hangs.</li>
+                    <li><strong>Memory Leaks & Permissions</strong>: Cleaned up system resource handles to keep memory usage low, and removed unused permission capabilities.</li>
+                    <li><strong>Accessibility</strong>: Added proper screen-reader tags to navigation buttons.</li>
                 </ul>
             </div>
         </div>

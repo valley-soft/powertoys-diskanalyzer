@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.5] - 2026-07-13
+
+### Added
+- **Right-Click Context Menu**: Added a context menu to items in the scan grid. You can now right-click any folder or file to instantly "Open in Explorer" or "Copy Path".
+- **Editable Address Bar**: You can now double-click the top folder breadcrumbs to type or paste folder paths directly, matching Windows File Explorer's address bar.
+- **Command Palette Keyboard Shortcuts**: Added an "Up one level" option and helpful keyboard shortcuts to the Command Palette extension for a cleaner, mouse-free experience.
+
+### Fixed
+- **Decoupled Installations**: Completely separated the PowerToys Run Plugin (.exe installer) from the Standalone App (.msix package) to ensure a conflict-free sideloading installation.
+- **Self-Signed Certificate Issues**: Resolved package signature verification failures (`0x800B010A`) on the manual MSIX installer by aligning build scripts to sign with the correct public certificates.
+- **Real-Time Scan Updates**: Restored smooth, real-time visual progress updates in the directory grid as the app scans.
+- **Folder Scanning Stability**: Fixed random crashes that occurred when analyzing deep, heavy, or highly complex folder structures.
+- **Startup UI Freezes**: Moved drive detection and icon loading to background processes, preventing the main window from freezing on launch.
+- **Memory Optimization**: Fixed an issue where the app would slowly consume system memory over time during long run sessions.
+- **Privacy & Security Hardening**: Removed unnecessary system permissions (such as local AI model capabilities) from the app manifest to minimize the installation footprint.
+- **Accessibility Improvements**: Added proper screen-reader tags to navigation buttons.
+
 ## [1.3.3] - 2026-06-26
 
 ### Added

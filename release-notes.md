@@ -29,7 +29,7 @@ This release includes three tools, bundled into two easy installations:
 
 ### Installation — Standalone App & Command Palette Extension (Unified MSIX)
 
-1. Download **`ValleySoft.DiskAnalyzer.App_1.3.3.0_x64.msix`** (or `arm64`) from the assets below.
+1. Download **`ValleySoft.DiskAnalyzer.App_1.3.5.0_x64.msix`** (or `arm64`) from the assets below.
 2. Double-click the `.msix` file and click **Install**.
 3. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
 
@@ -44,7 +44,7 @@ This release includes three tools, bundled into two easy installations:
 
 ### Installation — PowerToys Run Plugin
 
-1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.3.3-x64.exe`** (or `arm64`)
+1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.3.5-x64.exe`** (or `arm64`)
 2. Exit PowerToys (right-click tray icon → Exit)
 3. Run the installer — it will flawlessly clean install to `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer`
 4. Restart PowerToys and enable the plugin in Settings → PowerToys Run → Plugins
@@ -61,6 +61,21 @@ This release includes three tools, bundled into two easy installations:
 | `ds ext C:\ .mp4` | Find files by extension |
 | `ds empty C:\` | Find empty folders |
 | `ds gui` | Open the standalone GUI window |
+
+### Changes in v1.3.5
+
+#### Added
+- **Right-Click Context Menu**: Right-click scan results to instantly open them in File Explorer or copy their file paths.
+- **Editable Address Bar**: Double-click the top path bar to type or paste directory paths directly.
+- **Command Palette Flow**: Keyboard navigation improvements including an "Up one level" shortcut and on-screen keyboard hints.
+
+#### Fixed
+- **Clean Installation Setup**: Decoupled the PowerToys Run plugin (.exe) and standalone app installer (.msix) to ensure side-by-side sideloading installs properly.
+- **Package Signature Errors**: Fixed the local installation certificate mismatch error (`0x800B010A`).
+- **Smooth Real-Time Scanning**: Restored continuous progress-marshaling to update the grid smoothly.
+- **Scan Crashes & Freezes**: Solved random crashes when analyzing complex directories, and moved drive information checks to background processes to prevent app freezes on startup.
+- **Memory Leaks & Permissions**: Cleaned up system handles to keep memory usage low, and removed unused permission capabilities.
+- **Accessibility**: Added screen-reader tag descriptions to icon-only buttons.
 
 ### Changes in v1.3.3
 
