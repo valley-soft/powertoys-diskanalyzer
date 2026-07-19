@@ -29,7 +29,7 @@ This release includes three tools, bundled into two easy installations:
 
 ### Installation — Standalone App & Command Palette Extension (Unified MSIX)
 
-1. Download **`ValleySoft.DiskAnalyzer.App_1.3.5.0_x64.msix`** (or `arm64`) from the assets below.
+1. Download **`ValleySoft.DiskAnalyzer.App_1.3.6.0_x64.msix`** (or `arm64`) from the assets below.
 2. Double-click the `.msix` file and click **Install**.
 3. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
 
@@ -44,7 +44,7 @@ This release includes three tools, bundled into two easy installations:
 
 ### Installation — PowerToys Run Plugin
 
-1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.3.5-x64.exe`** (or `arm64`)
+1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.3.6-x64.exe`** (or `arm64`)
 2. Exit PowerToys (right-click tray icon → Exit)
 3. Run the installer — it will flawlessly clean install to `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer`
 4. Restart PowerToys and enable the plugin in Settings → PowerToys Run → Plugins
@@ -61,6 +61,13 @@ This release includes three tools, bundled into two easy installations:
 | `ds ext C:\ .mp4` | Find files by extension |
 | `ds empty C:\` | Find empty folders |
 | `ds gui` | Open the standalone GUI window |
+
+### Changes in v1.3.6
+
+#### Fixed
+- **Uncategorized Crashes on Locked Drives**: Fixed a bug where scanning the drives list would instantly crash the Command Palette extension if a drive was locked by BitLocker or otherwise inaccessible.
+- **Background Quiesce Hangs**: Fixed a major issue causing the Command Palette extension to stay alive in the background and refuse to suspend (HANG_QUIESCE).
+- **Installer UI text**: Fixed the installer displaying the wrong version and title in its UI.
 
 ### Changes in v1.3.5
 
@@ -86,3 +93,4 @@ This release includes three tools, bundled into two easy installations:
 
 #### Fixed
 - **Admin Toggle Logic**: Fixed a bug where the "Always Run as Administrator" toggle was incorrectly disabled and forced to appear checked while elevated, preventing users from switching back to standard user mode.
+

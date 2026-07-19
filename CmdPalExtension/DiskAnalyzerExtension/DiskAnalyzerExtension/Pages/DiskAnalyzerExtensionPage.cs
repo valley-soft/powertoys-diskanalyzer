@@ -166,7 +166,24 @@ namespace DiskAnalyzerExtension
         {
             var drives = System.IO.DriveInfo.GetDrives()
                 .Where(d => d.IsReady)
-                .OrderByDescending(d => d.TotalSize - d.AvailableFreeSpace);
+                .Select(d =>
+                {
+                    try
+                    {
+                        return new { Drive = d, Used = d.TotalSize - d.AvailableFreeSpace };
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        return null;
+                    }
+                    catch (System.IO.IOException)
+                    {
+                        return null;
+                    }
+                })
+                .Where(d => d != null)
+                .OrderByDescending(d => d!.Used)
+                .Select(d => d!.Drive);
 
             var items = new List<IListItem> { BackItem() };
 

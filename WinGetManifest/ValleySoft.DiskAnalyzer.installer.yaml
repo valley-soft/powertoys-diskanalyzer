@@ -1,9 +1,10 @@
 # yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.6.0.schema.json
 PackageIdentifier: ValleySoft.DiskAnalyzer
-PackageVersion: 1.3.5
+PackageVersion: 1.3.6
 Installers:
 - Architecture: neutral
   InstallerType: msstore
   ProductId: 9NF073KLTVWN
 ManifestType: installer
 ManifestVersion: 1.6.0
+

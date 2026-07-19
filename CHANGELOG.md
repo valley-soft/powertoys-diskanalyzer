@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.6] - 2026-07-18
+
+### Fixed
+- **Uncategorized Crashes on Locked Drives**: Fixed a bug where scanning the drives list would instantly crash the Command Palette extension if a drive was locked by BitLocker or otherwise inaccessible.
+- **Background Quiesce Hangs**: Fixed a major issue causing the Command Palette extension to stay alive in the background and refuse to suspend (HANG_QUIESCE).
+- **Installer UI text**: Fixed the installer displaying the wrong version and title in its UI.
+
 ## [1.3.5] - 2026-07-13
 
 ### Added
@@ -123,3 +130,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Browse folder sizes ranked by largest.
 - Recursive largest file/folder search.
 - Cloud folder support (iCloud, OneDrive).
+

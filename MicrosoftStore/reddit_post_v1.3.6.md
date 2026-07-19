@@ -1,10 +1,10 @@
-**Title:** Release: Disk Analyzer v1.3.5 (PowerToys Run Plugin & WinUI 3 App) - Real-time scanning, context menus, and stability updates!
+**Title:** Release: Disk Analyzer v1.3.6 (PowerToys Run Plugin & WinUI 3 App) - Real-time scanning, context menus, and stability updates!
 
 **Body:**
 
 Hey everyone!
 
-I just pushed version **1.3.5** of **Disk Analyzer** to GitHub and the Microsoft Store.
+I just pushed version **1.3.6** of **Disk Analyzer** to GitHub and the Microsoft Store.
 
 This release focuses on quality-of-life updates, security hardening, and behind-the-scenes stability fixes based on your feedback:
 
@@ -18,3 +18,4 @@ Check it out on GitHub: https://github.com/valley-soft/powertoys-diskanalyzer
 Or download it directly from the Microsoft Store!
 
 Thanks for the feedback and support! Let me know if you run into any issues.
+

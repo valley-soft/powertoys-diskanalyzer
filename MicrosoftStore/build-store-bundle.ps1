@@ -52,7 +52,7 @@ Copy-Item $ManifestPath $ManifestBackup
 $manifestContent = Get-Content $ManifestPath -Raw
 $manifestContent = $manifestContent -replace '<rescap:Capability Name="allowElevation" />', ''
 $manifestContent = $manifestContent -replace 'Publisher="CN=ValleySoft"', 'Publisher="CN=609617EB-B04D-404E-B0F3-720FF360003B"'
-$manifestContent | Set-Content $ManifestPath
+$manifestContent | Out-File $ManifestPath -Encoding UTF8
 
 $msixPaths = @()
 

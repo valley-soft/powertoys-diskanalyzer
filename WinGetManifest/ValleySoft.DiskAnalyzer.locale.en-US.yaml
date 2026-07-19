@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
 PackageIdentifier: ValleySoft.DiskAnalyzer
-PackageVersion: 1.3.5
+PackageVersion: 1.3.6
 PackageLocale: en-US
 Publisher: ValleySoft
 PackageName: ValleySoft Disk Analyzer
@@ -11,3 +11,4 @@ Tags:
 ManifestType: defaultLocale
 ManifestVersion: 1.6.0
 PublisherSupportUrl: mailto:valleysoftdev29@gmail.com
+

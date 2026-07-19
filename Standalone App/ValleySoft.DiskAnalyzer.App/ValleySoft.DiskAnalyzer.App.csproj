@@ -14,8 +14,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <DefineConstants>$(DefineConstants);STANDALONE_APP</DefineConstants>
-    <ApplicationVersion>1.3.5.0</ApplicationVersion>
-    <ApplicationDisplayVersion>1.3.5.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1.3.6.0</ApplicationVersion>
+    <ApplicationDisplayVersion>1.3.6.0</ApplicationDisplayVersion>
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
   </PropertyGroup>

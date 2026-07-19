@@ -1,6 +1,6 @@
 # DiskAnalyzer — PowerToys Run Plugin & Command Palette Extension
 
-[![Version](https://img.shields.io/badge/version-1.3.5-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.3.6-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 [![Microsoft Store](https://img.shields.io/badge/Microsoft_Store-Available-0078D7?logo=windows&logoColor=white)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/valley-soft/powertoys-diskanalyzer)
 [![PowerToys](https://img.shields.io/badge/PowerToys-v0.97.0+-orange.svg)](https://github.com/microsoft/PowerToys)
@@ -116,7 +116,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 ### Standalone App (WinUI 3) & Command Palette Extension (Unified MSIX)
 
-1. Download **`ValleySoft.DiskAnalyzer.App_1.3.5_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`ValleySoft.DiskAnalyzer.App_1.3.6_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Double-click** the `.msix` file — Windows will launch the installer
 3. Click **Install** (or **Update**)
 4. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
@@ -136,7 +136,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 #### Method 1 — Standalone Installer (Recommended)
 
-1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.3.5-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.3.6-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Exit PowerToys completely** — Right-click the PowerToys icon in the system tray → **Exit**
 3. **Run the installer** — it will automatically extract and copy plugin files to:
    ```
@@ -168,7 +168,7 @@ Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 ```powershell
 git clone https://github.com/valley-soft/powertoys-diskanalyzer.git
 cd powertoys-diskanalyzer
-.\build-v1.3.5.ps1
+.\build-v1.3.6.ps1
 # Installers and MSIX packages appear in out\
 ```
 
@@ -285,6 +285,13 @@ Looking to see what's coming next? Check out our official **[Project Roadmap](RO
 
 ## Version History
 
+### v1.3.6 — 2026-07-18
+
+#### Fixed
+- 🛠️ **Fixed**: Fixed a bug where scanning the drives list would instantly crash the Command Palette extension if a drive was locked by BitLocker or otherwise inaccessible.
+- 🛠️ **Fixed**: Fixed a major issue causing the Command Palette extension to stay alive in the background and refuse to suspend (HANG_QUIESCE).
+- 📦 **Fixed**: Fixed the installer displaying the wrong version and title in its UI.
+
 ### v1.3.5 — 2026-07-13
 
 #### Added
@@ -395,3 +402,4 @@ For support, feedback, or business inquiries, please reach out via email:
 ## License
 
 [MIT](https://opensource.org/licenses/MIT) © [ValleySoft](https://github.com/valley-soft)
+

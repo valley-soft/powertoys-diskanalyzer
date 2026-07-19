@@ -10,7 +10,7 @@ $StandaloneProject = "Standalone App\ValleySoft.DiskAnalyzer.App\ValleySoft.Disk
 $StandaloneDir     = "Standalone App\ValleySoft.DiskAnalyzer.App"
 
 Write-Host "========================================="
-Write-Host "  Building DiskAnalyzer v1.3.3          "
+Write-Host "  Building DiskAnalyzer v1.3.6          "
 Write-Host "========================================="
 
 Write-Host "Checking for ValleySoft certificate..."

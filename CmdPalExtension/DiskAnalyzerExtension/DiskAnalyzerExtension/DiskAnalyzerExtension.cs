@@ -36,7 +36,7 @@ public sealed partial class DiskAnalyzerExtension : IExtension, IDisposable
 
     public void Dispose()
     {
-        var logPath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "cmdpal_ext_trace.log");
-        System.IO.File.AppendAllText(logPath, "[DiskAnalyzerExtension] Dispose called. Ignoring to keep server alive.\n");
+        // Signal the main thread to exit the COM server gracefully
+        _extensionDisposedEvent.Set();
     }
 }
