@@ -10,13 +10,13 @@ $StandaloneProject = "Standalone App\ValleySoft.DiskAnalyzer.App\ValleySoft.Disk
 $StandaloneDir     = "Standalone App\ValleySoft.DiskAnalyzer.App"
 
 Write-Host "========================================="
-Write-Host "  Building DiskAnalyzer v1.3.6          "
+Write-Host "  Building DiskAnalyzer v1.3.7          "
 Write-Host "========================================="
 
 Write-Host "Checking for ValleySoft certificate..."
 if (-not (Test-Path "ValleySoft.pfx")) {
     Write-Host "Generating new self-signed certificate (CN=ValleySoft)..."
-    $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=ValleySoft" -KeyUsage DigitalSignature -FriendlyName "ValleySoft" -CertStoreLocation "Cert:\CurrentUser\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")
+    $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=ValleySoft" -KeyUsage DigitalSignature -FriendlyName "ValleySoft" -CertStoreLocation "Cert:\CurrentUser\My" -TextExtension @("2.5.29.37={text}1.3.7.1.5.5.7.3.3", "2.5.29.19={text}")
     $password = ConvertTo-SecureString -String "password" -Force -AsPlainText
     Export-PfxCertificate -Cert $cert -FilePath "ValleySoft.pfx" -Password $password | Out-Null
     Export-Certificate -Cert $cert -FilePath "ValleySoft.cer" | Out-Null

@@ -18,15 +18,23 @@ public sealed partial class DiskAnalyzerExtension : IExtension, IDisposable
 
     public DiskAnalyzerExtension(ManualResetEvent extensionDisposedEvent)
     {
-        var logPath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "cmdpal_ext_trace.log");
-        System.IO.File.AppendAllText(logPath, "[DiskAnalyzerExtension] Constructor called\n");
+        try
+        {
+            var logPath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "cmdpal_ext_trace.log");
+            System.IO.File.AppendAllText(logPath, "[DiskAnalyzerExtension] Constructor called\n");
+        }
+        catch { }
         this._extensionDisposedEvent = extensionDisposedEvent;
     }
 
     public object? GetProvider(ProviderType providerType)
     {
-        var logPath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "cmdpal_ext_trace.log");
-        System.IO.File.AppendAllText(logPath, $"[DiskAnalyzerExtension] GetProvider called for {providerType}\n");
+        try
+        {
+            var logPath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "cmdpal_ext_trace.log");
+            System.IO.File.AppendAllText(logPath, $"[DiskAnalyzerExtension] GetProvider called for {providerType}\n");
+        }
+        catch { }
         return providerType switch
         {
             ProviderType.Commands => _provider,
@@ -37,6 +45,6 @@ public sealed partial class DiskAnalyzerExtension : IExtension, IDisposable
     public void Dispose()
     {
         // Signal the main thread to exit the COM server gracefully
-        _extensionDisposedEvent.Set();
+        try { _extensionDisposedEvent.Set(); } catch { }
     }
 }

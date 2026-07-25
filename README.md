@@ -1,6 +1,6 @@
 # DiskAnalyzer — PowerToys Run Plugin & Command Palette Extension
 
-[![Version](https://img.shields.io/badge/version-1.3.6-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.3.7-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 [![Microsoft Store](https://img.shields.io/badge/Microsoft_Store-Available-0078D7?logo=windows&logoColor=white)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/valley-soft/powertoys-diskanalyzer)
 [![PowerToys](https://img.shields.io/badge/PowerToys-v0.97.0+-orange.svg)](https://github.com/microsoft/PowerToys)
@@ -283,7 +283,13 @@ Looking to see what's coming next? Check out our official **[Project Roadmap](RO
 
 ---
 
-## Version History
+### v1.3.7 — 2026-07-24
+
+#### Fixed
+- 🛠️ **Fixed**: Wrapped all `DriveInfo` queries in safe `try-catch` blocks to prevent crashes on BitLocker-locked or restricted drives.
+- 🛠️ **Fixed**: Wired `ComServer.Empty` event to automatically signal process exit when Command Palette disconnects, completely resolving `HANG_QUIESCE` background process hangs.
+- 🛠️ **Fixed**: Added global exception handling (`e.Handled = true`) and DirectComposition fallback protections for Windows 11 Insider preview builds (OS 26300+).
+- 🧹 **Cleaned**: Removed all developer trace log files and hardcoded path queries for production stability.
 
 ### v1.3.6 — 2026-07-18
 

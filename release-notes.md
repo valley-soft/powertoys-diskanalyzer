@@ -29,7 +29,7 @@ This release includes three tools, bundled into two easy installations:
 
 ### Installation — Standalone App & Command Palette Extension (Unified MSIX)
 
-1. Download **`ValleySoft.DiskAnalyzer.App_1.3.6.0_x64.msix`** (or `arm64`) from the assets below.
+1. Download **`ValleySoft.DiskAnalyzer.App_1.3.7.0_x64.msix`** (or `arm64`) from the assets below.
 2. Double-click the `.msix` file and click **Install**.
 3. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
 
@@ -44,7 +44,7 @@ This release includes three tools, bundled into two easy installations:
 
 ### Installation — PowerToys Run Plugin
 
-1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.3.6-x64.exe`** (or `arm64`)
+1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.3.7-x64.exe`** (or `arm64`)
 2. Exit PowerToys (right-click tray icon → Exit)
 3. Run the installer — it will flawlessly clean install to `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer`
 4. Restart PowerToys and enable the plugin in Settings → PowerToys Run → Plugins
@@ -61,6 +61,14 @@ This release includes three tools, bundled into two easy installations:
 | `ds ext C:\ .mp4` | Find files by extension |
 | `ds empty C:\` | Find empty folders |
 | `ds gui` | Open the standalone GUI window |
+
+### Changes in v1.3.7
+
+#### Fixed
+- **BitLocker & Drive Permission Crashes**: Wrapped drive property queries in safe try-catch blocks to prevent unhandled exceptions on BitLocker-locked or restricted drives.
+- **HANG_QUIESCE Background Suspension**: Wired up `ComServer.Empty` event to automatically signal process exit when Command Palette disconnects.
+- **Windows Insider Build Compatibility**: Added global `e.Handled = true` exception handling and DirectComposition fallback protections for Windows 11 Insider preview builds (OS 26300+).
+- **Clean Production Build**: Removed hardcoded developer trace paths and safely wrapped all file logging.
 
 ### Changes in v1.3.6
 

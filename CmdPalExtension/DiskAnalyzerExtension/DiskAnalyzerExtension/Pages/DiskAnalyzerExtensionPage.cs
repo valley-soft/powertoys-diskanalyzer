@@ -164,36 +164,36 @@ namespace DiskAnalyzerExtension
         // ── DRIVES ────────────────────────────────────────────────────────────
         private IListItem[] DriveItems()
         {
-            var drives = System.IO.DriveInfo.GetDrives()
-                .Where(d => d.IsReady)
+            var driveData = System.IO.DriveInfo.GetDrives()
                 .Select(d =>
                 {
                     try
                     {
-                        return new { Drive = d, Used = d.TotalSize - d.AvailableFreeSpace };
+                        if (!d.IsReady) return null;
+                        var total = d.TotalSize;
+                        var free = d.AvailableFreeSpace;
+                        var used = total - free;
+                        return new { Drive = d, Used = used, Free = free, Total = total, Name = d.Name };
                     }
-                    catch (UnauthorizedAccessException)
-                    {
-                        return null;
-                    }
-                    catch (System.IO.IOException)
+                    catch
                     {
                         return null;
                     }
                 })
                 .Where(d => d != null)
                 .OrderByDescending(d => d!.Used)
-                .Select(d => d!.Drive);
+                .ToList();
 
             var items = new List<IListItem> { BackItem() };
 
-            foreach (var drive in drives)
+            foreach (var d in driveData)
             {
-                var used      = drive.TotalSize - drive.AvailableFreeSpace;
-                var free      = drive.AvailableFreeSpace;
-                var pct       = (double)used / drive.TotalSize * 100;
+                var used      = d!.Used;
+                var free      = d.Free;
+                var total     = d.Total;
+                var pct       = total > 0 ? (double)used / total * 100 : 0;
                 var bar       = ProgressBar(pct);
-                var name      = drive.Name;
+                var name      = d.Name;
 
                 var copyCmd  = new CommandContextItem(new MyCopyTextCommand(name))                          { Title = "Copy path" };
                 var scanCmd  = new CommandContextItem(new MySetModeCommand(this, PageMode.Scanning, name))  { Title = "Scan this drive" };
@@ -202,7 +202,7 @@ namespace DiskAnalyzerExtension
 
                 items.Add(new ListItem(new MySetModeCommand(this, PageMode.Scanning, name))
                 {
-                    Title        = $"{name}  {Fmt(used)} / {Fmt(drive.TotalSize)}  ({pct:F1}%)",
+                    Title        = $"{name}  {Fmt(used)} / {Fmt(total)}  ({pct:F1}%)",
                     Subtitle     = $"{bar}  Free: {Fmt(free)}",
                     Icon         = new IconInfo("\ue71b"),
                     MoreCommands = new[] { scanCmd, topCmd, lgstCmd, copyCmd },

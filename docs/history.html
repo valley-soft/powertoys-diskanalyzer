@@ -202,6 +202,24 @@
             <p>Track the evolution of Disk Analyzer. All notable changes, fixes, and improvements.</p>
         </header>
 
+        <!-- v1.3.7 -->
+        <div class="release">
+            <div class="release-header">
+                <div class="release-version">v1.3.7</div>
+                <div class="release-date">July 24, 2026</div>
+            </div>
+            
+            <div class="release-section">
+                <span class="tag fixed">Fixed</span>
+                <ul class="release-list">
+                    <li><strong>BitLocker & Drive Permission Crashes</strong>: Wrapped drive property queries in safe try-catch blocks to prevent unhandled exceptions on BitLocker-locked or restricted drives.</li>
+                    <li><strong>HANG_QUIESCE Background Suspension</strong>: Wired up ComServer.Empty event to automatically signal process exit when Command Palette disconnects.</li>
+                    <li><strong>Windows Insider Build Compatibility</strong>: Added global exception handling and DirectComposition fallback protections for Windows 11 Insider preview builds (OS 26300+).</li>
+                    <li><strong>Clean Production Build</strong>: Stripped developer trace paths and safely wrapped all file logging.</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- v1.3.6 -->
         <div class="release">
             <div class="release-header">

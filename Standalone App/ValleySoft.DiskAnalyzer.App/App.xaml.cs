@@ -24,10 +24,13 @@ public partial class App : Application
         InitializeComponent();
         this.UnhandledException += (s, e) =>
         {
+            e.Handled = true; // Prevent unhandled process termination where possible
             try
             {
+                var folder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ValleySoft.DiskAnalyzer");
+                System.IO.Directory.CreateDirectory(folder);
                 System.IO.File.WriteAllText(
-                    System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "crash.txt"), 
+                    System.IO.Path.Combine(folder, "app_crash.log"),
                     e.Exception.ToString() + "\nMessage: " + e.Message);
             }
             catch { }
@@ -57,8 +60,21 @@ public partial class App : Application
         }
         catch { }
 
-        m_window = new MainWindow();
-        m_window.Activate();
+        try
+        {
+            m_window = new MainWindow();
+            m_window.Activate();
+        }
+        catch (Exception ex)
+        {
+            try
+            {
+                var folder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ValleySoft.DiskAnalyzer");
+                System.IO.Directory.CreateDirectory(folder);
+                System.IO.File.WriteAllText(System.IO.Path.Combine(folder, "dcomp_init_crash.log"), ex.ToString());
+            }
+            catch { }
+        }
     }
 
     private static bool IsAdministrator()
