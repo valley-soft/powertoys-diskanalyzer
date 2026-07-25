@@ -55,8 +55,41 @@ namespace ValleySoft_DiskAnalyzer_App
                 {
                     AdminWarningBar.IsOpen = false;
                 }
+
+                if (IsWindowsInsiderBuild())
+                {
+                    InsiderWarningBar.IsOpen = true;
+                }
             }
             catch { }
+        }
+
+        private static bool IsWindowsInsiderBuild()
+        {
+            try
+            {
+                // Check if the machine is actively enrolled in the Windows Insider flighting rings
+                using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\WindowsSelfHost\Applicability"))
+                {
+                    if (key != null)
+                    {
+                        var ring = key.GetValue("Ring") as string;
+                        var branch = key.GetValue("BranchName") as string;
+                        if (!string.IsNullOrEmpty(ring) || !string.IsNullOrEmpty(branch))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                // Fallback: If no active registry enrollment, check if build number exceeds the current stable release version (25H2 is build 26200)
+                if (Environment.OSVersion.Version.Build > 26300)
+                {
+                    return true;
+                }
+            }
+            catch { }
+            return false;
         }
 
         private static bool IsAdministrator()
@@ -99,15 +132,15 @@ namespace ValleySoft_DiskAnalyzer_App
 
         private void RestartAsAdmin()
         {
-            var startInfo = new System.Diagnostics.ProcessStartInfo
-            {
-                UseShellExecute = true,
-                WorkingDirectory = System.Environment.CurrentDirectory,
-                FileName = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? "ValleySoft.DiskAnalyzer.exe",
-                Verb = "runas"
-            };
             try
             {
+                var startInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "powershell.exe",
+                    Arguments = "-NoProfile -WindowStyle Hidden -Command \"Start-Process 'ValleySoft.DiskAnalyzer.exe' -Verb RunAs\"",
+                    UseShellExecute = true,
+                    CreateNoWindow = true
+                };
                 using (var process = System.Diagnostics.Process.Start(startInfo)) { }
                 Application.Current.Exit();
             }
@@ -456,7 +489,7 @@ private async Task NavigateToFolderAsync(string path)
             {
                 // Stream results to the UI as they are scanned
                 ResultsGrid.ItemsSource = _currentItems;
-                var progress = new Progress<DiskItemInfo>(async item => 
+                var progress = new Progress<DiskItemInfo>(item => 
                 {
                     if (token.IsCancellationRequested) return;
 
@@ -479,11 +512,6 @@ private async Task NavigateToFolderAsync(string path)
                     };
 
                     _currentItems.Add(vm);
-                    
-                    if (!item.IsFile)
-                    {
-                        try { vm.IconSource = await IconUtilities.GetIconAsync(item.FullPath, true); } catch { }
-                    }
                 });
 
                 var items = await Task.Run(() => DiskAnalyzerHelper.ScanDirectory(path, 1, _showHiddenFiles, progress), token);
@@ -498,6 +526,27 @@ private async Task NavigateToFolderAsync(string path)
                 }
                 
                 SortData();
+
+                // Load icons asynchronously in background after initial grid render
+                _ = Task.Run(async () =>
+                {
+                    foreach (var vm in _currentItems.ToList())
+                    {
+                        if (token.IsCancellationRequested) break;
+                        if (!vm.IsFile)
+                        {
+                            try
+                            {
+                                var icon = await IconUtilities.GetIconAsync(vm.FullPath, true, DispatcherQueue);
+                                if (icon != null)
+                                {
+                                    DispatcherQueue.TryEnqueue(() => vm.IconSource = icon);
+                                }
+                            }
+                            catch { }
+                        }
+                    }
+                });
             }
             catch (Exception)
             {
@@ -568,23 +617,15 @@ private async Task NavigateToFolderAsync(string path)
             if (sender is MenuFlyoutItem item && item.Tag is string tag)
             {
                 var app = Application.Current as App;
-                if (app?.MainWindow?.Content is FrameworkElement frameworkElement)
-                {
-                    if (tag == "Light")
-                        frameworkElement.RequestedTheme = ElementTheme.Light;
-                    else if (tag == "Dark")
-                        frameworkElement.RequestedTheme = ElementTheme.Dark;
-                    else
-                        frameworkElement.RequestedTheme = ElementTheme.Default;
+                app?.MainWindow?.SetAppTheme(tag);
 
-                    // Save theme preference
-                    try
-                    {
-                        var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-                        localSettings.Values["Theme"] = tag;
-                    }
-                    catch { }
+                // Save theme preference
+                try
+                {
+                    var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                    localSettings.Values["Theme"] = tag;
                 }
+                catch { }
             }
         }
 

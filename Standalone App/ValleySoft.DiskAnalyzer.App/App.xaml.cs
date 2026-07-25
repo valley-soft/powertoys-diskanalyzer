@@ -16,8 +16,8 @@ namespace ValleySoft_DiskAnalyzer_App;
 
 public partial class App : Application
 {
-    private Window m_window;
-    public Window MainWindow => m_window;
+    private MainWindow? m_window;
+    public MainWindow? MainWindow => m_window;
 
     public App()
     {
@@ -48,10 +48,10 @@ public partial class App : Application
             {
                 var startInfo = new System.Diagnostics.ProcessStartInfo
                 {
+                    FileName = "powershell.exe",
+                    Arguments = "-NoProfile -WindowStyle Hidden -Command \"Start-Process 'ValleySoft.DiskAnalyzer.exe' -Verb RunAs\"",
                     UseShellExecute = true,
-                    WorkingDirectory = System.Environment.CurrentDirectory,
-                    FileName = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? "ValleySoft.DiskAnalyzer.exe",
-                    Verb = "runas"
+                    CreateNoWindow = true
                 };
                 System.Diagnostics.Process.Start(startInfo);
                 System.Environment.Exit(0);
@@ -74,6 +74,7 @@ public partial class App : Application
                 System.IO.File.WriteAllText(System.IO.Path.Combine(folder, "dcomp_init_crash.log"), ex.ToString());
             }
             catch { }
+            System.Environment.Exit(1);
         }
     }
 

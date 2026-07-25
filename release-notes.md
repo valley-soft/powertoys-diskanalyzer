@@ -29,7 +29,7 @@ This release includes three tools, bundled into two easy installations:
 
 ### Installation — Standalone App & Command Palette Extension (Unified MSIX)
 
-1. Download **`ValleySoft.DiskAnalyzer.App_1.3.7.0_x64.msix`** (or `arm64`) from the assets below.
+1. Download **`ValleySoft.DiskAnalyzer.App_1.3.7_x64.msix`** (or `arm64`) from the assets below.
 2. Double-click the `.msix` file and click **Install**.
 3. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
 
@@ -46,10 +46,8 @@ This release includes three tools, bundled into two easy installations:
 
 1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.3.7-x64.exe`** (or `arm64`)
 2. Exit PowerToys (right-click tray icon → Exit)
-3. Run the installer — it will flawlessly clean install to `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer`
+3. Run the installer — it will clean install to `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer`
 4. Restart PowerToys and enable the plugin in Settings → PowerToys Run → Plugins
-
-
 
 ### Usage
 
@@ -65,40 +63,14 @@ This release includes three tools, bundled into two easy installations:
 ### Changes in v1.3.7
 
 #### Fixed
-- **BitLocker & Drive Permission Crashes**: Wrapped drive property queries in safe try-catch blocks to prevent unhandled exceptions on BitLocker-locked or restricted drives.
-- **HANG_QUIESCE Background Suspension**: Wired up `ComServer.Empty` event to automatically signal process exit when Command Palette disconnects.
+- **BitLocker & Drive Permission Crashes**: Wrapped drive property queries (`IsReady`, `TotalSize`, `AvailableFreeSpace`) inside safe try-catch blocks to eliminate unhandled exceptions on BitLocker-locked or restricted drives.
+- **HANG_QUIESCE Background Suspension**: Wired up `ComServer.Empty` event to automatically signal process exit when Command Palette disconnects, preventing process suspension timeouts.
 - **Windows Insider Build Compatibility**: Added global `e.Handled = true` exception handling and DirectComposition fallback protections for Windows 11 Insider preview builds (OS 26300+).
+- **Cross-Thread UI Exceptions**: Fixed a critical bug where folder icons failed to load and threw stowed `RPC_E_WRONG_THREAD` exceptions by ensuring `BitmapImage` creation is marshaled to the `DispatcherQueue` UI thread.
+- **PowerToys Run Clipboard Lock Protection**: Prevented unhandled external exceptions (which crashed PT Run) by wrapping clipboard copies in try-catch blocks.
+- **Unified Assets Packaging**: Fixed missing theme-light, theme-dark, and scaled asset copies in the build output by using a wildcard pattern in the `.csproj` file.
+- **About Page Layout Centering**: Centered and resized the About page content Grid to render perfectly on all window sizes.
+- **Windows Insider Warning InfoBar**: Added an informational warning banner at launch to notify users running on preview Windows Insider builds.
+- **Parallel Scanning Race Condition**: Materialized subdirectories before parallel execution to eliminate lazy enumeration race conditions.
+- **UI Thread Deadlocks & Flooding**: Offloaded `SHGetFileInfo` shell queries to background tasks and throttled UI progress reporting to prevent `DispatcherQueue` flooding.
 - **Clean Production Build**: Removed hardcoded developer trace paths and safely wrapped all file logging.
-
-### Changes in v1.3.6
-
-#### Fixed
-- **Uncategorized Crashes on Locked Drives**: Fixed a bug where scanning the drives list would instantly crash the Command Palette extension if a drive was locked by BitLocker or otherwise inaccessible.
-- **Background Quiesce Hangs**: Fixed a major issue causing the Command Palette extension to stay alive in the background and refuse to suspend (HANG_QUIESCE).
-- **Installer UI text**: Fixed the installer displaying the wrong version and title in its UI.
-
-### Changes in v1.3.5
-
-#### Added
-- **Right-Click Context Menu**: Right-click scan results to instantly open them in File Explorer or copy their file paths.
-- **Editable Address Bar**: Double-click the top path bar to type or paste directory paths directly.
-- **Command Palette Flow**: Keyboard navigation improvements including an "Up one level" shortcut and on-screen keyboard hints.
-
-#### Fixed
-- **Clean Installation Setup**: Decoupled the PowerToys Run plugin (.exe) and standalone app installer (.msix) to ensure side-by-side sideloading installs properly.
-- **Package Signature Errors**: Fixed the local installation certificate mismatch error (`0x800B010A`).
-- **Smooth Real-Time Scanning**: Restored continuous progress-marshaling to update the grid smoothly.
-- **Scan Crashes & Freezes**: Solved random crashes when analyzing complex directories, and moved drive information checks to background processes to prevent app freezes on startup.
-- **Memory Leaks & Permissions**: Cleaned up system handles to keep memory usage low, and removed unused permission capabilities.
-- **Accessibility**: Added screen-reader tag descriptions to icon-only buttons.
-
-### Changes in v1.3.3
-
-#### Added
-- **Professional Help Page**: Completely redesigned the Standalone App's Help & Features section using a native WinUI `NavigationView` for a premium, Windows 11 Settings-style experience.
-- **About Page**: Added a dedicated About page featuring the app version, copyright, and direct GitHub links.
-- **New Icons**: Updated the "View Help" menu icon to a professional `Library` icon.
-
-#### Fixed
-- **Admin Toggle Logic**: Fixed a bug where the "Always Run as Administrator" toggle was incorrectly disabled and forced to appear checked while elevated, preventing users from switching back to standard user mode.
-

@@ -9,7 +9,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <ScrollViewer>
-        <Grid Padding="24,24,24,64" MaxWidth="1000" HorizontalAlignment="Left">
+        <Grid Padding="24,24,24,64" MaxWidth="600" HorizontalAlignment="Center">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -23,7 +23,7 @@
 
             <!-- About Content -->
             <StackPanel Grid.Row="1" Spacing="24" Width="600" HorizontalAlignment="Center" Margin="0,48,0,0">
-                <Image Source="Assets/StoreLogo.png" Width="128" Height="128" HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                <Image Source="ms-appx:///Assets/StoreLogo.png" Width="128" Height="128" HorizontalAlignment="Center" Margin="0,0,0,12"/>
                 
                 <TextBlock Text="ValleySoft Disk Analyzer" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Center" FontWeight="SemiBold" />
                 <TextBlock Text="Version 1.3.7" Style="{ThemeResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />

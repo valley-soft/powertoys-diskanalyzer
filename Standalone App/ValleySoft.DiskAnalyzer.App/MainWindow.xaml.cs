@@ -1,7 +1,5 @@
 using Microsoft.UI.Xaml;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using System;
 
 namespace ValleySoft_DiskAnalyzer_App;
 
@@ -18,30 +16,40 @@ public sealed partial class MainWindow : Window
         {
             InitializeComponent();
 
-            ExtendsContentIntoTitleBar = true;
-            SetTitleBar(AppTitleBar);
-            SystemBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
 
-            AppWindow.SetIcon(System.IO.Path.Combine(System.AppContext.BaseDirectory, "Assets", "AppIcon.ico"));
+
+            try
+            {
+                ExtendsContentIntoTitleBar = true;
+                SetTitleBar(AppTitleBar);
+            }
+            catch { }
+
+            try
+            {
+                SystemBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
+            }
+            catch { }
+
+            try
+            {
+                AppWindow.SetIcon(System.IO.Path.Combine(System.AppContext.BaseDirectory, "Assets", "AppIcon.ico"));
+            }
+            catch { }
 
             // Load saved theme
+            string savedTheme = "Default";
             try
             {
                 var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
                 if (localSettings.Values.TryGetValue("Theme", out var themeObj) && themeObj is string tag)
                 {
-                    if (Content is FrameworkElement frameworkElement)
-                    {
-                        if (tag == "Light")
-                            frameworkElement.RequestedTheme = ElementTheme.Light;
-                        else if (tag == "Dark")
-                            frameworkElement.RequestedTheme = ElementTheme.Dark;
-                        else
-                            frameworkElement.RequestedTheme = ElementTheme.Default;
-                    }
+                    savedTheme = tag;
                 }
             }
             catch { }
+
+            SetAppTheme(savedTheme);
 
             RootFrame.Navigate(typeof(MainPage));
         }
@@ -51,5 +59,55 @@ public sealed partial class MainWindow : Window
                 System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop), "crash_main.txt"),
                 ex.ToString());
         }
+    }
+
+    public void SetAppTheme(string tag)
+    {
+        ElementTheme theme = tag switch
+        {
+            "Light" => ElementTheme.Light,
+            "Dark" => ElementTheme.Dark,
+            _ => ElementTheme.Default
+        };
+
+        if (Content is FrameworkElement frameworkElement)
+        {
+            frameworkElement.RequestedTheme = theme;
+        }
+
+        try
+        {
+            if (AppTitleBar != null)
+            {
+                AppTitleBar.RequestedTheme = theme;
+            }
+
+            if (Microsoft.UI.Windowing.AppWindowTitleBar.IsCustomizationSupported() && AppWindow.TitleBar != null)
+            {
+                bool isDark = theme == ElementTheme.Dark || 
+                    (theme == ElementTheme.Default && Application.Current.RequestedTheme == ApplicationTheme.Dark);
+
+                if (isDark)
+                {
+                    AppWindow.TitleBar.ButtonForegroundColor = Microsoft.UI.Colors.White;
+                    AppWindow.TitleBar.ButtonHoverForegroundColor = Microsoft.UI.Colors.White;
+                    AppWindow.TitleBar.ButtonHoverBackgroundColor = Windows.UI.Color.FromArgb(40, 255, 255, 255);
+                    AppWindow.TitleBar.ButtonPressedForegroundColor = Microsoft.UI.Colors.White;
+                    AppWindow.TitleBar.ButtonPressedBackgroundColor = Windows.UI.Color.FromArgb(70, 255, 255, 255);
+                    AppWindow.TitleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(120, 255, 255, 255);
+                }
+                else
+                {
+                    // Light mode: High-contrast sharp black caption buttons (#0F172A)
+                    AppWindow.TitleBar.ButtonForegroundColor = Windows.UI.Color.FromArgb(255, 15, 23, 42);
+                    AppWindow.TitleBar.ButtonHoverForegroundColor = Windows.UI.Color.FromArgb(255, 15, 23, 42);
+                    AppWindow.TitleBar.ButtonHoverBackgroundColor = Windows.UI.Color.FromArgb(40, 0, 0, 0);
+                    AppWindow.TitleBar.ButtonPressedForegroundColor = Windows.UI.Color.FromArgb(255, 15, 23, 42);
+                    AppWindow.TitleBar.ButtonPressedBackgroundColor = Windows.UI.Color.FromArgb(70, 0, 0, 0);
+                    AppWindow.TitleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(140, 15, 23, 42);
+                }
+            }
+        }
+        catch { }
     }
 }

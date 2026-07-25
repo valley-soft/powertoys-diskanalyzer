@@ -42,9 +42,12 @@ public partial class DiskAnalyzerExtensionCommandsProvider : CommandProvider
             {
                 try
                 {
+                    var baseDir = System.AppDomain.CurrentDomain.BaseDirectory;
+                    var exePath = System.IO.Path.Combine(baseDir, "ValleySoft.DiskAnalyzer.exe");
+                    var targetFile = System.IO.File.Exists(exePath) ? exePath : "ValleySoft.DiskAnalyzer.exe";
                     System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                     {
-                        FileName = "ValleySoft.DiskAnalyzer.exe",
+                        FileName = targetFile,
                         UseShellExecute = true
                     });
                 }

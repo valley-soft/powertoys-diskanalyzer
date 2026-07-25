@@ -76,7 +76,7 @@ namespace DiskAnalyzerExtension
             return _mode switch
             {
                 PageMode.MainMenu    => MainMenuItems(),
-                PageMode.Drives      => DriveItems(),
+                PageMode.Drives      => AsyncItems(() => DriveItems()),
                 PageMode.Scanning    => AsyncItems(() => FolderScanItems(_path)),
                 PageMode.TopFolders  => AsyncItems(() => TopFolderItems(_path)),
                 PageMode.LargestFiles => AsyncItems(() => LargestFileItems(_path)),
@@ -101,7 +101,7 @@ namespace DiskAnalyzerExtension
                 try   { _asyncCache = buildFn(); }
                 catch (Exception ex) { _asyncCache = new[] { PlaceholderItem($"Error: {ex.Message}") }; }
                 finally { _asyncRunning = false; }
-                RaiseItemsChanged();
+                try { RaiseItemsChanged(); } catch { }
             });
 
             return new[] { PlaceholderItem("Working… please wait.") };

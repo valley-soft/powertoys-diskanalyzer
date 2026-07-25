@@ -191,10 +191,10 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 
                 var options = CreateOptions(includeHidden, recurse: false);
 
-                // Fix #2: EnumerateDirectories instead of GetDirectories — lazy, no full array load
+                // Materialize subdirectories to array before parallel execution to prevent lazy enumeration race conditions
                 try
                 {
-                    var subDirs = dirInfo.EnumerateDirectories("*", options);
+                    var subDirs = dirInfo.EnumerateDirectories("*", options).ToArray();
                     var folderItems = new System.Collections.Concurrent.ConcurrentBag<DiskItemInfo>();
 
                     Parallel.ForEach(subDirs, sub =>
@@ -571,11 +571,12 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 
                 var results = new System.Collections.Concurrent.ConcurrentBag<DiskItemInfo>();
                 var directoryItems = enumerable.ToList();
+                int emptyCount = 0;
 
                 Parallel.ForEach(directoryItems, (item, state) =>
                 {
                     if (!item.isDir) return;
-                    if (results.Count >= maxResults)
+                    if (System.Threading.Volatile.Read(ref emptyCount) >= maxResults)
                     {
                         state.Stop();
                         return;
@@ -597,6 +598,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                                 FolderCount = 0,
                                 LastModified = item.modified,
                             });
+                            System.Threading.Interlocked.Increment(ref emptyCount);
                         }
                     }
                     catch (Exception ex)

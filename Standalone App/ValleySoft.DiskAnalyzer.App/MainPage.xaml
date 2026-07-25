@@ -9,12 +9,25 @@
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d">
 
-    <!--
-        This is the main content area of your application.
-        Add your UI elements here — for example, controls, layouts, and data-bound views.
-        Use 'dotnet new winui-page' to create additional pages and navigate to them via
-        the Frame in MainWindow (RootFrame).
-    -->
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="CardStrokeColorDefaultBrush" Color="#94A3B8" />
+                    <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="ControlFillColorDefaultBrush" Color="#F8FAFC" />
+                    <SolidColorBrush x:Key="ControlFillColorTransparentBrush" Color="#F1F5F9" />
+                    <SolidColorBrush x:Key="TextFillColorPrimaryBrush" Color="#0F172A" />
+                    <SolidColorBrush x:Key="TextFillColorSecondaryBrush" Color="#334155" />
+                    <SolidColorBrush x:Key="DataGridGridLinesBrush" Color="#CBD5E1" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="DataGridGridLinesBrush" Color="#334155" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
     <Grid Padding="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -59,6 +72,8 @@
                     <Button Content="Restart as Administrator" Click="RestartAsAdminInfoBar_Click" />
                 </InfoBar.ActionButton>
             </InfoBar>
+            
+            <InfoBar x:Name="InsiderWarningBar" Severity="Informational" Title="Windows Insider Build Detected" Message="You are running a Windows Insider Preview build. Pre-release Windows versions can introduce graphics, API, and Desktop Window Manager (DWM) updates that may cause window initialization, rendering, or composition conflicts." IsOpen="False" CornerRadius="8"/>
 
             <Grid ColumnSpacing="12">
                 <Grid.ColumnDefinitions>

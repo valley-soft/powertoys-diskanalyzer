@@ -206,16 +206,23 @@
         <div class="release">
             <div class="release-header">
                 <div class="release-version">v1.3.7</div>
-                <div class="release-date">July 24, 2026</div>
+                <div class="release-date">July 25, 2026</div>
             </div>
             
             <div class="release-section">
                 <span class="tag fixed">Fixed</span>
                 <ul class="release-list">
-                    <li><strong>BitLocker & Drive Permission Crashes</strong>: Wrapped drive property queries in safe try-catch blocks to prevent unhandled exceptions on BitLocker-locked or restricted drives.</li>
-                    <li><strong>HANG_QUIESCE Background Suspension</strong>: Wired up ComServer.Empty event to automatically signal process exit when Command Palette disconnects.</li>
-                    <li><strong>Windows Insider Build Compatibility</strong>: Added global exception handling and DirectComposition fallback protections for Windows 11 Insider preview builds (OS 26300+).</li>
-                    <li><strong>Clean Production Build</strong>: Stripped developer trace paths and safely wrapped all file logging.</li>
+                    <li><strong>BitLocker & Drive Permission Crashes</strong>: Wrapped drive property queries (`IsReady`, `TotalSize`, `AvailableFreeSpace`) inside safe try-catch blocks to eliminate unhandled exceptions on BitLocker-locked or restricted drives.</li>
+                    <li><strong>HANG_QUIESCE Background Suspension</strong>: Wired up `ComServer.Empty` event to automatically signal process exit when Command Palette disconnects, preventing process suspension timeouts.</li>
+                    <li><strong>Windows Insider Build Compatibility</strong>: Added global `e.Handled = true` exception handling and DirectComposition fallback protections for Windows 11 Insider preview builds (OS 26300+).</li>
+                    <li><strong>Cross-Thread UI Exceptions</strong>: Fixed folder icons failing to load (due to stowed `RPC_E_WRONG_THREAD` exceptions) by ensuring `BitmapImage` creation is marshaled to the `DispatcherQueue` UI thread.</li>
+                    <li><strong>PowerToys Run Clipboard Lock Protection</strong>: Prevented unhandled external exceptions (which crashed PT Run) by wrapping clipboard copies in try-catch blocks.</li>
+                    <li><strong>Unified Assets Packaging</strong>: Fixed missing theme-light, theme-dark, and scaled asset copies in the build output by using a wildcard pattern in the `.csproj` file.</li>
+                    <li><strong>About Page Layout Centering</strong>: Centered and resized the About page content Grid to render perfectly on all window sizes.</li>
+                    <li><strong>Windows Insider Warning InfoBar</strong>: Added an informational warning banner at launch to notify users running on preview Windows Insider builds.</li>
+                    <li><strong>Parallel Scanning Race Condition</strong>: Materialized subdirectories before parallel execution to eliminate lazy enumeration race conditions.</li>
+                    <li><strong>UI Thread Deadlocks & Flooding</strong>: Offloaded `SHGetFileInfo` shell queries to background tasks and throttled UI progress reporting to prevent `DispatcherQueue` flooding.</li>
+                    <li><strong>Clean Production Build</strong>: Removed hardcoded developer trace paths and safely wrapped all file logging.</li>
                 </ul>
             </div>
         </div>

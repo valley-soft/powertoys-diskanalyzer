@@ -38,15 +38,14 @@ namespace ValleySoft_DiskAnalyzer_App
 
         private static readonly ConcurrentDictionary<string, ImageSource> _iconCache = new();
 
-        public static async Task<ImageSource?> GetIconAsync(string path, bool isFolder)
+        public static async Task<ImageSource?> GetIconAsync(string path, bool isFolder, Microsoft.UI.Dispatching.DispatcherQueue? dispatcher = null)
         {
             try
             {
-                // We use extension as cache key for files, and "[Folder]" or "[Drive:C]" for folders/drives to reduce cache size
                 string cacheKey;
                 if (isFolder)
                 {
-                    if (path.Length <= 3) // Drive root, e.g., "C:\"
+                    if (path.Length <= 3)
                         cacheKey = $"[Drive:{path}]";
                     else
                         cacheKey = "[Folder]";
@@ -63,32 +62,81 @@ namespace ValleySoft_DiskAnalyzer_App
                     return cachedIcon;
                 }
 
-                SHFILEINFO shfi = new SHFILEINFO();
-                uint flags = SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES;
-                uint attributes = isFolder ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_NORMAL;
-
-                // For drives we want the actual drive icon, so we must not use FILE_ATTRIBUTE
-                if (isFolder && path.Length <= 3)
-                {
-                    flags &= ~SHGFI_USEFILEATTRIBUTES;
-                }
-
-                IntPtr result = SHGetFileInfo(path, attributes, ref shfi, (uint)Marshal.SizeOf(shfi), flags);
-
-                if (result != IntPtr.Zero && shfi.hIcon != IntPtr.Zero)
+                // Offload shell P/Invoke and GDI bitmap conversion to a background task
+                byte[]? pngBytes = await Task.Run(() =>
                 {
                     try
                     {
-                        var bitmapSource = await GetImageSourceFromHIconAsync(shfi.hIcon);
-                        if (bitmapSource != null)
+                        SHFILEINFO shfi = new SHFILEINFO();
+                        uint flags = SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES;
+                        uint attributes = isFolder ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_NORMAL;
+
+                        if (isFolder && path.Length <= 3)
                         {
-                            _iconCache.TryAdd(cacheKey, bitmapSource);
-                            return bitmapSource;
+                            flags &= ~SHGFI_USEFILEATTRIBUTES;
+                        }
+
+                        IntPtr result = SHGetFileInfo(path, attributes, ref shfi, (uint)Marshal.SizeOf(shfi), flags);
+
+                        // If querying disk/network root without attributes failed, retry with attributes fallback
+                        if ((result == IntPtr.Zero || shfi.hIcon == IntPtr.Zero) && (flags & SHGFI_USEFILEATTRIBUTES) == 0)
+                        {
+                            flags |= SHGFI_USEFILEATTRIBUTES;
+                            result = SHGetFileInfo(path, attributes, ref shfi, (uint)Marshal.SizeOf(shfi), flags);
+                        }
+
+                        if (result != IntPtr.Zero && shfi.hIcon != IntPtr.Zero)
+                        {
+                            try
+                            {
+                                using var icon = System.Drawing.Icon.FromHandle(shfi.hIcon);
+                                using var bmp = icon.ToBitmap();
+                                using var stream = new MemoryStream();
+                                bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                                return stream.ToArray();
+                            }
+                            finally
+                            {
+                                DestroyIcon(shfi.hIcon);
+                            }
                         }
                     }
-                    finally
+                    catch
                     {
-                        DestroyIcon(shfi.hIcon);
+                        // Fallback on background task failure
+                    }
+                    return null;
+                });
+
+                if (pngBytes != null && pngBytes.Length > 0)
+                {
+                    if (dispatcher != null)
+                    {
+                        var tcs = new TaskCompletionSource<ImageSource?>();
+                        dispatcher.TryEnqueue(async () =>
+                        {
+                            try
+                            {
+                                using var stream = new MemoryStream(pngBytes);
+                                var bitmapImage = new BitmapImage();
+                                await bitmapImage.SetSourceAsync(stream.AsRandomAccessStream());
+                                _iconCache.TryAdd(cacheKey, bitmapImage);
+                                tcs.SetResult(bitmapImage);
+                            }
+                            catch
+                            {
+                                tcs.SetResult(null);
+                            }
+                        });
+                        return await tcs.Task;
+                    }
+                    else
+                    {
+                        using var stream = new MemoryStream(pngBytes);
+                        var bitmapImage = new BitmapImage();
+                        await bitmapImage.SetSourceAsync(stream.AsRandomAccessStream());
+                        _iconCache.TryAdd(cacheKey, bitmapImage);
+                        return bitmapImage;
                     }
                 }
             }
@@ -98,30 +146,6 @@ namespace ValleySoft_DiskAnalyzer_App
             }
 
             return null;
-        }
-
-        private static async Task<ImageSource?> GetImageSourceFromHIconAsync(IntPtr hIcon)
-        {
-            try
-            {
-                // We can use Win32 CreateIconIndirect or just let System.Drawing extract it
-                // To avoid System.Drawing dependency in WinUI, we'll try to convert HICON manually
-                // Since this is WinUI 3, we can actually use System.Drawing.Common because we are on .NET 8
-                using var icon = System.Drawing.Icon.FromHandle(hIcon);
-                using var bmp = icon.ToBitmap();
-                
-                using var stream = new MemoryStream();
-                bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                stream.Position = 0;
-                
-                var bitmapImage = new BitmapImage();
-                await bitmapImage.SetSourceAsync(stream.AsRandomAccessStream());
-                return bitmapImage;
-            }
-            catch
-            {
-                return null;
-            }
         }
     }
 }

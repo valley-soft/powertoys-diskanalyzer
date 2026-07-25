@@ -285,7 +285,11 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 AcceleratorModifiers = ModifierKeys.Control,
                 Action = _ =>
                 {
-                    Clipboard.SetText(item.FullPath);
+                    try
+                    {
+                        Clipboard.SetText(item.FullPath);
+                    }
+                    catch { }
                     return true;
                 },
             });
@@ -301,7 +305,11 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 AcceleratorModifiers = ModifierKeys.Control | ModifierKeys.Shift,
                 Action = _ =>
                 {
-                    Clipboard.SetText(DiskAnalyzerHelper.FormatSize(item.SizeBytes));
+                    try
+                    {
+                        Clipboard.SetText(DiskAnalyzerHelper.FormatSize(item.SizeBytes));
+                    }
+                    catch { }
                     return true;
                 },
             });

@@ -5,13 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.7] - 2026-07-24
+## [1.3.7] - 2026-07-25
 
 ### Fixed
 - **BitLocker & Drive Permission Crashes**: Wrapped drive property queries (`IsReady`, `TotalSize`, `AvailableFreeSpace`) inside safe try-catch blocks to eliminate unhandled exceptions on BitLocker-locked or restricted drives.
 - **HANG_QUIESCE Background Suspension**: Wired up `ComServer.Empty` event to automatically signal process exit when Command Palette disconnects, preventing process suspension timeouts.
 - **Windows Insider Build Compatibility**: Added global `e.Handled = true` exception handling and DirectComposition fallback protections for Windows 11 Insider preview builds (OS 26300+).
-- **Clean Production Build**: Stripped developer trace logging and hardcoded path queries.
+- **Cross-Thread UI Exceptions**: Fixed a critical bug where folder icons failed to load and threw stowed `RPC_E_WRONG_THREAD` exceptions by ensuring `BitmapImage` creation is marshaled to the `DispatcherQueue` UI thread.
+- **PowerToys Run Clipboard Lock Protection**: Prevented unhandled external exceptions (which crashed PT Run) by wrapping clipboard copies in try-catch blocks.
+- **Unified Assets Packaging**: Fixed missing theme-light, theme-dark, and scaled asset copies in the build output by using a wildcard pattern in the `.csproj` file.
+- **About Page Layout Centering**: Centered and resized the About page content Grid to render perfectly on all window sizes.
+- **Windows Insider Warning InfoBar**: Added an informational warning banner at launch to notify users running on preview Windows Insider builds.
+- **Parallel Scanning Race Condition**: Materialized subdirectories before parallel execution to eliminate lazy enumeration race conditions.
+- **UI Thread Deadlocks & Flooding**: Offloaded `SHGetFileInfo` shell queries to background tasks and throttled UI progress reporting to prevent `DispatcherQueue` flooding.
+- **Clean Production Build**: Removed hardcoded developer trace paths and safely wrapped all file logging.
 
 ## [1.3.6] - 2026-07-18
 
