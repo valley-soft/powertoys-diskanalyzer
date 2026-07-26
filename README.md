@@ -1,4 +1,4 @@
-# DiskAnalyzer — PowerToys Run Plugin & Command Palette Extension
+# DiskAnalyzer — Standalone App, PowerToys Run Plugin & Command Palette Extension
 
 [![Version](https://img.shields.io/badge/version-1.3.7-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 [![Microsoft Store](https://img.shields.io/badge/Microsoft_Store-Available-0078D7?logo=windows&logoColor=white)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
