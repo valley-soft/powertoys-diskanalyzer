@@ -8,17 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.7] - 2026-07-25
 
 ### Fixed
-- **BitLocker & Drive Permission Crashes**: Wrapped drive property queries (`IsReady`, `TotalSize`, `AvailableFreeSpace`) inside safe try-catch blocks to eliminate unhandled exceptions on BitLocker-locked or restricted drives.
-- **HANG_QUIESCE Background Suspension**: Wired up `ComServer.Empty` event to automatically signal process exit when Command Palette disconnects, preventing process suspension timeouts.
-- **Windows Insider Build Compatibility**: Added global `e.Handled = true` exception handling and DirectComposition fallback protections for Windows 11 Insider preview builds (OS 26300+).
-- **Cross-Thread UI Exceptions**: Fixed a critical bug where folder icons failed to load and threw stowed `RPC_E_WRONG_THREAD` exceptions by ensuring `BitmapImage` creation is marshaled to the `DispatcherQueue` UI thread.
-- **PowerToys Run Clipboard Lock Protection**: Prevented unhandled external exceptions (which crashed PT Run) by wrapping clipboard copies in try-catch blocks.
-- **Unified Assets Packaging**: Fixed missing theme-light, theme-dark, and scaled asset copies in the build output by using a wildcard pattern in the `.csproj` file.
-- **About Page Layout Centering**: Centered and resized the About page content Grid to render perfectly on all window sizes.
-- **Windows Insider Warning InfoBar**: Added an informational warning banner at launch to notify users running on preview Windows Insider builds.
-- **Parallel Scanning Race Condition**: Materialized subdirectories before parallel execution to eliminate lazy enumeration race conditions.
-- **UI Thread Deadlocks & Flooding**: Offloaded `SHGetFileInfo` shell queries to background tasks and throttled UI progress reporting to prevent `DispatcherQueue` flooding.
-- **Clean Production Build**: Removed hardcoded developer trace paths and safely wrapped all file logging.
+- **Locked Drive Crash Fix**: Resolved a bug where scanning or showing drive listings would crash the app if a drive was locked by BitLocker or had restricted access permissions.
+- **Background Process Cleanup**: Fixed an issue where the Command Palette extension remained running in the background after closing, ensuring it shuts down cleanly and saves system resources.
+- **Windows Insider Compatibility**: Added fallbacks and exception protections to prevent launch crashes for users running preview Windows 11 Insider builds (build 26300+).
+- **Folder Icon Load Fix**: Fixed a bug where folder and file icons occasionally failed to load or caused background crashes, ensuring icons load reliably on the main screen.
+- **Clipboard Copy Protection**: Fixed a random crash in PowerToys Run when copying file paths to the clipboard while another app had the clipboard locked.
+- **Visual Theme Asset Fix**: Fixed a packaging bug that caused light/dark mode icons and different scale sizes to be missing from installer builds.
+- **About Page Layout Centering**: Centered and resized the About page content so it looks clean, centered, and proportional on all window sizes (including maximized windows).
+- **Insider Preview Warning Banner**: Added a helpful informational banner at startup to warn Windows Insider users about potential pre-release compatibility issues.
+- **Scanning Stability Improvement**: Fixed a scanning race condition that caused occasional crashes when exploring complex directory structures.
+- **Interface Lag & Freeze Mitigation**: Offloaded heavy folder information lookups to background tasks and regulated progress bar updates to keep the main window smooth and responsive.
+- **Clean Production Release**: Stripped developer test paths and cleaned up file logging for a safer and more stable production install.
 
 ## [1.3.6] - 2026-07-18
 
