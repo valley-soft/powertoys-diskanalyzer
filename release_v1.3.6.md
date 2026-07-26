@@ -29,7 +29,7 @@ This release includes three tools, bundled into two easy installations:
 
 ### Installation — Standalone App & Command Palette Extension (Unified MSIX)
 
-1. Download **ValleySoft.DiskAnalyzer.App_1.3.6_x64.msix** (or rm64) from the assets below.
+1. Download **`ValleySoft.DiskAnalyzer.App_1.3.6_x64.msix`** (or `arm64`) from the assets below.
 2. Double-click the .msix file and click **Install**.
 3. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
 
@@ -38,13 +38,13 @@ This release includes three tools, bundled into two easy installations:
 > [![Get it from Microsoft](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
 >
 > Alternatively, you can install it instantly via the command line using winget:
-> `powershell
+> ```powershell
 > winget install --id 9NF073KLTVWN --source msstore
-> `
+> ```
 
 ### Installation — PowerToys Run Plugin
 
-1. Download **ValleySoft.DiskAnalyzerInstaller-v1.3.6-x64.exe** (or rm64)
+1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.3.6-x64.exe`** (or `arm64`)
 2. Exit PowerToys (right-click tray icon → Exit)
 3. Run the installer — it will clean install to %LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer
 4. Restart PowerToys and enable the plugin in Settings → PowerToys Run → Plugins

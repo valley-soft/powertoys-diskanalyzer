@@ -272,7 +272,7 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 | `Images/` | Plugin icon assets (`DiskAnalyzerLight.png` / `DiskAnalyzerDark.png`) |
 | `CmdPalExtension/` | Native Command Palette MSIX extension project |
 | `Installer/` | Single-file native installer source |
-| `build-v1.3.1.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX + Standalone MSIX for x64 & ARM64 |
+| `build-v1.3.7.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX + Standalone MSIX for x64 & ARM64 |
 | `out/` | Final output directory for all generated artifacts |
 
 ---
