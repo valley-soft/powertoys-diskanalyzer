@@ -190,8 +190,8 @@ Open PowerToys Run (`Alt+Space`) and type `ds` followed by a command.
 | `ds top C:\` | Show top-level subfolders ranked by total size |
 | `ds ext C:\ .mp4` | Find the largest files of a specific extension |
 | `ds empty C:\` | Find empty folders inside a path |
-| `ds gui` | Open the legacy WPF GUI window |
-| `ds gui C:\Users` | Open the legacy WPF GUI window pre-navigated to a specific folder |
+| `ds gui` | Open the WinUI 3 Standalone GUI window |
+| `ds gui C:\Users` | Open the WinUI 3 Standalone GUI window pre-navigated to a specific folder |
 
 #### Context Menu (right-click / `>` on any result)
 
@@ -362,25 +362,16 @@ Looking to see what's coming next? Check out our official **[Project Roadmap](RO
 - 🛠️ **Fixed**: Fixed severe junction point infinite loop bugs in the directory scanner.
 
 ### v1.2.0 — 2026-06-14
-- ✨ **New**: Native **Command Palette MSIX Extension** — type commands directly in CmdPal without a keyword
-  - Async background scanning with live *Scanning…* placeholder
-  - Interactive drill-down by clicking results
-  - Supports `drives`, `top`, `largest`, `ext`, `empty`, and any folder path
-- ✨ **New**: Standalone GUI window (`ds gui`) with full drive/folder tree explorer
-  - Expandable left tree pane showing all drives
-  - Right grid with sortable Name, Size, Allocated, Items, Modified columns
-  - Double-click to drill down into folders
-  - Double-click files to reveal in File Explorer
-  - ← Back navigation, Browse folder picker, Refresh
-  - Sizes sort correctly by bytes (not alphabetically)
-- ✨ **New**: `ds ext <path> <extension>` — find largest files by extension
-- ✨ **New**: `ds empty <path>` — find empty folders
-- ✨ **New**: ARM64 support — separate installer and MSIX for ARM64 devices
-- ✨ **New**: PowerToys Run plugin labeled *DiskAnalyzer (PowerToys Run)* in CmdPal to distinguish from the MSIX extension
-- 🛠️ **Fixed**: Disk used space now matches Windows Explorer exactly
-- 🛠️ **Fixed**: Folder size calculation uses queue-based BFS (avoids reparse points)
-- 📦 **New**: Single-file native `.exe` installer for both x64 and ARM64
-- 📦 **New**: MSIX packages for Command Palette extension (x64 and ARM64)
+- ✨ **New**: Native **Command Palette MSIX Extension** — type commands directly in CmdPal without a keyword (featuring async background scanning and interactive drill-down).
+- ✨ **New**: Standalone GUI window (`ds gui`) with full drive/folder tree explorer, expandable tree pane, sortable grid, Back navigation, folder picker, and Refresh.
+- ✨ **New**: `ds ext <path> <extension>` — find largest files by extension.
+- ✨ **New**: `ds empty <path>` — find empty folders.
+- ✨ **New**: ARM64 support — separate installer and MSIX for ARM64 devices.
+- ✨ **New**: PowerToys Run plugin labeled *DiskAnalyzer (PowerToys Run)* in CmdPal to distinguish from the MSIX extension.
+- 🛠️ **Fixed**: Disk used space now matches Windows Explorer exactly.
+- 🛠️ **Fixed**: Folder size calculation uses queue-based BFS (avoids reparse points).
+- 📦 **New**: Single-file native `.exe` installer for both x64 and ARM64.
+- 📦 **New**: MSIX packages for Command Palette extension (x64 and ARM64).
 
 ### v1.1.0 — 2026-06-10
 - Updated target framework to net10.0-windows
@@ -392,9 +383,15 @@ Looking to see what's coming next? Check out our official **[Project Roadmap](RO
 - Updated target framework to net9.0-windows
 - Updated Community.PowerToys.Run.Plugin.Dependencies to v0.97.0
 - Compatible with PowerToys v0.97.0 and later
+- 🛠️ **Fixed**: Mouse click on results removing the `ds` prefix.
+- 🛠️ **Fixed**: Double `ds` appearing in search bar after selecting a result.
+- 🛠️ **Fixed**: iCloud and OneDrive showing allocated size instead of actual size.
+- 🛠️ **Fixed**: Folder sizes not fully recursive (capped at 1 level deep).
+- 🛠️ **Fixed**: Missing string interpolations and prefixes in `ChangeQuery` calls.
 
 ### v1.0.1 — 2026-05-20
-- Bug fixes and stability improvements
+- Moved "Open in Explorer" shortcut to `Ctrl+O` context menu.
+- Fixed a bug where pressing Enter on a drive result opened File Explorer instead of starting a scan.
 
 ### v1.0.0 — 2026-05-15
 - Initial release
