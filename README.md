@@ -393,10 +393,10 @@ Looking to see what's coming next? Check out our official **[Project Roadmap](RO
 - Updated Community.PowerToys.Run.Plugin.Dependencies to v0.97.0
 - Compatible with PowerToys v0.97.0 and later
 
-### v1.0.1
+### v1.0.1 — 2026-05-20
 - Bug fixes and stability improvements
 
-### v1.0.0
+### v1.0.0 — 2026-05-15
 - Initial release
 - List drives with used / free / total space
 - Browse folder sizes ranked by largest
