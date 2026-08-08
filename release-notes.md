@@ -45,7 +45,7 @@ This release includes three tools, bundled into two easy installations:
 
 ### Installation — PowerToys Run Plugin
 
-1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.3.7-x64.exe`** (or `arm64`)
+1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.4.0-x64.exe`** (or `arm64`)
 2. Exit PowerToys (right-click tray icon → Exit)
 3. Run the installer — it will clean install to `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer`
 4. Restart PowerToys and enable the plugin in Settings → PowerToys Run → Plugins
