@@ -37,9 +37,7 @@ namespace ValleySoft_DiskAnalyzer_App
             }
             catch (Exception ex)
             {
-                System.IO.File.WriteAllText(
-                    System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop), "crash_mainpage.txt"),
-                    ex.ToString());
+                App.WriteCrashLog(ex);
             }
 
             try
@@ -397,9 +395,15 @@ namespace ValleySoft_DiskAnalyzer_App
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Error in CalculateFileTypeBreakdown: {ex.Message}");
+                    App.WriteCrashLog(ex);
                 }
-            });
+            }).ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                {
+                    App.WriteCrashLog(t.Exception?.InnerException ?? t.Exception!);
+                }
+            }, TaskScheduler.Default);
         }
 
         private void ChartItemsControl_SizeChanged(object sender, Microsoft.UI.Xaml.SizeChangedEventArgs e)

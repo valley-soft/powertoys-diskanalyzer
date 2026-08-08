@@ -28,29 +28,13 @@ public partial class App : Application
         this.UnhandledException += (s, e) =>
         {
             e.Handled = true; // Prevent unhandled process termination where possible
-            try
-            {
-                var folder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ValleySoft.DiskAnalyzer");
-                System.IO.Directory.CreateDirectory(folder);
-                System.IO.File.WriteAllText(
-                    System.IO.Path.Combine(folder, "app_crash.log"),
-                    e.Exception.ToString() + "\nMessage: " + e.Message);
-            }
-            catch { }
+            WriteCrashLog(e.Exception);
         };
 
         // Background thread crashes not caught by WinUI — covers uncategorized telemetry events
         AppDomain.CurrentDomain.UnhandledException += (s, e) =>
         {
-            try
-            {
-                var folder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ValleySoft.DiskAnalyzer");
-                System.IO.Directory.CreateDirectory(folder);
-                System.IO.File.WriteAllText(
-                    System.IO.Path.Combine(folder, "app_domain_crash.log"),
-                    e.ExceptionObject?.ToString() ?? "Unknown exception");
-            }
-            catch { }
+            WriteCrashLog(e.ExceptionObject ?? "Unknown exception");
         };
 
         // Prevent unobserved Task exceptions (fire-and-forget) from terminating the process
@@ -60,10 +44,24 @@ public partial class App : Application
         };
     }
 
+    internal static void WriteCrashLog(object ex)
+    {
+        try
+        {
+            string dir = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "ValleySoft.DiskAnalyzer", "Logs");
+            System.IO.Directory.CreateDirectory(dir);
+            string logPath = System.IO.Path.Combine(dir, "crash.log");
+            System.IO.File.AppendAllText(logPath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {ex}\n\n");
+        }
+        catch { }
+    }
+
     protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         string initialPath = "";
-        RegisterContextMenu();
+        _ = Task.Run(() => RegisterContextMenu());
 
         try
         {
@@ -147,13 +145,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            try
-            {
-                var folder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ValleySoft.DiskAnalyzer");
-                System.IO.Directory.CreateDirectory(folder);
-                System.IO.File.WriteAllText(System.IO.Path.Combine(folder, "dcomp_init_crash.log"), ex.ToString());
-            }
-            catch { }
+            WriteCrashLog(ex);
 
             string errorMessage = "A critical system initialization error occurred.\n\n" +
                                    "This is often caused by composition or display driver issues on pre-release Windows Insider builds (e.g. missing dcompi.dll or composition registration).\n\n" +

@@ -55,9 +55,7 @@ public sealed partial class MainWindow : Window
         }
         catch (System.Exception ex)
         {
-            System.IO.File.WriteAllText(
-                System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop), "crash_main.txt"),
-                ex.ToString());
+            App.WriteCrashLog(ex);
         }
     }
 
