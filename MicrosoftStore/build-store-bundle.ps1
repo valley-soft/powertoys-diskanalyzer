@@ -116,9 +116,12 @@ if ($LASTEXITCODE -eq 0) {
     }
 
     $appxsymName = $BundleFileName -replace '\.msixbundle$', '.appxsym'
+    $appxsymZip = $BundleFileName -replace '\.msixbundle$', '.zip'
     $appxsymPath = "$appxsymName"
+    if (Test-Path $appxsymZip) { Remove-Item $appxsymZip -Force }
     if (Test-Path $appxsymPath) { Remove-Item $appxsymPath -Force }
-    Compress-Archive -Path "$tempPdbDir\*" -DestinationPath $appxsymPath -Force
+    Compress-Archive -Path "$tempPdbDir\*" -DestinationPath $appxsymZip -Force
+    Rename-Item -Path $appxsymZip -NewName $appxsymName -Force
 
     Write-Host "`nGenerating .msixupload container..."
     $tempUploadDir = "temp_msixupload"

@@ -174,7 +174,18 @@ public partial class App : Application
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Microsoft", "WindowsApps", "ValleySoft.DiskAnalyzer.exe");
 
-            string exePath = System.IO.File.Exists(aliasPath) ? aliasPath
+            bool aliasExists = false;
+            try
+            {
+                var attr = System.IO.File.GetAttributes(aliasPath);
+                if (attr != (System.IO.FileAttributes)(-1))
+                {
+                    aliasExists = true;
+                }
+            }
+            catch { }
+
+            string exePath = aliasExists ? aliasPath
                 : System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
                   ?? "ValleySoft.DiskAnalyzer.exe";
 
