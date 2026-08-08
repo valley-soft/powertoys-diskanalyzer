@@ -32,6 +32,9 @@ namespace ValleySoft_DiskAnalyzer_App
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         private static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, ref SHFILEINFO psfi, uint cbSizeFileInfo, uint uFlags);
 
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+        private static extern uint ExtractIconEx(string szFileName, int nIconIndex, IntPtr[] phiconLarge, IntPtr[] phiconSmall, uint nIcons);
+
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool DestroyIcon(IntPtr hIcon);
@@ -52,9 +55,10 @@ namespace ValleySoft_DiskAnalyzer_App
                 }
                 else
                 {
-                    cacheKey = Path.GetExtension(path).ToLowerInvariant();
-                    if (string.IsNullOrEmpty(cacheKey))
-                        cacheKey = "[File]";
+                    var ext = Path.GetExtension(path).ToLowerInvariant();
+                    // .exe/.dll/.ico/.lnk have unique per-file icons — cache by full path
+                    bool perFileIcon = ext == ".exe" || ext == ".dll" || ext == ".ico" || ext == ".lnk";
+                    cacheKey = perFileIcon ? path : (string.IsNullOrEmpty(ext) ? "[File]" : ext);
                 }
 
                 if (_iconCache.TryGetValue(cacheKey, out var cachedIcon))
@@ -68,24 +72,67 @@ namespace ValleySoft_DiskAnalyzer_App
                     try
                     {
                         SHFILEINFO shfi = new SHFILEINFO();
-                        uint flags = SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES;
-                        uint attributes = isFolder ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_NORMAL;
+                        uint flags = SHGFI_ICON | SHGFI_SMALLICON;
+                        uint attributes = 0;
 
-                        if (isFolder && path.Length <= 3)
+                        if (isFolder)
                         {
-                            flags &= ~SHGFI_USEFILEATTRIBUTES;
+                            // For drives, always hit disk; for regular folders use generic icon
+                            if (path.Length > 3)
+                            {
+                                flags |= SHGFI_USEFILEATTRIBUTES;
+                                attributes = FILE_ATTRIBUTE_DIRECTORY;
+                            }
+                        }
+                        else
+                        {
+                            var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+                            bool needsRealPath = ext == ".exe" || ext == ".dll" || ext == ".ico" || ext == ".lnk";
+                            if (needsRealPath && System.IO.File.Exists(path))
+                            {
+                                try
+                                {
+                                    IntPtr[] largeIcon = new IntPtr[1];
+                                    IntPtr[] smallIcon = new IntPtr[1];
+                                    uint count = ExtractIconEx(path, 0, largeIcon, smallIcon, 1);
+                                    if (count > 0 && (smallIcon[0] != IntPtr.Zero || largeIcon[0] != IntPtr.Zero))
+                                    {
+                                        shfi.hIcon = smallIcon[0] != IntPtr.Zero ? smallIcon[0] : largeIcon[0];
+                                        if (smallIcon[0] != IntPtr.Zero && largeIcon[0] != IntPtr.Zero)
+                                        {
+                                            DestroyIcon(largeIcon[0]);
+                                        }
+                                    }
+                                }
+                                catch { }
+                            }
+
+                            if (shfi.hIcon == IntPtr.Zero)
+                            {
+                                if (!needsRealPath)
+                                {
+                                    flags |= SHGFI_USEFILEATTRIBUTES;
+                                    attributes = FILE_ATTRIBUTE_NORMAL;
+                                }
+                            }
                         }
 
-                        IntPtr result = SHGetFileInfo(path, attributes, ref shfi, (uint)Marshal.SizeOf(shfi), flags);
+                        IntPtr result = IntPtr.Zero;
 
-                        // If querying disk/network root without attributes failed, retry with attributes fallback
-                        if ((result == IntPtr.Zero || shfi.hIcon == IntPtr.Zero) && (flags & SHGFI_USEFILEATTRIBUTES) == 0)
+                        if (shfi.hIcon == IntPtr.Zero)
                         {
-                            flags |= SHGFI_USEFILEATTRIBUTES;
                             result = SHGetFileInfo(path, attributes, ref shfi, (uint)Marshal.SizeOf(shfi), flags);
                         }
 
-                        if (result != IntPtr.Zero && shfi.hIcon != IntPtr.Zero)
+                        // Retry with attribute fallback if real-path query failed
+                        if ((result == IntPtr.Zero || shfi.hIcon == IntPtr.Zero) && (flags & SHGFI_USEFILEATTRIBUTES) == 0)
+                        {
+                            flags |= SHGFI_USEFILEATTRIBUTES;
+                            attributes = isFolder ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_NORMAL;
+                            result = SHGetFileInfo(path, attributes, ref shfi, (uint)Marshal.SizeOf(shfi), flags);
+                        }
+
+                        if (shfi.hIcon != IntPtr.Zero)
                         {
                             try
                             {

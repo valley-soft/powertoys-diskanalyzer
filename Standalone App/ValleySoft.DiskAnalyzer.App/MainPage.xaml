@@ -38,6 +38,7 @@
         <MenuBar Grid.Row="0" Margin="-12,-12,-12,12">
             <MenuBarItem Title="File">
                 <MenuFlyoutItem Text="Select Directory..." Icon="Folder" Click="BrowseButton_Click"/>
+                <MenuFlyoutItem Text="Export to CSV..." Icon="Save" Click="ExportToCsv_Click"/>
                 <MenuFlyoutSeparator/>
                 <ToggleMenuFlyoutItem Text="Always Run as Administrator" Click="RunAsAdmin_Click" x:Name="RunAsAdminToggle"/>
                 <ToggleMenuFlyoutItem Text="Show warning when running as user" Click="ShowAdminWarning_Click" x:Name="ShowAdminWarningToggle" IsChecked="True"/>
@@ -79,6 +80,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
                 
@@ -100,18 +102,27 @@
                     </StackPanel>
                 </Button>
 
-                <TextBox x:Name="FilterBox" Grid.Column="2" PlaceholderText="Filter (e.g. *.mp4)" VerticalAlignment="Center" Margin="12,0,0,0" TextChanged="FilterBox_TextChanged" />
+                <Button Grid.Column="2" x:Name="ExportCsvButton" Click="ExportToCsv_Click" IsEnabled="False" Height="40" Padding="16,0">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE780;" FontSize="14" />
+                        <TextBlock Text="Export CSV" />
+                    </StackPanel>
+                </Button>
+
+                <TextBox x:Name="FilterBox" Grid.Column="3" PlaceholderText="Filter (e.g. *.mp4)" VerticalAlignment="Center" Margin="12,0,0,0" TextChanged="FilterBox_TextChanged" />
             </Grid>
         </StackPanel>
         
         <ProgressBar x:Name="ScanProgressBar" Grid.Row="2" IsIndeterminate="True" Visibility="Collapsed" VerticalAlignment="Top" Margin="0,-4,0,0" Canvas.ZIndex="10"/>
 
-        <!-- Main Content area with TreeView and DataGrid -->
+        <!-- Main Content area with TreeView, DataGrid, and Breakdown Panel -->
         <Grid Grid.Row="2" Margin="0,12,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="250" MinWidth="150" />
+                <ColumnDefinition Width="220" MinWidth="120" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="250" MinWidth="150" />
             </Grid.ColumnDefinitions>
 
             <!-- Left pane: TreeView -->
@@ -138,7 +149,11 @@
 
             <!-- Right pane: DataGrid -->
             <Grid Grid.Column="2" CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
-                <Pivot>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Pivot Grid.Row="0">
                     <PivotItem Header="Details">
                         <controls:DataGrid x:Name="ResultsGrid" 
                             AutoGenerateColumns="False" 
@@ -151,6 +166,9 @@
                             BorderThickness="0"
                             CanUserResizeColumns="True"
                             CanUserSortColumns="True"
+                            ManipulationMode="TranslateY,TranslateRailsY,TranslateInertia"
+                            PointerWheelChanged="ResultsGrid_PointerWheelChanged"
+                            ManipulationDelta="ResultsGrid_ManipulationDelta"
                             Sorting="ResultsGrid_Sorting">
                             <controls:DataGrid.ContextFlyout>
                                 <MenuFlyout>
@@ -159,32 +177,32 @@
                                 </MenuFlyout>
                             </controls:DataGrid.ContextFlyout>
                             <controls:DataGrid.Columns>
-                                <controls:DataGridTemplateColumn Header="Name" Tag="Name" Width="*">
+                                <controls:DataGridTemplateColumn Header="Name" Tag="Name" Width="*" MinWidth="350">
                                     <controls:DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" Spacing="12" Padding="12,0,0,0">
                                                 <Image Source="{Binding IconSource}" Width="16" Height="16" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </controls:DataGridTemplateColumn.CellTemplate>
                                 </controls:DataGridTemplateColumn>
-                                <controls:DataGridTemplateColumn Header="% of Parent" Tag="Percentage" Width="120" SortDirection="Descending">
+                                <controls:DataGridTemplateColumn Header="% of Parent" Tag="Percentage" Width="105" SortDirection="Descending">
                                     <controls:DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" Margin="8,0" VerticalAlignment="Center" Spacing="8">
-                                                <ProgressBar Minimum="0" Maximum="100" Value="{Binding ParentPercentage}" Height="14" Width="50" Foreground="{ThemeResource AccentFillColorDefaultBrush}" Background="{ThemeResource ControlFillColorTransparentBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"/>
+                                            <StackPanel Orientation="Horizontal" Margin="4,0" VerticalAlignment="Center" Spacing="6">
+                                                <ProgressBar Minimum="0" Maximum="100" Value="{Binding ParentPercentage}" Height="14" Width="40" Foreground="{ThemeResource AccentFillColorDefaultBrush}" Background="{ThemeResource ControlFillColorTransparentBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"/>
                                                 <TextBlock Text="{Binding FormattedPercentage}" FontSize="11" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
                                             </StackPanel>
                                         </DataTemplate>
                                     </controls:DataGridTemplateColumn.CellTemplate>
                                 </controls:DataGridTemplateColumn>
-                                <controls:DataGridTextColumn Header="Size" Tag="Size" Binding="{Binding FormattedSize}" Width="120"/>
-                                <controls:DataGridTextColumn Header="Allocated" Tag="Allocated" Binding="{Binding FormattedAllocated}" Width="120"/>
-                                <controls:DataGridTextColumn Header="Free Space" Tag="FreeSpace" Binding="{Binding FormattedFreeSpace}" Width="100"/>
-                                <controls:DataGridTextColumn Header="Files" Tag="Files" Binding="{Binding FileCount}" Width="80"/>
-                                <controls:DataGridTextColumn Header="Folders" Tag="Folders" Binding="{Binding FolderCount}" Width="80"/>
-                                <controls:DataGridTextColumn Header="Modified" Tag="Modified" Binding="{Binding FormattedDate}" Width="150"/>
+                                <controls:DataGridTextColumn Header="Size" Tag="Size" Binding="{Binding FormattedSize}" Width="100"/>
+                                <controls:DataGridTextColumn Header="Allocated" Tag="Allocated" Binding="{Binding FormattedAllocated}" Width="100"/>
+                                <controls:DataGridTextColumn Header="Free Space" Tag="FreeSpace" Binding="{Binding FormattedFreeSpace}" Width="90"/>
+                                <controls:DataGridTextColumn Header="Files" Tag="Files" Binding="{Binding FileCount}" Width="70"/>
+                                <controls:DataGridTextColumn Header="Folders" Tag="Folders" Binding="{Binding FolderCount}" Width="70"/>
+                                <controls:DataGridTextColumn Header="Modified" Tag="Modified" Binding="{Binding FormattedDate}" Width="140"/>
                             </controls:DataGrid.Columns>
                         </controls:DataGrid>
                     </PivotItem>
@@ -198,7 +216,7 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="local:ChartItemViewModel">
-                                        <StackPanel VerticalAlignment="Bottom" ToolTipService.ToolTip="{x:Bind ToolTip}">
+                                        <StackPanel VerticalAlignment="Bottom" ToolTipService.ToolTip="{x:Bind ToolTip}" Tapped="ChartItem_Tapped" Background="Transparent">
                                             <Rectangle Width="80" Height="{x:Bind Height}" Fill="{x:Bind Color}" StrokeThickness="1" Stroke="{ThemeResource CardStrokeColorDefaultBrush}" RadiusX="4" RadiusY="4"/>
                                             <TextBlock Text="{x:Bind Name}" Foreground="{ThemeResource TextFillColorPrimaryBrush}" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" Width="80" FontSize="12" Margin="0,8,0,0" TextAlignment="Center" />
                                             <TextBlock Text="{x:Bind FormattedSize}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" FontSize="11" Margin="0,4,0,0" />
@@ -209,6 +227,60 @@
                         </Grid>
                     </PivotItem>
                 </Pivot>
+
+                <!-- Status bar: item count -->
+                <Border Grid.Row="1"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="0,1,0,0"
+                        Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                        CornerRadius="0,0,8,8"
+                        Padding="12,5,12,5">
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <TextBlock x:Name="ItemCountText"
+                                   Text="0 items"
+                                   FontSize="12"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   VerticalAlignment="Center" />
+                        <Rectangle Width="1" Height="12"
+                                   Fill="{ThemeResource CardStrokeColorDefaultBrush}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- GridSplitter 2 -->
+            <controls:GridSplitter Grid.Column="3" Width="12" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+
+            <!-- File Type Breakdown Pane -->
+            <Grid Grid.Column="4" CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" Padding="12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0" Text="File Type Breakdown" FontSize="16" FontWeight="Bold" Margin="0,0,0,12"/>
+                
+                <ListView Grid.Row="1" x:Name="TypeBreakdownList" SelectionMode="None">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="local:TypeCategoryViewModel">
+                            <Grid Padding="0,6" ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Column="0" Grid.Row="0" Text="{x:Bind Name}" FontWeight="SemiBold"/>
+                                <TextBlock Grid.Column="1" Grid.Row="0" Text="{x:Bind FormattedSize}" HorizontalAlignment="Right"/>
+                                
+                                <ProgressBar Grid.ColumnSpan="2" Grid.Row="1" Value="{x:Bind Percentage}" Maximum="100" Height="6" CornerRadius="3" Margin="0,6,0,2" Background="{ThemeResource ControlFillColorSecondaryBrush}" Foreground="{x:Bind ColorBrush}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </Grid>
         </Grid>
     </Grid>

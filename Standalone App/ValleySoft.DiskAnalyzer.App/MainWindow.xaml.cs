@@ -10,7 +10,7 @@ namespace ValleySoft_DiskAnalyzer_App;
 /// </summary>
 public sealed partial class MainWindow : Window
 {
-    public MainWindow()
+    public MainWindow(string initialPath = "")
     {
         try
         {
@@ -51,7 +51,7 @@ public sealed partial class MainWindow : Window
 
             SetAppTheme(savedTheme);
 
-            RootFrame.Navigate(typeof(MainPage));
+            RootFrame.Navigate(typeof(MainPage), initialPath);
         }
         catch (System.Exception ex)
         {

@@ -4,11 +4,15 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Windows.Storage.Pickers;
 using Community.PowerToys.Run.Plugin.DiskAnalyzer;
+using Microsoft.UI.Xaml.Navigation;
 using WinRT.Interop;
+using Windows.UI;
 
 namespace ValleySoft_DiskAnalyzer_App
 {
@@ -29,7 +33,7 @@ namespace ValleySoft_DiskAnalyzer_App
                 this.InitializeComponent();
                 ResultsGrid.ItemsSource = _currentItems;
                 PathBreadcrumbBar.ItemsSource = _pathSegments;
-                _ = LoadDrivesAsync();
+                _currentItems.CollectionChanged += (s, e) => UpdateItemCount();
             }
             catch (Exception ex)
             {
@@ -62,6 +66,19 @@ namespace ValleySoft_DiskAnalyzer_App
                 }
             }
             catch { }
+        }
+
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            if (e.Parameter is string path && !string.IsNullOrWhiteSpace(path))
+            {
+                await NavigateToFolderAsync(path);
+            }
+            else
+            {
+                await LoadDrivesAsync();
+            }
         }
 
         private static bool IsWindowsInsiderBuild()
@@ -134,19 +151,36 @@ namespace ValleySoft_DiskAnalyzer_App
         {
             try
             {
+                // MSIX apps must use the App Execution Alias for elevation.
+                // MainModule.FileName points to C:\Program Files\WindowsApps\ which is
+                // protected and cannot be ShellExecuted with 'runas' from a packaged context.
+                // The alias in %LOCALAPPDATA%\Microsoft\WindowsApps\ is the correct target.
+                string aliasPath = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Microsoft", "WindowsApps", "ValleySoft.DiskAnalyzer.exe");
+
+                // Fallback to cmd launching the alias if the alias file is somehow missing
+                string exePath = System.IO.File.Exists(aliasPath) ? aliasPath
+                    : System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
+                      ?? "ValleySoft.DiskAnalyzer.exe";
+
                 var startInfo = new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = "powershell.exe",
-                    Arguments = "-NoProfile -WindowStyle Hidden -Command \"Start-Process 'ValleySoft.DiskAnalyzer.exe' -Verb RunAs\"",
-                    UseShellExecute = true,
-                    CreateNoWindow = true
+                    FileName = exePath,
+                    Verb = "runas",           // Triggers UAC elevation prompt
+                    UseShellExecute = true,   // Required for Verb to work
+                    CreateNoWindow = false
                 };
-                using (var process = System.Diagnostics.Process.Start(startInfo)) { }
+
+                // Start elevated instance first — if UAC is cancelled this throws, so we don't exit
+                System.Diagnostics.Process.Start(startInfo);
+
+                // Only exit the current (non-admin) instance after the elevated one launches
                 Application.Current.Exit();
             }
             catch
             {
-                // User cancelled UAC
+                // User cancelled UAC prompt — stay in current instance, revert toggles
                 RunAsAdminToggle.IsChecked = false;
                 try
                 {
@@ -183,12 +217,32 @@ namespace ValleySoft_DiskAnalyzer_App
 
         private void ViewHelp_Click(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(HelpPage));
+            try
+            {
+                if (this.Frame != null)
+                {
+                    this.Frame.Navigate(typeof(HelpPage));
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"ViewHelp_Click error: {ex.Message}");
+            }
         }
 
         private void About_Click(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(AboutPage));
+            try
+            {
+                if (this.Frame != null)
+                {
+                    this.Frame.Navigate(typeof(AboutPage));
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"About_Click error: {ex.Message}");
+            }
         }
 
         private void ResultsGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)
@@ -221,16 +275,31 @@ namespace ValleySoft_DiskAnalyzer_App
             SortData();
         }
 
+        private void FilterBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            SortData();
+        }
+
         private void SortData()
         {
-            if (_currentItems.Count == 0) return;
+            if (_currentItems == null || _currentItems.Count == 0) return;
 
             string filter = FilterBox?.Text?.Trim()?.ToLowerInvariant() ?? "";
             var filtered = string.IsNullOrEmpty(filter) 
                 ? _currentItems.ToList() 
                 : _currentItems.Where(i => {
-                    if (filter.StartsWith("*.")) return i.Name.ToLowerInvariant().EndsWith(filter.Substring(1));
-                    return i.Name.ToLowerInvariant().Contains(filter);
+                    string nameLower = (i.Name ?? "").ToLowerInvariant();
+                    if (filter.StartsWith("*."))
+                    {
+                        string ext = filter.Substring(1);
+                        return nameLower.EndsWith(ext, StringComparison.OrdinalIgnoreCase);
+                    }
+                    if (filter.StartsWith("."))
+                    {
+                        return nameLower.EndsWith(filter, StringComparison.OrdinalIgnoreCase);
+                    }
+                    return nameLower.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                           nameLower.EndsWith("." + filter, StringComparison.OrdinalIgnoreCase);
                 }).ToList();
 
             switch (_sortColumn)
@@ -263,11 +332,64 @@ namespace ValleySoft_DiskAnalyzer_App
 
             ResultsGrid.ItemsSource = new ObservableCollection<GridItemViewModel>(filtered);
             UpdateChart(filtered);
+            CalculateFileTypeBreakdown();
         }
 
-        private void FilterBox_TextChanged(object sender, Microsoft.UI.Xaml.Controls.TextChangedEventArgs e)
+        private void CalculateFileTypeBreakdown()
         {
-            SortData();
+            if (string.IsNullOrEmpty(_currentPath))
+            {
+                TypeBreakdownList.ItemsSource = null;
+                return;
+            }
+
+            string path = _currentPath;
+            bool includeHidden = _showHiddenFiles;
+
+            // Start dynamic background calculation to prevent blocking WinUI UI thread
+            Task.Run(() =>
+            {
+                try
+                {
+                    var breakdown = DiskAnalyzerHelper.GetFileTypeBreakdown(path, includeHidden);
+                    var colorMap = new Dictionary<string, Color>
+                    {
+                        { "Videos", Microsoft.UI.ColorHelper.FromArgb(255, 107, 102, 255) },       // Vibrant Violet/Indigo
+                        { "Audio", Microsoft.UI.ColorHelper.FromArgb(255, 255, 69, 58) },         // Vibrant Coral Red
+                        { "Images", Microsoft.UI.ColorHelper.FromArgb(255, 255, 159, 10) },       // Vibrant Amber Orange
+                        { "Archives", Microsoft.UI.ColorHelper.FromArgb(255, 255, 214, 10) },     // Vibrant Bright Gold
+                        { "Documents", Microsoft.UI.ColorHelper.FromArgb(255, 191, 90, 242) },    // Vibrant Purple
+                        { "Code", Microsoft.UI.ColorHelper.FromArgb(255, 48, 209, 88) },          // Vibrant Mint Green
+                        { "Apps/Executables", Microsoft.UI.ColorHelper.FromArgb(255, 100, 210, 255) }, // Vibrant Electric Cyan
+                        { "Other Files", Microsoft.UI.ColorHelper.FromArgb(255, 174, 174, 178) }  // Light Silver Gray
+                    };
+
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        if (_currentPath == path)
+                        {
+                            var list = new List<TypeCategoryViewModel>();
+                            foreach (var entry in breakdown)
+                            {
+                                var color = colorMap.ContainsKey(entry.Category) ? colorMap[entry.Category] : Microsoft.UI.ColorHelper.FromArgb(255, 174, 174, 178);
+                                list.Add(new TypeCategoryViewModel
+                                {
+                                    Name = entry.Category,
+                                    SizeBytes = entry.Size,
+                                    FormattedSize = DiskAnalyzerHelper.FormatSize(entry.Size),
+                                    Percentage = entry.Percentage,
+                                    ColorBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(color) // Safe: Created on the UI thread
+                                });
+                            }
+                            TypeBreakdownList.ItemsSource = list;
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error in CalculateFileTypeBreakdown: {ex.Message}");
+                }
+            });
         }
 
         private void ChartItemsControl_SizeChanged(object sender, Microsoft.UI.Xaml.SizeChangedEventArgs e)
@@ -278,25 +400,38 @@ namespace ValleySoft_DiskAnalyzer_App
             }
         }
 
-        private void UpdateChart(System.Collections.Generic.List<GridItemViewModel> items)
+        private void UpdateChart(List<GridItemViewModel> items)
         {
-            if (ChartItemsControl == null) return;
-            var chartItems = new ObservableCollection<ChartItemViewModel>();
-            
-            long totalSize = items.Sum(i => i.SizeBytes);
-            if (totalSize == 0) {
-                ChartItemsControl.ItemsSource = chartItems;
+            if (items == null || items.Count == 0)
+            {
+                ChartItemsControl.ItemsSource = null;
                 return;
             }
 
-            double maxHeight = 300; // max pixel height for the largest bar
-            long maxSize = items.Max(i => i.SizeBytes);
-            if (maxSize == 0) maxSize = 1;
+            double maxHeight = 160;
+            double maxSize = items.Max(i => i.SizeBytes);
+            if (maxSize <= 0) maxSize = 1;
 
-            var colors = new[] { Microsoft.UI.Colors.CornflowerBlue, Microsoft.UI.Colors.SeaGreen, Microsoft.UI.Colors.IndianRed, Microsoft.UI.Colors.Goldenrod, Microsoft.UI.Colors.MediumPurple, Microsoft.UI.Colors.DarkOrange, Microsoft.UI.Colors.Teal, Microsoft.UI.Colors.Crimson };
+            var chartItems = new List<ChartItemViewModel>();
+            var colors = new[]
+            {
+                Microsoft.UI.ColorHelper.FromArgb(255, 100, 210, 255),
+                Microsoft.UI.ColorHelper.FromArgb(255, 48, 209, 88),
+                Microsoft.UI.ColorHelper.FromArgb(255, 255, 159, 10),
+                Microsoft.UI.ColorHelper.FromArgb(255, 255, 69, 58),
+                Microsoft.UI.ColorHelper.FromArgb(255, 191, 90, 242),
+                Microsoft.UI.ColorHelper.FromArgb(255, 255, 214, 10),
+                Microsoft.UI.ColorHelper.FromArgb(255, 107, 102, 255),
+                Microsoft.UI.ColorHelper.FromArgb(255, 174, 174, 178)
+            };
             int colorIdx = 0;
 
-            foreach (var item in items.OrderByDescending(i => i.SizeBytes).Take(15))
+            var sortedItems = items.OrderByDescending(i => i.SizeBytes).ToList();
+            int topLimit = 15;
+            var topItems = sortedItems.Take(topLimit).ToList();
+            var remainingItems = sortedItems.Skip(topLimit).ToList();
+
+            foreach (var item in topItems)
             {
                 if (item.SizeBytes == 0) continue;
                 double h = (item.SizeBytes * 1.0 / maxSize) * maxHeight;
@@ -305,6 +440,8 @@ namespace ValleySoft_DiskAnalyzer_App
                 chartItems.Add(new ChartItemViewModel
                 {
                     Name = item.Name,
+                    FullPath = item.FullPath,
+                    IsFile = item.IsFile,
                     Height = h,
                     Color = new Microsoft.UI.Xaml.Media.SolidColorBrush(colors[colorIdx % colors.Length]),
                     ToolTip = $"{item.Name} - {item.FormattedSize} ({item.FormattedPercentage})",
@@ -312,7 +449,53 @@ namespace ValleySoft_DiskAnalyzer_App
                 });
                 colorIdx++;
             }
+
+            // Aggregate remaining items into an "Other Items" summary bar
+            if (remainingItems.Count > 0)
+            {
+                long otherSizeBytes = remainingItems.Sum(i => i.SizeBytes);
+                if (otherSizeBytes > 0)
+                {
+                    double otherHeight = (otherSizeBytes * 1.0 / maxSize) * maxHeight;
+                    if (otherHeight < 5) otherHeight = 5;
+                    string formattedOtherSize = DiskAnalyzerHelper.FormatSize(otherSizeBytes);
+
+                    chartItems.Add(new ChartItemViewModel
+                    {
+                        Name = $"Other ({remainingItems.Count} items)",
+                        FullPath = "",
+                        IsFile = false,
+                        Height = otherHeight,
+                        Color = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(255, 120, 120, 128)),
+                        ToolTip = $"Other {remainingItems.Count} items - {formattedOtherSize}",
+                        FormattedSize = formattedOtherSize
+                    });
+                }
+            }
+
             ChartItemsControl.ItemsSource = chartItems;
+        }
+
+        private async void ChartItem_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            if (sender is FrameworkElement elem && elem.DataContext is ChartItemViewModel vm)
+            {
+                if (!string.IsNullOrEmpty(vm.FullPath))
+                {
+                    if (!vm.IsFile)
+                    {
+                        await NavigateToFolderAsync(vm.FullPath);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            System.Diagnostics.Process.Start("explorer.exe", $"/select,\"{vm.FullPath}\"");
+                        }
+                        catch { }
+                    }
+                }
+            }
         }
 
         private async Task LoadDrivesAsync()
@@ -382,7 +565,9 @@ namespace ValleySoft_DiskAnalyzer_App
             }
             
             _currentItems = new ObservableCollection<GridItemViewModel>(newItems);
+            _currentItems.CollectionChanged += (s, e) => UpdateItemCount();
             ResultsGrid.ItemsSource = _currentItems;
+            UpdateItemCount();
             
             FolderTree.ItemsSource = rootNodes;
             
@@ -395,9 +580,26 @@ namespace ValleySoft_DiskAnalyzer_App
         {
             ScanProgressBar.Visibility = isLoading ? Visibility.Visible : Visibility.Collapsed;
             ResultsGrid.Opacity = isLoading ? 0.5 : 1.0;
+            if (ExportCsvButton != null)
+            {
+                ExportCsvButton.IsEnabled = !isLoading && !string.IsNullOrWhiteSpace(_currentPath) && (_currentItems != null && _currentItems.Count > 0);
+            }
         }
 
-        
+        private void UpdateItemCount()
+        {
+            // CollectionChanged fires on the UI thread for our usage, but guard just in case
+            var count = _currentItems.Count;
+            var text = count == 1 ? "1 item" : $"{count} items";
+            if (ItemCountText != null)
+                ItemCountText.Text = text;
+
+            if (ExportCsvButton != null && ScanProgressBar.Visibility != Visibility.Visible)
+            {
+                ExportCsvButton.IsEnabled = !string.IsNullOrWhiteSpace(_currentPath) && count > 0;
+            }
+        }
+
         private async Task SyncTreeViewToPath(string path)
         {
             if (string.IsNullOrWhiteSpace(path)) return;
@@ -517,6 +719,33 @@ private async Task NavigateToFolderAsync(string path)
                 var items = await Task.Run(() => DiskAnalyzerHelper.ScanDirectory(path, 1, _showHiddenFiles, progress), token);
                 if (token.IsCancellationRequested) return;
 
+                // Reconcile: folders arrived via progress (live streaming), files are only in
+                // the returned list. Add any items not yet shown in the grid.
+                var reportedPaths = new HashSet<string>(
+                    _currentItems.Select(vm => vm.FullPath), StringComparer.OrdinalIgnoreCase);
+                foreach (var item in items)
+                {
+                    if (reportedPaths.Contains(item.FullPath)) continue;
+                    if (token.IsCancellationRequested) break;
+                    _currentItems.Add(new GridItemViewModel
+                    {
+                        Name = item.Name,
+                        FullPath = item.FullPath,
+                        FormattedSize = DiskAnalyzerHelper.FormatSize(item.SizeBytes),
+                        FormattedAllocated = DiskAnalyzerHelper.FormatSize(item.AllocatedSizeBytes),
+                        FileCount = item.FileCount,
+                        FolderCount = item.FolderCount,
+                        ParentPercentage = 0,
+                        FreeSpaceBytes = 0,
+                        FormattedFreeSpace = "",
+                        LastModified = item.LastModified,
+                        SizeBytes = item.SizeBytes,
+                        AllocatedSizeBytes = item.AllocatedSizeBytes,
+                        IsFile = item.IsFile,
+                        IconSource = null
+                    });
+                }
+
                 long parentSize = items.Sum(i => i.SizeBytes);
 
                 // Update percentages after all items have been scanned
@@ -527,24 +756,25 @@ private async Task NavigateToFolderAsync(string path)
                 
                 SortData();
 
-                // Load icons asynchronously in background after initial grid render
+                // Load icons asynchronously in background after initial grid render.
+                // IMPORTANT: snapshot must be taken HERE on the UI thread — calling
+                // _currentItems.ToList() from inside Task.Run causes a race condition with
+                // the UI thread and triggers FATAL_USER_CALLBACK_EXCEPTION in Composition.
+                var iconSnapshot = _currentItems.ToList();
                 _ = Task.Run(async () =>
                 {
-                    foreach (var vm in _currentItems.ToList())
+                    foreach (var vm in iconSnapshot)
                     {
                         if (token.IsCancellationRequested) break;
-                        if (!vm.IsFile)
+                        try
                         {
-                            try
+                            var icon = await IconUtilities.GetIconAsync(vm.FullPath, !vm.IsFile, DispatcherQueue);
+                            if (icon != null)
                             {
-                                var icon = await IconUtilities.GetIconAsync(vm.FullPath, true, DispatcherQueue);
-                                if (icon != null)
-                                {
-                                    DispatcherQueue.TryEnqueue(() => vm.IconSource = icon);
-                                }
+                                DispatcherQueue.TryEnqueue(() => vm.IconSource = icon);
                             }
-                            catch { }
                         }
+                        catch { }
                     }
                 });
             }
@@ -557,9 +787,62 @@ private async Task NavigateToFolderAsync(string path)
                 if (!token.IsCancellationRequested)
                 {
                     SetLoading(false);
+                    CheckAndShowRatingPromptAsync();
                 }
             }
         }
+
+        private async void CheckAndShowRatingPromptAsync()
+        {
+            try
+            {
+                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                bool neverShow = localSettings.Values["NeverShowRatingPrompt"] as bool? ?? false;
+                if (neverShow) return;
+
+                int scanCount = localSettings.Values["CompletedScanCount"] as int? ?? 0;
+                scanCount++;
+                localSettings.Values["CompletedScanCount"] = scanCount;
+
+                // Prompt user professionally after 3 completed scans
+                if (scanCount == 3 || (scanCount > 3 && scanCount % 20 == 0))
+                {
+                    var promptContent = new StackPanel { Spacing = 12 };
+                    promptContent.Children.Add(new TextBlock
+                    {
+                        Text = "If ValleySoft Disk Analyzer is helping you organize your drives and free up space, please take a moment to rate us on the Microsoft Store. Your feedback is greatly appreciated!",
+                        TextWrapping = TextWrapping.Wrap
+                    });
+
+                    var ratingDialog = new ContentDialog
+                    {
+                        Title = "Enjoying DiskAnalyzer?",
+                        Content = promptContent,
+                        PrimaryButtonText = "Rate on Store ⭐",
+                        SecondaryButtonText = "Maybe Later",
+                        CloseButtonText = "Don't Ask Again",
+                        DefaultButton = ContentDialogButton.Primary,
+                        XamlRoot = this.XamlRoot
+                    };
+
+                    var result = await ratingDialog.ShowAsync();
+                    if (result == ContentDialogResult.Primary)
+                    {
+                        localSettings.Values["NeverShowRatingPrompt"] = true;
+                        await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9NF073KLTVWN"));
+                    }
+                    else if (result == ContentDialogResult.None) // Close button ("Don't Ask Again")
+                    {
+                        localSettings.Values["NeverShowRatingPrompt"] = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Rating prompt error: {ex.Message}");
+            }
+        }
+
 
         private async void ResultsGrid_DoubleTapped(object sender, Microsoft.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
         {
@@ -567,6 +850,55 @@ private async Task NavigateToFolderAsync(string path)
             {
                 await NavigateToFolderAsync(item.FullPath);
             }
+        }
+
+        // --- Touchpad / touchscreen scroll support for DataGrid ---
+        // The CommunityToolkit DataGrid swallows PointerWheelChanged and ManipulationDelta
+        // events without forwarding them to its internal ScrollViewer, breaking touchpad
+        // precision scrolling and touchscreen pan gestures. We intercept both and
+        // programmatically drive the inner ScrollViewer instead.
+
+        private ScrollViewer? _dataGridScrollViewer;
+
+        private ScrollViewer? GetDataGridScrollViewer()
+        {
+            if (_dataGridScrollViewer != null) return _dataGridScrollViewer;
+            _dataGridScrollViewer = FindChildScrollViewer(ResultsGrid);
+            return _dataGridScrollViewer;
+        }
+
+        private static ScrollViewer? FindChildScrollViewer(DependencyObject parent)
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is ScrollViewer sv) return sv;
+                var found = FindChildScrollViewer(child);
+                if (found != null) return found;
+            }
+            return null;
+        }
+
+        private void ResultsGrid_PointerWheelChanged(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            var sv = GetDataGridScrollViewer();
+            if (sv == null) return;
+
+            var props = e.GetCurrentPoint(ResultsGrid).Properties;
+            // Vertical scroll: positive delta = scroll up, negative = scroll down
+            double scrollAmount = -props.MouseWheelDelta / 3.0;
+            sv.ChangeView(null, sv.VerticalOffset + scrollAmount, null, false);
+            e.Handled = true;
+        }
+
+        private void ResultsGrid_ManipulationDelta(object sender, Microsoft.UI.Xaml.Input.ManipulationDeltaRoutedEventArgs e)
+        {
+            var sv = GetDataGridScrollViewer();
+            if (sv == null) return;
+
+            // Translate touch pan gesture into vertical scroll (invert Y for natural scrolling)
+            sv.ChangeView(null, sv.VerticalOffset - e.Delta.Translation.Y, null, false);
+            e.Handled = true;
         }
 
         private async void BackButton_Click(object sender, RoutedEventArgs e)
@@ -596,21 +928,206 @@ private async Task NavigateToFolderAsync(string path)
             }
         }
 
+        private IntPtr GetWindowHandle()
+        {
+            try
+            {
+                var appWindow = (Application.Current as App)?.MainWindow;
+                if (appWindow != null)
+                {
+                    var hwnd = WindowNative.GetWindowHandle(appWindow);
+                    if (hwnd != IntPtr.Zero) return hwnd;
+                }
+            }
+            catch { }
+            try
+            {
+                return System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+            }
+            catch { }
+            return IntPtr.Zero;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct OPENFILENAME
+        {
+            public int lStructSize;
+            public IntPtr hwndOwner;
+            public IntPtr hInstance;
+            public string lpstrFilter;
+            public string lpstrCustomFilter;
+            public int nMaxCustFilter;
+            public int nFilterIndex;
+            public string lpstrFile;
+            public int nMaxFile;
+            public string lpstrFileTitle;
+            public int nMaxFileTitle;
+            public string lpstrInitialDir;
+            public string lpstrTitle;
+            public int Flags;
+            public short nFileOffset;
+            public short nFileExtension;
+            public string lpstrDefExt;
+            public IntPtr lCustData;
+            public IntPtr lpfnHook;
+            public string lpTemplateName;
+            public IntPtr pvReserved;
+            public int dwReserved;
+            public int FlagsEx;
+        }
+
+        [DllImport("comdlg32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern bool GetSaveFileName([In, Out] ref OPENFILENAME ofn);
+
+        private string? ShowNativeSaveFileDialog(string defaultFileName)
+        {
+            try
+            {
+                var ofn = new OPENFILENAME();
+                ofn.lStructSize = Marshal.SizeOf(ofn);
+                ofn.hwndOwner = GetWindowHandle();
+                ofn.lpstrFilter = "CSV File (*.csv)\0*.csv\0All Files (*.*)\0*.*\0\0";
+                ofn.lpstrFile = defaultFileName.PadRight(260, '\0');
+                ofn.nMaxFile = 260;
+                ofn.lpstrDefExt = "csv";
+                ofn.Flags = 0x00080000 | 0x00000002 | 0x00000004; // OFN_EXPLORER | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT
+
+                if (GetSaveFileName(ref ofn))
+                {
+                    return ofn.lpstrFile.TrimEnd('\0');
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in ShowNativeSaveFileDialog: {ex.Message}");
+            }
+            return null;
+        }
+
         private async void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
-            var folderPicker = new FolderPicker();
-            folderPicker.FileTypeFilter.Add("*");
-
-            // Required for WinUI 3 desktop apps
-            var hwnd = WindowNative.GetWindowHandle((Application.Current as App)?.MainWindow);
-            InitializeWithWindow.Initialize(folderPicker, hwnd);
-
-            var folder = await folderPicker.PickSingleFolderAsync();
-            if (folder != null)
+            try
             {
-                await NavigateToFolderAsync(folder.Path);
+                var folderPicker = new FolderPicker();
+                folderPicker.FileTypeFilter.Add("*");
+
+                var hwnd = GetWindowHandle();
+                if (hwnd != IntPtr.Zero)
+                {
+                    InitializeWithWindow.Initialize(folderPicker, hwnd);
+                }
+
+                var folder = await folderPicker.PickSingleFolderAsync();
+                if (folder != null)
+                {
+                    await NavigateToFolderAsync(folder.Path);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in BrowseButton_Click: {ex.Message}");
             }
         }
+
+        private async void ExportToCsv_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_currentItems == null || _currentItems.Count == 0)
+                {
+                    var noItemsDialog = new ContentDialog
+                    {
+                        Title = "Export CSV",
+                        Content = "No data is currently loaded to export.",
+                        CloseButtonText = "OK",
+                        XamlRoot = this.XamlRoot
+                    };
+                    await noItemsDialog.ShowAsync();
+                    return;
+                }
+
+                string safeFolderName = string.Join("_", _currentPath.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).Replace(" ", "_").Trim();
+                if (string.IsNullOrWhiteSpace(safeFolderName)) safeFolderName = "DiskAnalysis";
+                string defaultFileName = $"{safeFolderName}_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+
+                string? destinationPath = null;
+
+                // 1. Try WinRT FileSavePicker first
+                try
+                {
+                    var savePicker = new FileSavePicker();
+                    var hwnd = GetWindowHandle();
+                    if (hwnd != IntPtr.Zero)
+                    {
+                        InitializeWithWindow.Initialize(savePicker, hwnd);
+                    }
+                    savePicker.SuggestedStartLocation = PickerLocationId.Downloads;
+                    savePicker.FileTypeChoices.Add("CSV File (*.csv)", new List<string>() { ".csv" });
+                    savePicker.SuggestedFileName = defaultFileName;
+
+                    var file = await savePicker.PickSaveFileAsync();
+                    if (file != null)
+                    {
+                        destinationPath = file.Path;
+                    }
+                }
+                catch { }
+
+                // 2. If WinRT FileSavePicker failed or returned null (e.g. running elevated as Admin), use native comdlg32 fallback
+                if (string.IsNullOrEmpty(destinationPath))
+                {
+                    destinationPath = ShowNativeSaveFileDialog(defaultFileName);
+                }
+
+                if (string.IsNullOrEmpty(destinationPath))
+                {
+                    return; // User explicitly cancelled or closed the dialog
+                }
+
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine("Name,Path,Type,Size,Allocated Size,% of Parent,File Count,Folder Count,Last Modified");
+                foreach (var item in _currentItems)
+                {
+                    string name = (item.Name ?? "").Replace("\"", "\"\"");
+                    string path = (item.FullPath ?? "").Replace("\"", "\"\"");
+                    string type = item.IsFile ? "File" : "Directory";
+                    string formattedSize = (item.FormattedSize ?? "").Replace("\"", "\"\"");
+                    string formattedAllocated = (item.FormattedAllocated ?? "").Replace("\"", "\"\"");
+                    string pct = (item.FormattedPercentage ?? "0%").Replace("\"", "\"\"");
+                    string files = item.IsFile ? "0" : item.FileCount.ToString();
+                    string folders = item.IsFile ? "0" : item.FolderCount.ToString();
+                    string modified = item.LastModified.ToString("yyyy-MM-dd HH:mm:ss");
+                    sb.AppendLine($"\"{name}\",\"{path}\",\"{type}\",\"{formattedSize}\",\"{formattedAllocated}\",\"{pct}\",{files},{folders},{modified}");
+                }
+
+                System.IO.File.WriteAllText(destinationPath, sb.ToString(), System.Text.Encoding.UTF8);
+
+                var successDialog = new ContentDialog
+                {
+                    Title = "Export Complete",
+                    Content = $"Successfully exported {_currentItems.Count} items to:\n{destinationPath}",
+                    CloseButtonText = "OK",
+                    XamlRoot = this.XamlRoot
+                };
+                await successDialog.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                string errorDetails = !string.IsNullOrWhiteSpace(ex.Message) ? ex.Message : $"{ex.GetType().Name} ({ex.HResult:X8})";
+                var errorDialog = new ContentDialog
+                {
+                    Title = "Export Failed",
+                    Content = $"An error occurred while exporting CSV: {errorDetails}",
+                    CloseButtonText = "OK",
+                    XamlRoot = this.XamlRoot
+                };
+                await errorDialog.ShowAsync();
+            }
+        }
+
+
+
+
 
         private void ThemeMenuItem_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
@@ -802,6 +1319,8 @@ private async Task NavigateToFolderAsync(string path)
     public class ChartItemViewModel
     {
         public string Name { get; set; } = "";
+        public string FullPath { get; set; } = "";
+        public bool IsFile { get; set; }
         public double Height { get; set; }
         public Microsoft.UI.Xaml.Media.SolidColorBrush Color { get; set; } = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Gray);
         public string ToolTip { get; set; } = "";
@@ -836,5 +1355,14 @@ private async Task NavigateToFolderAsync(string path)
         public long AllocatedSizeBytes { get; set; }
         public bool IsFile { get; set; }
         public Microsoft.UI.Xaml.Media.ImageSource? IconSource { get; set; }
+    }
+
+    public class TypeCategoryViewModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public long SizeBytes { get; set; }
+        public string FormattedSize { get; set; } = string.Empty;
+        public double Percentage { get; set; }
+        public Microsoft.UI.Xaml.Media.SolidColorBrush ColorBrush { get; set; } = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.CornflowerBlue);
     }
 }

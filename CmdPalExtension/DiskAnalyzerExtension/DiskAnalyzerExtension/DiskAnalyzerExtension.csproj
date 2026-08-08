@@ -19,6 +19,9 @@
     <DefineConstants>$(DefineConstants);CMD_PAL</DefineConstants>
     <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
     <EnableDefaultAssetItems>false</EnableDefaultAssetItems>
+    <Version>1.4.0</Version>
+    <AssemblyVersion>1.4.0.0</AssemblyVersion>
+    <FileVersion>1.4.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

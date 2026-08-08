@@ -34,29 +34,64 @@ public partial class DiskAnalyzerExtensionCommandsProvider : CommandProvider
         {
             new ListItem(new DiskAnalyzerExtensionPage())
             {
-                Title    = DisplayName,
-                Subtitle = "Analyze disk space usage",
+                Title    = "ValleySoft Disk Analyzer (Command Palette)",
+                Subtitle = "Interactive in-palette disk space usage analyzer",
                 Icon     = Icon,
             },
             new ListItem(new MyAnonymousCommand(() => 
             {
                 try
                 {
-                    var baseDir = System.AppDomain.CurrentDomain.BaseDirectory;
-                    var exePath = System.IO.Path.Combine(baseDir, "ValleySoft.DiskAnalyzer.exe");
-                    var targetFile = System.IO.File.Exists(exePath) ? exePath : "ValleySoft.DiskAnalyzer.exe";
+                    string aliasPath = System.IO.Path.Combine(
+                        System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData),
+                        "Microsoft", "WindowsApps", "ValleySoft.DiskAnalyzer.exe");
+
+                    string exePath = System.IO.File.Exists(aliasPath) ? aliasPath : "ValleySoft.DiskAnalyzer.exe";
+
                     System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                     {
-                        FileName = targetFile,
+                        FileName = exePath,
                         UseShellExecute = true
                     });
                 }
                 catch { }
             }))
             {
-                Title = "ValleySoft Disk Analyzer (Standalone App)",
-                Subtitle = "Launch standalone graphical window",
-                Icon = SafeIcon("Assets\\DiskAnalyzerLight.png")
+                Title    = "ValleySoft Disk Analyzer (Standalone App)",
+                Subtitle = "Launch standalone graphical WinUI 3 window",
+                Icon     = Icon,
+            },
+            new ListItem(new MyAnonymousCommand(() => 
+            {
+                try
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "powertoys://run",
+                        UseShellExecute = true
+                    });
+                }
+                catch
+                {
+                    try
+                    {
+                        string aliasPath = System.IO.Path.Combine(
+                            System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData),
+                            "Microsoft", "WindowsApps", "ValleySoft.DiskAnalyzer.exe");
+
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = aliasPath,
+                            UseShellExecute = true
+                        });
+                    }
+                    catch { }
+                }
+            }))
+            {
+                Title    = "ValleySoft Disk Analyzer (PowerToys Run)",
+                Subtitle = "Open PowerToys Run plugin launcher (ds <path>)",
+                Icon     = Icon,
             }
         };
     }

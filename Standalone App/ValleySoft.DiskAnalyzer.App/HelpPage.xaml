@@ -18,6 +18,7 @@
                         Header="Help &amp; Features"
                         IsSettingsVisible="False">
             <NavigationView.MenuItems>
+                <NavigationViewItem Tag="WhatsNew" Content="What's New (v1.4.0)" Icon="Help" SelectsOnInvoked="True" IsSelected="True" />
                 <NavigationViewItem Tag="Scanning" Content="Scanning &amp; Admin" Icon="Scan" />
                 <NavigationViewItem Tag="Filtering" Content="Filtering &amp; Search" Icon="Find" />
                 <NavigationViewItem Tag="Navigation" Content="Navigation" Icon="MapDrive" />
@@ -26,38 +27,160 @@
 
             <ScrollViewer>
                 <Grid Padding="24" MaxWidth="1000" HorizontalAlignment="Left" x:Name="ContentGrid">
+                    <!-- What's New Section -->
+                    <StackPanel x:Name="WhatsNewSection" Spacing="20" Visibility="Visible">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <FontIcon Glyph="&#xE897;" FontSize="24" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                            <TextBlock Text="What's New in Version 1.4.0" Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        
+                        <TextBlock Text="Here are the latest features and enhancements added in Version 1.4.0:" Style="{ThemeResource SubtitleTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xEC50;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                    <TextBlock Text="Windows File Explorer Context Menu" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                </StackPanel>
+                                <TextBlock Text="You can now right-click any folder, drive, or folder background in Windows File Explorer and select 'Analyze with DiskAnalyzer' to launch directly into target scan view." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xEB9F;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                    <TextBlock Text="Authentic Embedded Executable File Icons" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                </StackPanel>
+                                <TextBlock Text="Application executables (.exe and .dll files) now display their real high-resolution embedded application icons in the results grid instead of generic installer placeholders." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE78C;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                    <TextBlock Text="3 Top-Level Command Palette Shortcuts" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                </StackPanel>
+                                <TextBlock Text="Windows Command Palette now provides 3 dedicated shortcuts for Command Palette In-App Analyzer, Standalone App launcher, and PowerToys Run launcher." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE74E;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                    <TextBlock Text="Dynamic CSV Export &amp; Admin Elevation Resilience" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                </StackPanel>
+                                <TextBlock Text="Export CSV button automatically enables once a scan finishes and supports native Win32 save dialogs under Administrator elevation." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE80F;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                    <TextBlock Text="Live Item Count Status Bar" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                </StackPanel>
+                                <TextBlock Text="A new status bar at the bottom of the scan window displays real-time item counts for scanned drives and folders." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
                     <!-- Scanning Section -->
-                    <StackPanel x:Name="ScanningSection" Spacing="16" Visibility="Visible">
-                        <TextBlock Text="Scanning &amp; Administrator Mode" Style="{ThemeResource TitleTextBlockStyle}" />
-                        <TextBlock Text="When you select a directory to scan, the app traverses all subfolders and files to calculate their true size on disk." TextWrapping="Wrap" Style="{ThemeResource BodyTextBlockStyle}"/>
-                        <TextBlock Text="Important:" FontWeight="Bold" Margin="0,12,0,0"/>
-                        <TextBlock Text="Windows heavily protects certain system folders (like C:\Windows or C:\Program Files). If you scan your drive as a standard user, these folders will show 0 bytes because the app is denied access. To get a 100% accurate representation of your hard drive, toggle the 'Always Run as Administrator' setting in the File menu. This restarts the app with elevated privileges, allowing it to scan everything." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <StackPanel x:Name="ScanningSection" Spacing="20" Visibility="Collapsed">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <FontIcon Glyph="&#xE781;" FontSize="24" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                            <TextBlock Text="Scanning &amp; Administrator Mode" Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <TextBlock Text="Understand how DiskAnalyzer scans directories and when to use Administrator mode." Style="{ThemeResource SubtitleTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="Byte-for-Byte Deep Scanning" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="When you select a directory to scan, DiskAnalyzer traverses all subfolders and files to calculate their exact size on disk." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="Administrator Privileges (Recommended)" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="Windows protects system directories (like C:\Windows or C:\Program Files). Scanning as a standard user may skip protected folders. Toggle 'Always Run as Administrator' in the File menu to restart with elevated privileges for 100% accurate system-wide drive analysis." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
 
                     <!-- Filtering Section -->
-                    <StackPanel x:Name="FilteringSection" Spacing="16" Visibility="Collapsed">
-                        <TextBlock Text="Fast Filtering &amp; Searching" Style="{ThemeResource TitleTextBlockStyle}" />
-                        <TextBlock Text="The filter box at the top right is a powerful tool to narrow down your view instantly." TextWrapping="Wrap" Style="{ThemeResource BodyTextBlockStyle}"/>
-                        <TextBlock Text="• Type a word (e.g. 'cache') to only show folders and files containing that word." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                        <TextBlock Text="• Type an extension (e.g. '*.mp4' or '*.log') to isolate only those specific file types across your entire drive!" TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                        <TextBlock Text="The pie chart and data grid will dynamically update to reflect only the filtered results." TextWrapping="Wrap"/>
+                    <StackPanel x:Name="FilteringSection" Spacing="20" Visibility="Collapsed">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <FontIcon Glyph="&#xE71E;" FontSize="24" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                            <TextBlock Text="Fast Filtering &amp; Searching" Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <TextBlock Text="Use the top-right search filter box to instantly isolate specific files and folders." Style="{ThemeResource SubtitleTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="Keyword Filtering" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="Type any word (e.g. 'cache' or 'video') to filter results instantly in real time." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="File Extension Filtering" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="Type an extension pattern (e.g. *.mp4, *.zip, *.iso) to isolate specific file types across your entire drive!" TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
 
                     <!-- Navigation Section -->
-                    <StackPanel x:Name="NavigationSection" Spacing="16" Visibility="Collapsed">
-                        <TextBlock Text="Navigation &amp; Drill-Down" Style="{ThemeResource TitleTextBlockStyle}" />
-                        <TextBlock Text="You don't need to rescan to explore folders!" TextWrapping="Wrap" Style="{ThemeResource BodyTextBlockStyle}"/>
-                        <TextBlock Text="Simply double-click on any folder in the Data Grid (or right-click the Pie Chart) to 'drill down' into that specific folder. The Breadcrumb Bar at the top will track your location." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                        <TextBlock Text="Use the Back button or click directly on a breadcrumb item to instantly jump back up the directory tree." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <StackPanel x:Name="NavigationSection" Spacing="20" Visibility="Collapsed">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <FontIcon Glyph="&#xE817;" FontSize="24" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                            <TextBlock Text="Navigation &amp; Drill-Down" Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <TextBlock Text="Explore subdirectories without rescanning disk storage." Style="{ThemeResource SubtitleTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="Interactive Folder Drill-Down" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="Double-click any folder in the DataGrid or TreeView to drill down directly into its contents." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="Breadcrumb &amp; Address Bar" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="Use the top breadcrumb bar to jump to any parent folder, or click the address bar container to type/paste folder paths directly." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
 
                     <!-- ViewOptions Section -->
-                    <StackPanel x:Name="ViewOptionsSection" Spacing="16" Visibility="Collapsed">
-                        <TextBlock Text="View Options &amp; File Context" Style="{ThemeResource TitleTextBlockStyle}" />
-                        <TextBlock Text="The 'View' menu offers options to tailor your experience:" TextWrapping="Wrap" Style="{ThemeResource BodyTextBlockStyle}"/>
-                        <TextBlock Text="• Show Hidden Files: Toggle this off to ignore system-hidden files (like pagefile.sys or hiberfil.sys)." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                        <TextBlock Text="• Expand/Collapse Root Folders: Quickly expand all folders in the grid to see sub-items without clicking." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                        <TextBlock Text="• Right-Click Menu: You can right-click any file or folder in the grid and select 'Open in File Explorer' to immediately launch Windows Explorer at that exact location." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <StackPanel x:Name="ViewOptionsSection" Spacing="20" Visibility="Collapsed">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <FontIcon Glyph="&#xE890;" FontSize="24" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                            <TextBlock Text="View Options &amp; Context Menu" Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <TextBlock Text="Tailor UI appearance and interact with scanned files." Style="{ThemeResource SubtitleTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="Hidden Files &amp; Folder Trees" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="Toggle 'Show Hidden Files' to include or exclude system hidden files, and use Expand/Collapse to manage tree hierarchy views." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="DataGrid Context Menu" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="Right-click any item in the scan grid to open 'Open in Explorer' or 'Copy Path' directly to clipboard." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </Grid>
             </ScrollViewer>

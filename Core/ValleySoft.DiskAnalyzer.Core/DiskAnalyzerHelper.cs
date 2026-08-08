@@ -31,6 +31,64 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         private static readonly string[] SizeUnits = { "B", "KB", "MB", "GB", "TB", "PB" };
         private const FileAttributes RecallOnDataAccess = (FileAttributes)0x400000;
 
+        // Fix 5: Cached EnumerationOptions — avoid allocating a new object on every scan call
+        private static readonly EnumerationOptions _optsDefault = new EnumerationOptions
+        {
+            IgnoreInaccessible = true,
+            RecurseSubdirectories = false,
+            MaxRecursionDepth = int.MaxValue,
+            AttributesToSkip = FileAttributes.Hidden | FileAttributes.System,
+        };
+        private static readonly EnumerationOptions _optsHidden = new EnumerationOptions
+        {
+            IgnoreInaccessible = true,
+            RecurseSubdirectories = false,
+            MaxRecursionDepth = int.MaxValue,
+            AttributesToSkip = 0,
+        };
+        private static readonly EnumerationOptions _optsDefaultRecurse = new EnumerationOptions
+        {
+            IgnoreInaccessible = true,
+            RecurseSubdirectories = true,
+            MaxRecursionDepth = int.MaxValue,
+            AttributesToSkip = FileAttributes.Hidden | FileAttributes.System,
+        };
+        private static readonly EnumerationOptions _optsHiddenRecurse = new EnumerationOptions
+        {
+            IgnoreInaccessible = true,
+            RecurseSubdirectories = true,
+            MaxRecursionDepth = int.MaxValue,
+            AttributesToSkip = 0,
+        };
+
+        // Fix 1: Cap parallelism to half core count — prevents disk I/O thrashing on SSDs/HDDs
+        private static readonly ParallelOptions _parallelOpts = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = Math.Max(2, Environment.ProcessorCount / 2)
+        };
+
+        // Fix 4: O(1) extension → category dictionary — replaces O(n×m) Array.Contains per file
+        private static readonly Dictionary<string, string> _extToCategory = BuildExtensionMap();
+        private static Dictionary<string, string> BuildExtensionMap()
+        {
+            var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var (cat, exts) in new[]
+            {
+                ("Videos",           new[] { ".mp4", ".mkv", ".avi", ".mov", ".wmv", ".flv", ".webm" }),
+                ("Audio",            new[] { ".mp3", ".wav", ".wma", ".ogg", ".flac", ".m4a", ".aac" }),
+                ("Images",           new[] { ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".svg", ".ico", ".webp" }),
+                ("Archives",         new[] { ".zip", ".rar", ".7z", ".tar", ".gz", ".iso", ".cab" }),
+                ("Documents",        new[] { ".pdf", ".docx", ".doc", ".xlsx", ".xls", ".pptx", ".ppt", ".txt", ".rtf", ".csv" }),
+                ("Code",             new[] { ".cs", ".js", ".ts", ".html", ".css", ".json", ".xml", ".py", ".cpp", ".h", ".go", ".rs", ".java", ".sh", ".ps1", ".xaml" }),
+                ("Apps/Executables", new[] { ".exe", ".msi", ".dll", ".sys", ".bat", ".cmd" }),
+            })
+            {
+                foreach (var ext in exts)
+                    map.TryAdd(ext, cat);
+            }
+            return map;
+        }
+
         [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true, EntryPoint = "GetCompressedFileSizeW", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
         private static extern uint GetCompressedFileSize(string lpFileName, out uint lpFileSizeHigh);
 
@@ -77,6 +135,13 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 
         private static EnumerationOptions CreateOptions(bool includeHidden, bool recurse = false, int maxDepth = int.MaxValue)
         {
+            // Fix 5: Return cached instances for common cases; fall back to allocation only for non-default maxDepth
+            if (maxDepth == int.MaxValue)
+            {
+                if (!recurse) return includeHidden ? _optsHidden : _optsDefault;
+                return includeHidden ? _optsHiddenRecurse : _optsDefaultRecurse;
+            }
+            // Non-standard depth (rare) — allocate
             return new EnumerationOptions
             {
                 IgnoreInaccessible = true,
@@ -194,10 +259,37 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 // Materialize subdirectories to array before parallel execution to prevent lazy enumeration race conditions
                 try
                 {
-                    var subDirs = dirInfo.EnumerateDirectories("*", options).ToArray();
+                    var subDirsList = new List<DirectoryInfo>();
+                    try
+                    {
+                        using (var enumerator = dirInfo.EnumerateDirectories("*", options).GetEnumerator())
+                        {
+                            while (true)
+                            {
+                                try
+                                {
+                                    if (!enumerator.MoveNext()) break;
+                                    if (enumerator.Current != null)
+                                    {
+                                        subDirsList.Add(enumerator.Current);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogHelper.Warn($"Skipping directory during enumeration in ScanDirectory: {ex.Message}", typeof(DiskAnalyzerHelper));
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogHelper.Error($"Failed to initialize directory enumerator in ScanDirectory: {ex.Message}", typeof(DiskAnalyzerHelper));
+                    }
+                    var subDirs = subDirsList.ToArray();
                     var folderItems = new System.Collections.Concurrent.ConcurrentBag<DiskItemInfo>();
 
-                    Parallel.ForEach(subDirs, sub =>
+                    // Fix 1: Capped parallelism — prevents all cores hammering disk simultaneously
+                    Parallel.ForEach(subDirs, _parallelOpts, sub =>
                     {
                         try
                         {
@@ -251,32 +343,38 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     LogHelper.Warn($"Error enumerating directories in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
                 }
 
-                // Fix #2: EnumerateFiles instead of GetFiles — lazy, no full array load
+                // Enumerate files — lazy, no full array load
                 try
                 {
-                    int fileCount = 0;
                     foreach (var file in dirInfo.EnumerateFiles("*", options))
                     {
                         try
                         {
+                            // Fix 3: Skip P/Invoke for normal files — only call GetAllocatedSize for
+                            // compressed/sparse files. Normal files use fast cluster-align math.
+                            bool needsNativeSize = (file.Attributes &
+                                (FileAttributes.Compressed | FileAttributes.SparseFile)) != 0 &&
+                                (file.Attributes & (FileAttributes.Offline | FileAttributes.ReparsePoint | RecallOnDataAccess)) == 0;
+
+                            long allocated = needsNativeSize
+                                ? GetAllocatedSize(file.FullName, file.Length, file.Attributes)
+                                : (file.Length + 4095L) / 4096L * 4096L;
+
                             var item = new DiskItemInfo
                             {
                                 Name = file.Name,
                                 FullPath = file.FullName,
                                 SizeBytes = file.Length,
-                                AllocatedSizeBytes = GetAllocatedSize(file.FullName, file.Length, file.Attributes),
+                                AllocatedSizeBytes = allocated,
                                 IsFile = true,
                                 FileCount = 1,
                                 FolderCount = 0,
                                 LastModified = file.LastWriteTime,
                             };
                             items.Add(item);
-                            
-                            // Throttle UI updates to prevent flooding the message queue
-                            if (++fileCount % 100 == 0)
-                            {
-                                progress?.Report(item);
-                            }
+                            // NOTE: Files are NOT reported via progress — they are always present
+                            // in the returned list. The UI reconciles files from the return value
+                            // after scan completes. Only folders use progress for live streaming.
                         }
                         catch (Exception ex)
                         {
@@ -402,10 +500,37 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 var options = CreateOptions(includeHidden, recurse: false);
 
                 // Materialize to array to bypass Enumerator lock contention in Parallel.ForEach
-                var subDirs = dirInfo.EnumerateDirectories("*", options).ToArray();
+                var subDirsList = new List<DirectoryInfo>();
+                try
+                {
+                    using (var enumerator = dirInfo.EnumerateDirectories("*", options).GetEnumerator())
+                    {
+                        while (true)
+                        {
+                            try
+                            {
+                                if (!enumerator.MoveNext()) break;
+                                if (enumerator.Current != null)
+                                {
+                                    subDirsList.Add(enumerator.Current);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                LogHelper.Warn($"Skipping directory during enumeration in GetTopFolders: {ex.Message}", typeof(DiskAnalyzerHelper));
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error($"Failed to initialize directory enumerator in GetTopFolders: {ex.Message}", typeof(DiskAnalyzerHelper));
+                }
+                var subDirs = subDirsList.ToArray();
                 var folderItems = new System.Collections.Concurrent.ConcurrentBag<DiskItemInfo>();
 
-                Parallel.ForEach(subDirs, sub =>
+                // Fix 1: Capped parallelism
+                Parallel.ForEach(subDirs, _parallelOpts, sub =>
                 {
                     try
                     {
@@ -570,10 +695,12 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 };
 
                 var results = new System.Collections.Concurrent.ConcurrentBag<DiskItemInfo>();
-                var directoryItems = enumerable.ToList();
+                // Fix 6: Stream directories instead of .ToList() — avoids loading entire tree into memory
+                // Fix 1: Capped parallelism
+                var directoryItems = enumerable; // streaming — no ToList()
                 int emptyCount = 0;
 
-                Parallel.ForEach(directoryItems, (item, state) =>
+                Parallel.ForEach(directoryItems, _parallelOpts, (item, state) =>
                 {
                     if (!item.isDir) return;
                     if (System.Threading.Volatile.Read(ref emptyCount) >= maxResults)
@@ -676,6 +803,61 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             }
 
             return (totalSize, totalAllocated, fileCount, folderCount);
+        }
+
+
+        public static List<(string Category, long Size, double Percentage)> GetFileTypeBreakdown(string path, bool includeHidden)
+        {
+            // Fix 4: Use O(1) dictionary lookup instead of O(n×m) Array.Contains per file
+            var categoryOrder = new[] { "Videos", "Audio", "Images", "Archives", "Documents", "Code", "Apps/Executables" };
+            var sizes = new Dictionary<string, long>(StringComparer.Ordinal);
+            foreach (var cat in categoryOrder) sizes[cat] = 0;
+            long otherSize = 0;
+            long totalSize = 0;
+
+            try
+            {
+                var options = CreateOptions(includeHidden, recurse: true, maxDepth: int.MaxValue);
+                var enumerable = new System.IO.Enumeration.FileSystemEnumerable<(long size, string name)>(
+                    path,
+                    (ref System.IO.Enumeration.FileSystemEntry entry) => (entry.Length, entry.FileName.ToString()),
+                    options)
+                {
+                    ShouldIncludePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => !entry.IsDirectory,
+                    ShouldRecursePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => (entry.Attributes & FileAttributes.ReparsePoint) == 0
+                };
+
+                foreach (var file in enumerable)
+                {
+                    try
+                    {
+                        long fileSize = file.size;
+                        totalSize += fileSize;
+                        string ext = System.IO.Path.GetExtension(file.name);
+                        if (!string.IsNullOrEmpty(ext) && _extToCategory.TryGetValue(ext, out string catName))
+                            sizes[catName] += fileSize;
+                        else
+                            otherSize += fileSize;
+                    }
+                    catch { }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"Error calculating file type breakdown for {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
+            }
+
+            var result = new List<(string Category, long Size, double Percentage)>();
+            foreach (var cat in categoryOrder)
+            {
+                long size = sizes[cat];
+                double pct = totalSize > 0 ? (double)size / totalSize * 100 : 0;
+                result.Add((cat, size, pct));
+            }
+            double otherPct = totalSize > 0 ? (double)otherSize / totalSize * 100 : 0;
+            result.Add(("Other Files", otherSize, otherPct));
+
+            return result.OrderByDescending(r => r.Size).ToList();
         }
     }
 }

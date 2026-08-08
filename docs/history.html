@@ -202,6 +202,37 @@
             <p>Track the evolution of Disk Analyzer. All notable changes, fixes, and improvements.</p>
         </header>
 
+        <!-- v1.4.0 -->
+        <div class="release">
+            <div class="release-header">
+                <div class="release-version">v1.4.0</div>
+                <div class="release-date">August 7, 2026</div>
+            </div>
+            
+            <div class="release-section">
+                <span class="tag added">Added</span>
+                <ul class="release-list">
+                    <li><strong>Windows File Explorer Context Menu</strong>: Added "Analyze with DiskAnalyzer" right-click context menu item with official application icon for all directories, drives, and folder backgrounds.</li>
+                    <li><strong>Microsoft Store Rating Dialog</strong>: Integrated non-intrusive, professional WinUI 3 rating prompt after 3 completed scans.</li>
+                    <li><strong>Crisp Executable File Icon Extraction</strong>: Added native Win32 <code>ExtractIconEx</code> shell extraction for <code>.exe</code> and <code>.dll</code> files in the main DataGrid view.</li>
+                    <li><strong>Command Palette Top-Level Shortcuts</strong>: Restored all 3 explicit top-level Command Palette entries: (Command Palette), (Standalone App), and (PowerToys Run).</li>
+                    <li><strong>Dynamic CSV Export &amp; Admin Elevation Resilience</strong>: Native <code>comdlg32.dll</code> save dialog fallback guarantees CSV export under Administrator elevation.</li>
+                    <li><strong>Live Item Count Status Bar</strong>: Real-time status bar displaying exact item counts (e.g. <code>212 items</code>).</li>
+                    <li><strong>Interactive Visual Chart &amp; "Other Items" Bar</strong>: Added Top 15 largest items visual chart with aggregate "Other (N items)" summary bar and direct tap-to-drill-down navigation.</li>
+                </ul>
+            </div>
+            
+            <div class="release-section">
+                <span class="tag fixed">Fixed &amp; Improved</span>
+                <ul class="release-list">
+                    <li><strong>Zero-Crash Telemetry Fixes</strong>: Eliminated <code>MOAPPLICATION_HANG</code> watchdog issues and WinUI Composition multi-threading race conditions.</li>
+                    <li><strong>Expanded DataGrid Name Column Width</strong>: Set default minimum width of 350px for the Name column so file names are never clipped by default.</li>
+                    <li><strong>Real-Time Live Search Filter</strong>: Fixed filter text box text-changed event handler for instant keyword and extension (<code>*.mp4</code>, <code>*.exe</code>) filtering.</li>
+                    <li><strong>PowerToys Run Plugin Sync</strong>: Resolved process locking issues during deployment so <code>plugin.json</code> updates cleanly to v1.4.0.</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- v1.3.7 -->
         <div class="release">
             <div class="release-header">

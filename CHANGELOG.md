@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-08-07
+
+### Added
+- **Windows File Explorer Context Menu**: Added **"Analyze with DiskAnalyzer"** right-click context menu item with official application icon for all directories, drives, and folder backgrounds, launching directly into target scan view.
+- **Microsoft Store Rating Dialog**: Integrated non-intrusive, professional WinUI 3 rating prompt after 3 completed scans (linking to `ms-windows-store://review/?ProductId=9NF073KLTVWN`).
+- **Crisp Executable File Icon Extraction**: Added native Win32 `ExtractIconEx` shell extraction for `.exe` and `.dll` files in the main DataGrid view.
+- **Command Palette Top-Level Shortcuts**: Restored all 3 explicit top-level Command Palette entries: **(Command Palette)**, **(Standalone App)**, and **(PowerToys Run)**.
+- **Dynamic Export CSV Button State**: `Export CSV` button starts disabled (greyed out) on launch and while scanning, enabling automatically only after a scan completes.
+- **Live Item Count Status Bar**: Real-time bottom status bar displaying exact item counts (e.g. `212 items`).
+- **Vibrant Fluent Category Colors**: Redesigned File Type Breakdown progress bars with vibrant Fluent palette colors and rounded corners.
+
+### Fixed & Improved
+- **Zero-Crash Telemetry Fixes**:
+  - **`MOAPPLICATION_HANG` Watchdog Fix**: Eliminated synchronous COM thread file logging during Command Palette activation.
+  - **WinUI Composition Crash Fix**: Resolved `ObservableCollection.ToList()` multi-threading race conditions on live UI grid renders.
+  - **Global Exception Catching**: Added unhandled `AppDomain` and `TaskScheduler` exception handlers across all 3 applications.
+- **PowerToys Run Plugin Version Sync**: Fixed process locking issue (`PowerToys.Run.exe`) in deployment script so `plugin.json` and binaries update cleanly to `v1.4.0`.
+- **Admin Elevation CSV Export Resilience**: Added native `comdlg32.dll` (`GetSaveFileName`) P/Invoke save dialog fallback to guarantee CSV export works 100% reliably in elevated Administrator and packaged MSIX modes.
+- **Scan Engine CPU & RAM Optimization**: Capped `Parallel.ForEach` DOP to half processor count, cached `EnumerationOptions`, implemented O(1) file type lookups, and decoupled file progress dispatches.
+
 ## [1.3.7] - 2026-07-25
 
 ### Fixed

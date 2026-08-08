@@ -1,6 +1,6 @@
 # DiskAnalyzer — Standalone App, PowerToys Run Plugin & Command Palette Extension
 
-[![Version](https://img.shields.io/badge/version-1.3.7-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 [![Microsoft Store](https://img.shields.io/badge/Microsoft_Store-Available-0078D7?logo=windows&logoColor=white)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/valley-soft/powertoys-diskanalyzer)
 [![PowerToys](https://img.shields.io/badge/PowerToys-v0.97.0+-orange.svg)](https://github.com/microsoft/PowerToys)
@@ -38,12 +38,21 @@ This project ships three tools, bundled into two easy installations:
 ## Features
 
 ### Standalone App (WinUI 3)
-- 📊 **Visual Charts**: Instantly visualize disk usage with a beautiful colored Bar Chart
-- 🗂️ **Deep Scanning**: Scan any drive or folder to see exact byte-for-byte size analysis
-- 📋 **Sortable Data**: View Name, Size, Allocated Size, Items count, and Modified dates
-- ⬅️ **Navigation**: Fully integrated back-and-forth history, plus an interactive breadcrumb bar
-- 📂 **Integration**: Double-click any folder to drill down, or double-click any file to seamlessly reveal it in Windows Explorer
-- 🔒 **Safe**: Read-only tool with absolutely no delete functionality—your data is safe
+- 📊 **Visual Charts & File Type Breakdown**: Instantly visualize disk usage with progress bars and Fluent category colors
+- 💾 **Export CSV**: Export complete disk analysis results to formatted `.csv` files (with Admin elevation save dialog fallback)
+- 📁 **Windows File Explorer Context Menu**: Right-click any folder or drive in Windows Explorer and click **"Analyze with DiskAnalyzer"** to scan directly
+- 🖼️ **Crisp Executable Icons**: True high-fidelity icon extraction (`ExtractIconEx`) for `.exe` and `.dll` binaries
+- ⭐ **Microsoft Store Rating Prompt**: Professional, non-intrusive rating dialog after 3 completed scans
+- 📊 **Live Item Count Status Bar**: Real-time status bar displaying exact item counts (e.g. `212 items`)
+- 🗂️ **Deep Byte-for-Byte Scanning**: Scan any drive or folder with CPU-aware parallel threading
+- ⬅️ **Breadcrumbs & Navigation**: Interactive address bar and back/forward history navigation
+- 🔒 **Safe & Read-Only**: High-speed disk analysis with zero data deletion risk
+
+### Command Palette Extension (Native Windows CmdPal)
+- 🚀 **3 Top-Level Shortcuts**: Direct entries for **Command Palette View**, **Standalone App**, and **PowerToys Run**
+- 🛡️ **Zero-Hang Activation**: Optimized COM initialization (`MOAPPLICATION_HANG` fix) for instant startup
+- 📂 **In-Palette Drill-Down**: Explore subfolders directly inside Command Palette with an **"Up one level"** return item
+- 🔄 **Async Background Queries**: Non-blocking background disk scans with live progress rendering
 
 ### PowerToys Run Plugin (`ds` keyword)
 - 🖥️ List all drives with used / free / total space and a visual usage bar
@@ -52,16 +61,8 @@ This project ships three tools, bundled into two easy installations:
 - 📊 Show top-level subdirectories ranked by total size
 - 🔎 Filter files by extension (e.g. find all `.mp4` files)
 - 📁 Find empty folders inside any path
-- 🪟 Launch the full standalone **GUI window** with one command
-- 📋 Context menu: open in Explorer, copy path, copy size, drill down, find largest files
-- ⚡ Results cached for 10 seconds — no redundant re-scans
-
-### Command Palette Extension (native CmdPal)
-- 🖥️ Type commands directly — no keyword prefix needed
-- 📂 Async background scanning — shows a *Scanning…* placeholder while working
-- 🔄 Results appear automatically when the scan finishes
-- 🖱️ Click any result to drill down interactively
-- 📋 Context menu: copy path, copy size, open in Explorer, drill into subfolders
+- 🪟 Launch the full standalone **GUI window** with `ds gui`
+- ⚡ High-speed caching for instant query responses
 
 ---
 
@@ -116,7 +117,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 ### Standalone App (WinUI 3) & Command Palette Extension (Unified MSIX)
 
-1. Download **`ValleySoft.DiskAnalyzer.App_1.3.7_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`ValleySoft.DiskAnalyzer.App_1.4.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Double-click** the `.msix` file — Windows will launch the installer
 3. Click **Install** (or **Update**)
 4. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
@@ -136,7 +137,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 #### Method 1 — Standalone Installer (Recommended)
 
-1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.3.7-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.4.0-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Exit PowerToys completely** — Right-click the PowerToys icon in the system tray → **Exit**
 3. **Run the installer** — it will automatically extract and copy plugin files to:
    ```
@@ -168,7 +169,7 @@ Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 ```powershell
 git clone https://github.com/valley-soft/powertoys-diskanalyzer.git
 cd powertoys-diskanalyzer
-.\build-v1.3.7.ps1
+.\build-v1.4.0.ps1
 # Installers and MSIX packages appear in out\
 ```
 
@@ -272,7 +273,7 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 | `Images/` | Plugin icon assets (`DiskAnalyzerLight.png` / `DiskAnalyzerDark.png`) |
 | `CmdPalExtension/` | Native Command Palette MSIX extension project |
 | `Installer/` | Single-file native installer source |
-| `build-v1.3.7.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX + Standalone MSIX for x64 & ARM64 |
+| `build-v1.4.0.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX + Standalone MSIX for x64 & ARM64 |
 | `out/` | Final output directory for all generated artifacts |
 
 ---
@@ -282,6 +283,15 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 Looking to see what's coming next? Check out our official **[Project Roadmap](ROADMAP.md)** for our bi-weekly release schedule and upcoming features!
 
 ---
+
+### v1.4.0 — 2026-08-07
+
+#### Added & Fixed
+- 🛡️ **Zero-Crash Telemetry Fixes**: Eliminated `MOAPPLICATION_HANG` and WinUI Composition crash bugs.
+- ⚡ **Scan Engine Performance**: Parallel DOP capped to half CPU cores with O(1) file type breakdown lookups.
+- 📊 **Admin Elevation CSV Export**: Added native `comdlg32.dll` P/Invoke fallback for 100% reliable CSV saves in Admin mode.
+- 🔘 **Dynamic CSV Button State**: `Export CSV` button starts greyed out until a drive or folder scan completes.
+- 🎨 **Live Status Bar & Vibrant Colors**: Added live item count status bar and vibrant Fluent category colors.
 
 ### v1.3.7 — 2026-07-25
 

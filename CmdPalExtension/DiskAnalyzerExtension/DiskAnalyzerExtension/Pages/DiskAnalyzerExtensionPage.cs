@@ -19,7 +19,7 @@ namespace DiskAnalyzerExtension
     public sealed partial class DiskAnalyzerExtensionPage : ListPage
     {
         // ── State ─────────────────────────────────────────────────────────────
-        public enum PageMode { MainMenu, Drives, Scanning, TopFolders, LargestFiles, ExtFiles, EmptyFolders }
+        public enum PageMode { MainMenu, Drives, Scanning, TopFolders, LargestFiles, ExtFiles, EmptyFolders, TypeBreakdown }
 
         private PageMode _mode    = PageMode.MainMenu;
         private string   _path    = string.Empty;
@@ -82,6 +82,7 @@ namespace DiskAnalyzerExtension
                 PageMode.LargestFiles => AsyncItems(() => LargestFileItems(_path)),
                 PageMode.ExtFiles    => AsyncItems(() => ExtensionItems(_path, _ext)),
                 PageMode.EmptyFolders => AsyncItems(() => EmptyFolderItems(_path)),
+                PageMode.TypeBreakdown => AsyncItems(() => TypeBreakdownItems(_path)),
                 _                    => MainMenuItems(),
             };
         }
@@ -159,6 +160,12 @@ namespace DiskAnalyzerExtension
                 Subtitle = "Scan any folder – ranked by size",
                 Icon     = new IconInfo("\ue71b"),
             },
+            new ListItem(new MySetModeCommand(this, PageMode.TypeBreakdown, "C:\\"))
+            {
+                Title    = "type breakdown C:\\",
+                Subtitle = "File extension type breakdown of space",
+                Icon     = new IconInfo("\ue71b"),
+            },
         };
 
         // ── DRIVES ────────────────────────────────────────────────────────────
@@ -226,6 +233,10 @@ namespace DiskAnalyzerExtension
                     Title    = $"📂 {path}",
                     Subtitle = $"Total: {Fmt(totalSize)}  –  {results.Count} items",
                     Icon     = new IconInfo("\ue71b"),
+                    MoreCommands = new CommandContextItem[]
+                    {
+                        new CommandContextItem(new MyExportCsvCommand(path, results)) { Title = "Export Scan to CSV" }
+                    }
                 }
             };
 
@@ -279,6 +290,10 @@ namespace DiskAnalyzerExtension
                     Title    = $"📊 Top folders in {path}",
                     Subtitle = $"Total: {Fmt(totalSize)}  –  {results.Count} folders",
                     Icon     = new IconInfo("\ue71b"),
+                    MoreCommands = new CommandContextItem[]
+                    {
+                        new CommandContextItem(new MyExportCsvCommand(path, results)) { Title = "Export Scan to CSV" }
+                    }
                 }
             };
 
@@ -423,6 +438,49 @@ namespace DiskAnalyzerExtension
             return items.ToArray();
         }
 
+        // ── FILE TYPE BREAKDOWN ───────────────────────────────────────────────
+        private IListItem[] TypeBreakdownItems(string path)
+        {
+            if (!System.IO.Directory.Exists(path))
+                return new[] { PlaceholderItem($"Path not found: {path}") };
+
+            var breakdown = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.GetFileTypeBreakdown(path, true);
+            long totalSize = 0;
+            foreach (var entry in breakdown)
+            {
+                totalSize += entry.Size;
+            }
+
+            var items = new List<IListItem>();
+            var results = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.ScanDirectory(path, 1, true);
+
+            items.Add(new ListItem(new MyNoOpCommand())
+            {
+                Title = $"📊 Recursive Type breakdown for {path}",
+                Subtitle = $"Total Files Size: {Fmt(totalSize)}",
+                Icon = new IconInfo("\ue71b"),
+                MoreCommands = new CommandContextItem[]
+                {
+                    new CommandContextItem(new MyExportCsvCommand(path, results)) { Title = "Export Scan to CSV" }
+                }
+            });
+
+            foreach (var entry in breakdown)
+            {
+                if (entry.Size == 0) continue;
+                double pct = entry.Percentage;
+                var bar = ProgressBar(pct);
+                items.Add(new ListItem(new MyNoOpCommand())
+                {
+                    Title = $"{entry.Category} - {Fmt(entry.Size)} ({pct:F1}%)",
+                    Subtitle = bar,
+                    Icon = new IconInfo("\ue71b")
+                });
+            }
+
+            return items.ToArray();
+        }
+
         // ── Shared helpers ────────────────────────────────────────────────────
         internal void SetMode(PageMode mode, string path = "", string ext = "") =>
             GoTo(mode, path, ext);
@@ -506,6 +564,60 @@ namespace DiskAnalyzerExtension
         {
             ClipboardHelper.SetText(Text);
             return CommandResult.ShowToast("Copied to clipboard");
+        }
+    }
+
+    public sealed partial class MyExportCsvCommand : InvokableCommand
+    {
+        private readonly string _path;
+        private readonly List<DiskItemInfo> _items;
+
+        public MyExportCsvCommand(string path, List<DiskItemInfo> items)
+        {
+            _path = path;
+            _items = items;
+            Name = "Export Scan to CSV";
+        }
+
+        public override ICommandResult Invoke()
+        {
+            try
+            {
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine("Name,Path,Type,Size (Bytes),Allocated Size (Bytes),File Count,Folder Count,Last Modified");
+                foreach (var item in _items)
+                {
+                    string name = item.Name.Replace("\"", "\"\"");
+                    string fpath = item.FullPath.Replace("\"", "\"\"");
+                    string type = item.IsFile ? "File" : "Directory";
+                    string size = item.SizeBytes.ToString();
+                    string allocated = item.AllocatedSizeBytes.ToString();
+                    string files = item.IsFile ? "0" : item.FileCount.ToString();
+                    string folders = item.IsFile ? "0" : item.FolderCount.ToString();
+                    string modified = item.LastModified.ToString("yyyy-MM-dd HH:mm:ss");
+                    sb.AppendLine($"\"{name}\",\"{fpath}\",\"{type}\",{size},{allocated},{files},{folders},{modified}");
+                }
+
+                string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                string downloadsPath = System.IO.Path.Combine(userProfile, "Downloads");
+                if (!System.IO.Directory.Exists(downloadsPath))
+                {
+                    downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                }
+
+                string safeFolderName = string.Join("_", _path.Split(System.IO.Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
+                if (string.IsNullOrEmpty(safeFolderName)) safeFolderName = "root";
+                string csvFileName = $"DiskAnalyzer_{safeFolderName}_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+                string fullCsvPath = System.IO.Path.Combine(downloadsPath, csvFileName);
+
+                System.IO.File.WriteAllText(fullCsvPath, sb.ToString(), System.Text.Encoding.UTF8);
+
+                return CommandResult.ShowToast($"Saved {csvFileName} to Downloads");
+            }
+            catch (Exception ex)
+            {
+                return CommandResult.ShowToast($"Export failed: {ex.Message}");
+            }
         }
     }
 }

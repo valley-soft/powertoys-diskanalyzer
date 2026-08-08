@@ -30,7 +30,7 @@ This release includes three tools, bundled into two easy installations:
 
 ### Installation — Standalone App & Command Palette Extension (Unified MSIX)
 
-1. Download **`ValleySoft.DiskAnalyzer.App_1.3.7_x64.msix`** (or `arm64`) from the assets below.
+1. Download **`ValleySoft.DiskAnalyzer.App_1.4.0_x64.msix`** (or `arm64`) from the assets below.
 2. Double-click the `.msix` file and click **Install**.
 3. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
 

@@ -18,23 +18,11 @@ public sealed partial class DiskAnalyzerExtension : IExtension, IDisposable
 
     public DiskAnalyzerExtension(ManualResetEvent extensionDisposedEvent)
     {
-        try
-        {
-            var logPath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "cmdpal_ext_trace.log");
-            System.IO.File.AppendAllText(logPath, "[DiskAnalyzerExtension] Constructor called\n");
-        }
-        catch { }
         this._extensionDisposedEvent = extensionDisposedEvent;
     }
 
     public object? GetProvider(ProviderType providerType)
     {
-        try
-        {
-            var logPath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "cmdpal_ext_trace.log");
-            System.IO.File.AppendAllText(logPath, $"[DiskAnalyzerExtension] GetProvider called for {providerType}\n");
-        }
-        catch { }
         return providerType switch
         {
             ProviderType.Commands => _provider,
