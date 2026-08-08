@@ -73,6 +73,11 @@
     <PublishTrimmed>False</PublishTrimmed>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\Core\ValleySoft.DiskAnalyzer.Core\ValleySoft.DiskAnalyzer.Core.csproj" />
     <ProjectReference Include="..\..\CmdPalExtension\DiskAnalyzerExtension\DiskAnalyzerExtension\DiskAnalyzerExtension.csproj" />

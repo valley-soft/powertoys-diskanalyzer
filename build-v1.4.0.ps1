@@ -100,12 +100,14 @@ foreach ($Arch in $Architectures) {
         
         # ── Collect Debug Symbols (PDBs) ──
         Write-Host "Collecting debug symbols (PDBs)..."
-        $publishBinDir = "$StandaloneDir\bin\$Arch\Release\net10.0-windows\$WinArch\publish"
+        $publishBinDir = Get-ChildItem -Path "$StandaloneDir\bin" -Directory -Recurse -ErrorAction SilentlyContinue |
+                         Where-Object { $_.FullName -like "*Release*win-$Arch*\publish" } |
+                         Select-Object -First 1
         $symbolZip = "$appOutputDir\ValleySoft.DiskAnalyzer.Symbols_$($Version)_$Arch.zip"
         if (Test-Path $symbolZip) { Remove-Item $symbolZip -Force }
         
-        if (Test-Path $publishBinDir) {
-            $pdbFiles = Get-ChildItem -Path $publishBinDir -Filter "*.pdb"
+        if ($publishBinDir) {
+            $pdbFiles = Get-ChildItem -Path $publishBinDir.FullName -Filter "*.pdb"
             if ($pdbFiles.Count -gt 0) {
                 Compress-Archive -Path ($pdbFiles.FullName) -DestinationPath $symbolZip -Force
                 Write-Host "Symbols zip packaged successfully at: $symbolZip"
