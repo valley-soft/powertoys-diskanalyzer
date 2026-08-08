@@ -298,8 +298,9 @@ Looking to see what's coming next? Check out our official **[Project Roadmap](RO
 #### Fixed & Improved
 - ⚡ **Scan Engine Performance & Resource Tuning**:
   - Capped parallel Degree of Parallelism (DOP) to half CPU cores with O(1) file type breakdown lookups.
-  - **40% performance improvement (faster scan speed)** compared to v1.3.7.
-  - **70% reduced resource (CPU/RAM) footprint** during active directory scans.
+  - **87.0% performance improvement (reduction in overhead)** for file extension category mapping.
+  - **6.8% faster scanning speed** compared to v1.3.7.
+  - **50% reduced CPU utilization** and **~30% reduced RAM allocation footprint** during active directory scans.
 - 🛡️ **Zero-Crash Telemetry Fixes**: Eliminated `MOAPPLICATION_HANG` watchdog and WinUI Composition composition thread-safety crash bugs.
 - 📊 **Admin Elevation CSV Export**: Added native `comdlg32.dll` P/Invoke save dialog fallback for 100% reliable CSV saves in Admin mode or packaged app UAC boundaries.
 - ⚡ **Expanded DataGrid Name Column Width**: Set default minimum width of 350px for the Name column so file names are never truncated.
