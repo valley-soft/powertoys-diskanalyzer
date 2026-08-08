@@ -61,6 +61,14 @@ This release includes three tools, bundled into two easy installations:
 2. Double-click the `.msix` file and click **Install**.
 3. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
 
+> 💡 **Troubleshooting Certificate Verification (Error 0x800B010A):**
+> Because this MSIX is a sideloading release signed with a self-signed certificate, Windows requires you to install the certificate once before installing the app:
+> 1. Download **`ValleySoft.cer`** from the release assets below.
+> 2. Right-click the `.cer` file and select **Install Certificate**.
+> 3. Select **Local Machine**, click Next.
+> 4. Choose **Place all certificates in the following store**, click Browse, select **Trusted People**, click OK.
+> 5. Click Next, then Finish. Now double-click the `.msix` file to install the app cleanly!
+
 > **Recommended:** The Microsoft Store is the easiest way to install and keep the app automatically updated!
 >
 > [![Get it from Microsoft](https://get.microsoft.com/images/en-us%20dark.svg)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
