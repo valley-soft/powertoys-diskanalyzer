@@ -13,7 +13,7 @@ A [PowerToys Run](https://aka.ms/PowerToysOverview) plugin **and** a native Wind
 **[🌐 Visit the Official DiskAnalyzer Website](https://valley-soft.github.io/powertoys-diskanalyzer/)**
 
 <div align="center">
-  <img src="docs/Images/standalone-app-ui.png" alt="DiskAnalyzer Hero Screenshot" width="800"/>
+  <img src="docs/Images/standalone-app-ui ver 1.4.0.png" alt="DiskAnalyzer Hero Screenshot" width="800"/>
 </div>
 
 ### 🚀 Install Instantly (Windows 11)
@@ -72,7 +72,7 @@ This project ships three tools, bundled into two easy installations:
 
 Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalone experience.
 
-![GUI — Main Overview](docs/Images/standalone-app-ui.png)
+![GUI — Main Overview](docs/Images/standalone-app-ui%20ver%201.4.0.png)
 
 ![GUI — Visual Chart Analysis](docs/Images/standalone-app-visual-chart.png)
 
@@ -81,7 +81,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 ![GUI — Administrator Banner](docs/Images/standalone-app-runas-admin-banner.png)
 
-![GUI — Professional Help & Features Navigation](docs/Images/standalone-app-help-page.png)
+![GUI — Professional Help & Features Navigation](docs/Images/standalone-app-help-page%20ver%201.4.0.png)
 
 ![GUI — About Page](docs/Images/standalone-app-about-page.png)
 
