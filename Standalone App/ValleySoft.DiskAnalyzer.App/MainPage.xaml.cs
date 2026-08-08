@@ -159,8 +159,18 @@ namespace ValleySoft_DiskAnalyzer_App
                     Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "Microsoft", "WindowsApps", "ValleySoft.DiskAnalyzer.exe");
 
-                // Fallback to cmd launching the alias if the alias file is somehow missing
-                string exePath = System.IO.File.Exists(aliasPath) ? aliasPath
+                bool aliasExists = false;
+                try
+                {
+                    var attr = System.IO.File.GetAttributes(aliasPath);
+                    if (attr != (System.IO.FileAttributes)(-1))
+                    {
+                        aliasExists = true;
+                    }
+                }
+                catch { }
+
+                string exePath = aliasExists ? aliasPath
                     : System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
                       ?? "ValleySoft.DiskAnalyzer.exe";
 

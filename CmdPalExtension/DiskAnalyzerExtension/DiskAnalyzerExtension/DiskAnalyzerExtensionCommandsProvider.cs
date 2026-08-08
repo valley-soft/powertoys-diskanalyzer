@@ -46,7 +46,18 @@ public partial class DiskAnalyzerExtensionCommandsProvider : CommandProvider
                         System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData),
                         "Microsoft", "WindowsApps", "ValleySoft.DiskAnalyzer.exe");
 
-                    string exePath = System.IO.File.Exists(aliasPath) ? aliasPath : "ValleySoft.DiskAnalyzer.exe";
+                    bool aliasExists = false;
+                    try
+                    {
+                        var attr = System.IO.File.GetAttributes(aliasPath);
+                        if (attr != (System.IO.FileAttributes)(-1))
+                        {
+                            aliasExists = true;
+                        }
+                    }
+                    catch { }
+
+                    string exePath = aliasExists ? aliasPath : "ValleySoft.DiskAnalyzer.exe";
 
                     System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                     {
