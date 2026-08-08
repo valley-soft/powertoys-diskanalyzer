@@ -17,4 +17,5 @@ temp_x64_payload/
  
 MicrosoftStore/*.msix
 MicrosoftStore/*.msixbundle
+MicrosoftStore/*.msixupload
 MicrosoftStore/bundle_mapping.txt

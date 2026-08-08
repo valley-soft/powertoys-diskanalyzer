@@ -95,6 +95,53 @@ Write-Host "`nGenerating .msixbundle..."
 if ($LASTEXITCODE -eq 0) {
     Write-Host "`nSUCCESS! Your Store bundle is ready:" -ForegroundColor Green
     Write-Host "MicrosoftStore\$BundleFileName"
+
+    # -- Create unified .msixupload file with matching symbols for Partner Center --
+    Write-Host "`nPackaging matching PDB symbols into .appxsym..."
+    $tempPdbDir = "temp_pdbs_for_store"
+    if (Test-Path $tempPdbDir) { Remove-Item $tempPdbDir -Recurse -Force }
+    New-Item -ItemType Directory -Path $tempPdbDir -Force | Out-Null
+
+    # Gather PDBs from both x64 and arm64 publish dirs
+    foreach ($Arch in $Architectures) {
+        $WinArch = "win-$Arch"
+        $publishBinDir = Get-ChildItem -Path "$StandaloneDir\bin" -Directory -Recurse -ErrorAction SilentlyContinue |
+                         Where-Object { $_.FullName -like "*Release*win-$Arch*\publish" } |
+                         Select-Object -First 1
+        if ($publishBinDir) {
+            Get-ChildItem -Path $publishBinDir.FullName -Filter "*.pdb" | ForEach-Object {
+                Copy-Item $_.FullName -Destination "$tempPdbDir\$($_.BaseName)_$Arch.pdb" -Force
+            }
+        }
+    }
+
+    $appxsymName = $BundleFileName -replace '\.msixbundle$', '.appxsym'
+    $appxsymPath = "$appxsymName"
+    if (Test-Path $appxsymPath) { Remove-Item $appxsymPath -Force }
+    Compress-Archive -Path "$tempPdbDir\*" -DestinationPath $appxsymPath -Force
+
+    Write-Host "`nGenerating .msixupload container..."
+    $tempUploadDir = "temp_msixupload"
+    if (Test-Path $tempUploadDir) { Remove-Item $tempUploadDir -Recurse -Force }
+    New-Item -ItemType Directory -Path $tempUploadDir -Force | Out-Null
+
+    Copy-Item $BundleFileName -Destination "$tempUploadDir\" -Force
+    Copy-Item $appxsymPath -Destination "$tempUploadDir\" -Force
+
+    $msixuploadName = $BundleFileName -replace '\.msixbundle$', '.msixupload'
+    if (Test-Path $msixuploadName) { Remove-Item $msixuploadName -Force }
+
+    $msixuploadZip = $msixuploadName -replace '\.msixupload$', '.zip'
+    Compress-Archive -Path "$tempUploadDir\*" -DestinationPath $msixuploadZip -Force
+    Rename-Item -Path $msixuploadZip -NewName $msixuploadName -Force
+
+    # Cleanup temp resources
+    Remove-Item $tempPdbDir -Recurse -Force
+    Remove-Item $tempUploadDir -Recurse -Force
+    Remove-Item $appxsymPath -Force
+
+    Write-Host "`nSUCCESS! Your unified upload package (with symbols) is ready:" -ForegroundColor Green
+    Write-Host "MicrosoftStore\$msixuploadName"
 } else {
     Write-Error "Failed to create .msixbundle"
 }
