@@ -26,8 +26,14 @@ namespace DiskAnalyzerExtension
         private string   _ext     = string.Empty;
 
         // Cached results for async operations
-        private IListItem[]? _asyncCache;
-        private bool          _asyncRunning;
+        private readonly object _asyncLock = new object();
+        private volatile bool   _asyncRunning;
+        private IListItem[]?    _asyncCache;
+        private int             _navigationId = 0;
+
+        private static readonly string _systemDrive = 
+            System.IO.Path.GetPathRoot(Environment.GetFolderPath(
+                Environment.SpecialFolder.System)) ?? @"C:\";
 
         public DiskAnalyzerExtensionPage()
         {
@@ -57,8 +63,12 @@ namespace DiskAnalyzerExtension
             _mode         = mode;
             _path         = path;
             _ext          = ext;
-            _asyncCache   = null;
-            _asyncRunning = false;
+            lock (_asyncLock)
+            {
+                _asyncCache   = null;
+                _asyncRunning = false;
+                _navigationId++;
+            }
             SearchText    = string.Empty;   // clear search box so filter doesn't hide items
             RaiseItemsChanged();
         }
@@ -90,18 +100,37 @@ namespace DiskAnalyzerExtension
         // ── Async wrapper ─────────────────────────────────────────────────────
         private IListItem[] AsyncItems(Func<IListItem[]> buildFn)
         {
-            if (_asyncCache != null)
-                return PrependBack(_asyncCache);
+            int currentNavId;
+            lock (_asyncLock)
+            {
+                if (_asyncCache != null)
+                    return PrependBack(_asyncCache);
 
-            if (_asyncRunning)
-                return new[] { PlaceholderItem("Working… please wait.") };
+                if (_asyncRunning)
+                    return new[] { PlaceholderItem("Working… please wait.") };
 
-            _asyncRunning = true;
+                _asyncRunning = true;
+                currentNavId = _navigationId;
+            }
+
             System.Threading.Tasks.Task.Run(() =>
             {
-                try   { _asyncCache = buildFn(); }
-                catch (Exception ex) { _asyncCache = new[] { PlaceholderItem($"Error: {ex.Message}") }; }
-                finally { _asyncRunning = false; }
+                IListItem[] results;
+                try   { results = buildFn(); }
+                catch (Exception ex) { results = new[] { PlaceholderItem($"Error: {ex.Message}") }; }
+
+                lock (_asyncLock)
+                {
+                    if (currentNavId == _navigationId)
+                    {
+                        _asyncCache = results;
+                        _asyncRunning = false;
+                    }
+                    else
+                    {
+                        return; // Discard results from obsolete navigation
+                    }
+                }
                 try { RaiseItemsChanged(); } catch { }
             });
 
@@ -130,39 +159,39 @@ namespace DiskAnalyzerExtension
                 Subtitle = "List all drives with used / free / total space",
                 Icon     = new IconInfo("\ue71b"),
             },
-            new ListItem(new MySetModeCommand(this, PageMode.TopFolders, "C:\\"))
+            new ListItem(new MySetModeCommand(this, PageMode.TopFolders, _systemDrive))
             {
-                Title    = "top C:\\",
+                Title    = $"top {_systemDrive}",
                 Subtitle = "Top-level folders ranked by size",
                 Icon     = new IconInfo("\ue71b"),
             },
-            new ListItem(new MySetModeCommand(this, PageMode.LargestFiles, "C:\\"))
+            new ListItem(new MySetModeCommand(this, PageMode.LargestFiles, _systemDrive))
             {
-                Title    = "largest C:\\",
+                Title    = $"largest {_systemDrive}",
                 Subtitle = "Find the largest files recursively",
                 Icon     = new IconInfo("\ue71b"),
             },
-            new ListItem(new MySetModeCommand(this, PageMode.ExtFiles, "C:\\", ".mp4"))
+            new ListItem(new MySetModeCommand(this, PageMode.ExtFiles, _systemDrive, ".mp4"))
             {
-                Title    = "ext C:\\ .mp4",
+                Title    = $"ext {_systemDrive} .mp4",
                 Subtitle = "Find largest files of a specific extension",
                 Icon     = new IconInfo("\ue71b"),
             },
-            new ListItem(new MySetModeCommand(this, PageMode.EmptyFolders, "C:\\"))
+            new ListItem(new MySetModeCommand(this, PageMode.EmptyFolders, _systemDrive))
             {
-                Title    = "empty C:\\",
+                Title    = $"empty {_systemDrive}",
                 Subtitle = "Find empty folders",
                 Icon     = new IconInfo("\ue71b"),
             },
-            new ListItem(new MySetModeCommand(this, PageMode.Scanning, "C:\\Users"))
+            new ListItem(new MySetModeCommand(this, PageMode.Scanning, System.IO.Path.Combine(_systemDrive, "Users")))
             {
-                Title    = "C:\\Users",
+                Title    = $"{_systemDrive}Users",
                 Subtitle = "Scan any folder – ranked by size",
                 Icon     = new IconInfo("\ue71b"),
             },
-            new ListItem(new MySetModeCommand(this, PageMode.TypeBreakdown, "C:\\"))
+            new ListItem(new MySetModeCommand(this, PageMode.TypeBreakdown, _systemDrive))
             {
-                Title    = "type breakdown C:\\",
+                Title    = $"type breakdown {_systemDrive}",
                 Subtitle = "File extension type breakdown of space",
                 Icon     = new IconInfo("\ue71b"),
             },
@@ -221,6 +250,9 @@ namespace DiskAnalyzerExtension
         // ── FOLDER SCAN ───────────────────────────────────────────────────────
         private IListItem[] FolderScanItems(string path)
         {
+            if (!System.IO.Directory.Exists(path))
+                return new[] { PlaceholderItem($"Path not found: {path}") };
+
             var results = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.ScanDirectory(path, 1, true);
             if (results.Count == 0)
                 return new[] { PlaceholderItem($"No items found in '{path}'") };

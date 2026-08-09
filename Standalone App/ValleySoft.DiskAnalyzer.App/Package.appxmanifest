@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -15,7 +15,7 @@
 
   <Identity
     Name="ValleySoft.ValleySoftDiskAnalyzer"
-    Publisher="CN=609617EB-B04D-404E-B0F3-720FF360003B"
+    Publisher="CN=ValleySoft"
     Version="1.4.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="B66E5954-FDAC-43E7-B4F4-EC969822E519" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>

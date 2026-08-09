@@ -1,5 +1,7 @@
 $ErrorActionPreference = "Stop"
 
+# ── Self-elevate if not running as Administrator ─────────────────────────────
+
 # 1. Run the build script
 Write-Host "Running build-v1.4.0.ps1..."
 & ".\build-v1.4.0.ps1"
@@ -17,6 +19,18 @@ $existing = Get-AppxPackage -Name "ValleySoft.ValleySoftDiskAnalyzer"
 if ($existing) {
     Write-Host "Removing older version: $($existing.PackageFullName)"
     Remove-AppxPackage -Package $existing.PackageFullName -ErrorAction SilentlyContinue
+}
+
+# Trust the signing certificate so Add-AppxPackage accepts the MSIX
+# certutil works without requiring a separate elevated process
+$cerPath = Resolve-Path "out\App\ValleySoft.cer" -ErrorAction SilentlyContinue
+if ($cerPath) {
+    Write-Host "Trusting signing certificate..."
+    # CurrentUser\TrustedPeople (no elevation needed)
+    Import-Certificate -FilePath $cerPath -CertStoreLocation "Cert:\CurrentUser\TrustedPeople" -ErrorAction SilentlyContinue | Out-Null
+    # LocalMachine\TrustedPeople via certutil (works if process has sufficient rights)
+    & certutil -addstore -f "TrustedPeople" "$cerPath" 2>&1 | Out-Null
+    Write-Host "Certificate trusted."
 }
 
 # 4. Install the new MSIX package

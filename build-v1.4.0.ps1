@@ -14,23 +14,43 @@ Write-Host "  Building DiskAnalyzer v1.4.0          "
 Write-Host "========================================="
 
 Write-Host "Checking for ValleySoft certificate..."
+
+# Require the password via environment variable — never hardcoded.
+# Run Setup-DevCert.ps1 once to configure this on a new machine.
+$certPasswordRaw = $env:VALLEYSOFT_CERT_PASSWORD
+if (!$certPasswordRaw) {
+    Write-Error "VALLEYSOFT_CERT_PASSWORD environment variable is not set.`nRun Setup-DevCert.ps1 once to generate a strong password and certificate."
+    exit 1
+}
+
 if (-not (Test-Path "ValleySoft.pfx")) {
-    Write-Host "Generating new self-signed certificate (CN=ValleySoft)..."
-    $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=ValleySoft" -KeyUsage DigitalSignature -FriendlyName "ValleySoft" -CertStoreLocation "Cert:\CurrentUser\My" -TextExtension @("2.5.29.37={text}1.3.7.1.5.5.7.3.3", "2.5.29.19={text}")
-    $password = ConvertTo-SecureString -String "password" -Force -AsPlainText
-    Export-PfxCertificate -Cert $cert -FilePath "ValleySoft.pfx" -Password $password | Out-Null
-    Export-Certificate -Cert $cert -FilePath "ValleySoft.cer" | Out-Null
+    Write-Error "ValleySoft.pfx not found. Run Setup-DevCert.ps1 first to generate the signing certificate."
+    exit 1
 }
 
 Write-Host "Importing ValleySoft certificate to trusted stores..."
-$password = ConvertTo-SecureString -String "password" -Force -AsPlainText
-Import-PfxCertificate -FilePath "ValleySoft.pfx" -CertStoreLocation "Cert:\CurrentUser\My" -Password $password | Out-Null
-Import-Certificate -FilePath "ValleySoft.cer" -CertStoreLocation "Cert:\CurrentUser\TrustedPeople" | Out-Null
+$password = ConvertTo-SecureString -String $certPasswordRaw -Force -AsPlainText
+Import-PfxCertificate -FilePath "ValleySoft.pfx" -CertStoreLocation "Cert:\CurrentUser\My" -Password $password -ErrorAction SilentlyContinue | Out-Null
+Import-Certificate -FilePath "ValleySoft.cer" -CertStoreLocation "Cert:\CurrentUser\TrustedPeople" -ErrorAction SilentlyContinue | Out-Null
+try {
+    Import-Certificate -FilePath "ValleySoft.cer" -CertStoreLocation "Cert:\LocalMachine\TrustedPeople" -ErrorAction SilentlyContinue | Out-Null
+} catch {}
+
+# Resolve cert thumbprint for signtool (avoids EKU filter failure when using /f)
+$pfxCert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2("ValleySoft.pfx", $certPasswordRaw)
+$CertThumbprint = $pfxCert.Thumbprint
+Write-Host "Certificate thumbprint: $CertThumbprint"
 
 # Extract version from plugin.json
 $pluginJson = Get-Content "plugin.json" -Raw | ConvertFrom-Json
 $Version    = $pluginJson.Version
 Write-Host "Version: v$Version"
+
+# Clean AppPackages, obj, and bin in target project to prevent stale manifest/signing caches
+Write-Host "Cleaning target project build outputs..."
+if (Test-Path "$StandaloneDir\AppPackages") { Remove-Item "$StandaloneDir\AppPackages" -Recurse -Force }
+if (Test-Path "$StandaloneDir\obj") { Remove-Item "$StandaloneDir\obj" -Recurse -Force }
+if (Test-Path "$StandaloneDir\bin") { Remove-Item "$StandaloneDir\bin" -Recurse -Force }
 
 $Architectures = @("x64", "arm64")
 
@@ -85,11 +105,19 @@ foreach ($Arch in $Architectures) {
 
     if ($msixSearchApp) {
         $msixPath = $msixSearchApp.FullName
+        
         Write-Host "Signing MSIX using SignTool..."
-        $thumbprint = (Get-PfxCertificate -FilePath "ValleySoft.cer").Thumbprint
-        $signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\signtool.exe"
+        $signtool = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin" -Recurse -Filter "signtool.exe" -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -like "*x64*" } |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1 -ExpandProperty FullName
+        if (!$signtool) {
+            $signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\signtool.exe"
+        }
         if (Test-Path $signtool) {
-            & $signtool sign /fd SHA256 /a /sha1 $thumbprint "$msixPath"
+            # Sign by thumbprint so signtool uses the cert already in CurrentUser\My
+            # This bypasses the EKU filter issue that occurs with /f file-based signing
+            & $signtool sign /sha1 $CertThumbprint /fd SHA256 /v "$msixPath"
         } else {
             Write-Host "Warning: signtool.exe not found at $signtool"
         }
@@ -129,6 +157,12 @@ foreach ($Arch in $Architectures) {
     if ($payloadItems.Count -eq 0) {
         Write-Host "Warning: temp_payload is empty - skipping installer build for $Arch."
     } else {
+        # Bundle the signing certificate into the payload so the installer can trust it on any PC
+        if (Test-Path "ValleySoft.cer") {
+            Copy-Item -Path "ValleySoft.cer" -Destination "temp_payload\ValleySoft.cer" -Force
+            Write-Host "ValleySoft.cer bundled into installer payload."
+        }
+
         Compress-Archive -Path "temp_payload\*" -DestinationPath $PayloadZip -Force -ErrorAction Stop
         $payloadSizeMB = [Math]::Round((Get-Item $PayloadZip).Length / 1048576, 2)
         Write-Host ("Payload zip created at: " + $PayloadZip + " (" + $payloadSizeMB + " MB)")

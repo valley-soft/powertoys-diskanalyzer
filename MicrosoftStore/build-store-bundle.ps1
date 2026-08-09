@@ -63,10 +63,13 @@ foreach ($Arch in $Architectures) {
     Write-Host "  Building Store MSIX ($Arch)            "
     Write-Host "========================================="
 
-    # We do NOT pass a test certificate password here, because for the actual Store, 
-    # packages should either be unsigned (the Store signs them) or you use your actual 
-    # Publisher certificate. The MSBuild target GenerateAppxPackageOnBuild will create it.
-    dotnet publish $ProjectFile -c Release -r $WinArch --self-contained true -p:GenerateAppxPackageOnBuild=true -p:PackageCertificateKeyFile="..\..\Store.pfx" -p:PackageCertificatePassword=password -p:DefineConstants="STORE_BUILD"
+    # Require the password via environment variable — never hardcoded.
+    $certPasswordRaw = $env:VALLEYSOFT_CERT_PASSWORD
+    if (!$certPasswordRaw) {
+        Write-Error "VALLEYSOFT_CERT_PASSWORD environment variable is not set. Run Setup-DevCert.ps1 first."
+        exit 1
+    }
+    dotnet publish $ProjectFile -c Release -r $WinArch --self-contained true -p:GenerateAppxPackageOnBuild=true -p:PackageCertificateKeyFile="..\..\Store.pfx" -p:PackageCertificatePassword=$certPasswordRaw -p:DefineConstants="STORE_BUILD"
 
     # Find the generated MSIX file
     $msixFile = Get-ChildItem -Path "$StandaloneDir\AppPackages" -Filter "*.msix" -Recurse -ErrorAction SilentlyContinue |

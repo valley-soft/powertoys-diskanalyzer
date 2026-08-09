@@ -92,9 +92,35 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true, EntryPoint = "GetCompressedFileSizeW", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
         private static extern uint GetCompressedFileSize(string lpFileName, out uint lpFileSizeHigh);
 
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true, EntryPoint = "GetDiskFreeSpaceW", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+        private static extern bool GetDiskFreeSpace(
+            string lpRootPathName,
+            out uint lpSectorsPerCluster,
+            out uint lpBytesPerSector,
+            out uint lpNumberOfFreeClusters,
+            out uint lpTotalNumberOfClusters);
+
+        public static long GetClusterSize(string path)
+        {
+            try
+            {
+                string root = System.IO.Path.GetPathRoot(path);
+                if (!string.IsNullOrEmpty(root))
+                {
+                    uint sectorsPerCluster, bytesPerSector, freeClusters, totalClusters;
+                    if (GetDiskFreeSpace(root, out sectorsPerCluster, out bytesPerSector, out freeClusters, out totalClusters))
+                    {
+                        return (long)sectorsPerCluster * bytesPerSector;
+                    }
+                }
+            }
+            catch { }
+            return 4096;
+        }
+
         public static long GetAllocatedSize(string path, long actualSize, FileAttributes attributes = 0)
         {
-            long clusterSize = 4096;
+            long clusterSize = GetClusterSize(path);
             
             // Cloud files and Reparse Points (OneDrive, iCloud, Symlinks) take 0 physical space.
             // Explicitly return 0 to avoid GetCompressedFileSizeW failing with Access Denied in MSIX.
@@ -245,6 +271,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         public static List<DiskItemInfo> ScanDirectory(string path, int maxDepth, bool includeHidden, IProgress<DiskItemInfo> progress = null)
         {
             var items = new List<DiskItemInfo>();
+            long clusterSize = GetClusterSize(path);
 
             try
             {
@@ -358,7 +385,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 
                             long allocated = needsNativeSize
                                 ? GetAllocatedSize(file.FullName, file.Length, file.Attributes)
-                                : (file.Length + 4095L) / 4096L * 4096L;
+                                : (file.Length + clusterSize - 1) / clusterSize * clusterSize;
 
                             var item = new DiskItemInfo
                             {
@@ -753,7 +780,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             long totalAllocated = 0;
             int fileCount = 0;
             int folderCount = 0;
-            long clusterSize = 4096;
+            long clusterSize = GetClusterSize(path);
 
             try
             {

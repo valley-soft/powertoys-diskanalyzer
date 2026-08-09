@@ -13,7 +13,8 @@
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <EnableMsixTooling>false</EnableMsixTooling>
     <PackageCertificateKeyFile>..\..\..\ValleySoft.pfx</PackageCertificateKeyFile>
-    <PackageCertificatePassword>password</PackageCertificatePassword>
+    <PackageCertificatePassword Condition="'$(VALLEYSOFT_CERT_PASSWORD)' != ''">$(VALLEYSOFT_CERT_PASSWORD)</PackageCertificatePassword>
+    <PackageCertificatePassword Condition="'$(VALLEYSOFT_CERT_PASSWORD)' == ''">password</PackageCertificatePassword>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <DefineConstants>$(DefineConstants);CMD_PAL</DefineConstants>
@@ -93,7 +94,8 @@
     <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
     <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
     <PackageCertificateKeyFile>..\..\..\ValleySoft.pfx</PackageCertificateKeyFile>
-    <PackageCertificatePassword>password</PackageCertificatePassword>
+    <PackageCertificatePassword Condition="'$(VALLEYSOFT_CERT_PASSWORD)' != ''">$(VALLEYSOFT_CERT_PASSWORD)</PackageCertificatePassword>
+    <PackageCertificatePassword Condition="'$(VALLEYSOFT_CERT_PASSWORD)' == ''">password</PackageCertificatePassword>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'!='Debug'">

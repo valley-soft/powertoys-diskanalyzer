@@ -4,17 +4,18 @@ out/
 *.user
 .vs/
 
-
 # Build artifacts
 *.zip
 publish/
 temp_inspect/
 temp_payload/
 temp_x64_payload/
-%TEMP%/
+temp_installer_build/
 *.pfx
+*.pfx.user
 *.cer
- 
+build.log
+
 MicrosoftStore/*.msix
 MicrosoftStore/*.msixbundle
 MicrosoftStore/*.msixupload

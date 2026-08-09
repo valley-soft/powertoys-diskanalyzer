@@ -70,6 +70,14 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
                         archive.ExtractToDirectory(tempDir);
                 }
 
+                // ── Trust the signing certificate so MSIX installs on any PC ────────
+                string cerPath = Path.Combine(tempDir, "ValleySoft.cer");
+                if (File.Exists(cerPath))
+                {
+                    log("Trusting ValleySoft signing certificate...");
+                    TrustCertificate(cerPath, log);
+                }
+
                 if (installPlugin) InstallPowerToysPlugin(tempDir, isCleanInstall, log);
 
                 log("\nINSTALLATION COMPLETE!");
@@ -82,6 +90,18 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer.Installer
             {
                 try { if (Directory.Exists(tempDir)) Directory.Delete(tempDir, true); } catch { }
             }
+        }
+
+        private static void TrustCertificate(string cerPath, Action<string> log)
+        {
+            // Import into CurrentUser\TrustedPeople — works without elevation
+            RunPowerShell(
+                $"Import-Certificate -FilePath '{cerPath}' -CertStoreLocation 'Cert:\\CurrentUser\\TrustedPeople' -ErrorAction SilentlyContinue | Out-Null",
+                log, silent: true);
+            // Also attempt LocalMachine\TrustedPeople if we have admin rights
+            RunPowerShell(
+                $"try {{ Import-Certificate -FilePath '{cerPath}' -CertStoreLocation 'Cert:\\LocalMachine\\TrustedPeople' -ErrorAction SilentlyContinue | Out-Null }} catch {{}}",
+                log, silent: true);
         }
 
         // ─────────────────────────────────────────────────────────────────────
