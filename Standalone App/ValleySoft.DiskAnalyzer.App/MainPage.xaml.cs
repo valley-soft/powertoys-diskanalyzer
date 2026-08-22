@@ -818,37 +818,42 @@ private async Task NavigateToFolderAsync(string path)
                 scanCount++;
                 localSettings.Values["CompletedScanCount"] = scanCount;
 
-                // Prompt user professionally after 3 completed scans
-                if (scanCount == 3 || (scanCount > 3 && scanCount % 20 == 0))
+                // Show only once, after the user has completed 10 scans —
+                // they're a genuine regular user at that point, not a first-timer.
+                if (scanCount != 10) return;
+
+                // Wait 5 seconds so results are fully visible before the dialog appears.
+                await Task.Delay(TimeSpan.FromSeconds(5));
+
+                // Check again in case the user navigated away or started another scan.
+                neverShow = localSettings.Values["NeverShowRatingPrompt"] as bool? ?? false;
+                if (neverShow) return;
+
+                var promptContent = new StackPanel { Spacing = 12 };
+                promptContent.Children.Add(new TextBlock
                 {
-                    var promptContent = new StackPanel { Spacing = 12 };
-                    promptContent.Children.Add(new TextBlock
-                    {
-                        Text = "If ValleySoft Disk Analyzer is helping you organize your drives and free up space, please take a moment to rate us on the Microsoft Store. Your feedback is greatly appreciated!",
-                        TextWrapping = TextWrapping.Wrap
-                    });
+                    Text = "You've been using Disk Analyzer for a while — thank you! If it's been useful, a quick rating on the Microsoft Store helps a lot.",
+                    TextWrapping = TextWrapping.Wrap
+                });
 
-                    var ratingDialog = new ContentDialog
-                    {
-                        Title = "Enjoying DiskAnalyzer?",
-                        Content = promptContent,
-                        PrimaryButtonText = "Rate on Store ⭐",
-                        SecondaryButtonText = "Maybe Later",
-                        CloseButtonText = "Don't Ask Again",
-                        DefaultButton = ContentDialogButton.Primary,
-                        XamlRoot = this.XamlRoot
-                    };
+                var ratingDialog = new ContentDialog
+                {
+                    Title = "Enjoying Disk Analyzer?",
+                    Content = promptContent,
+                    PrimaryButtonText = "Leave a Rating",
+                    SecondaryButtonText = "Not Now",
+                    CloseButtonText = "Don't Ask Again",
+                    DefaultButton = ContentDialogButton.Secondary,
+                    XamlRoot = this.XamlRoot
+                };
 
-                    var result = await ratingDialog.ShowAsync();
-                    if (result == ContentDialogResult.Primary)
-                    {
-                        localSettings.Values["NeverShowRatingPrompt"] = true;
-                        await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9NF073KLTVWN"));
-                    }
-                    else if (result == ContentDialogResult.None) // Close button ("Don't Ask Again")
-                    {
-                        localSettings.Values["NeverShowRatingPrompt"] = true;
-                    }
+                // Mark as shown regardless of outcome — we only ever ask once.
+                localSettings.Values["NeverShowRatingPrompt"] = true;
+
+                var result = await ratingDialog.ShowAsync();
+                if (result == ContentDialogResult.Primary)
+                {
+                    await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9NF073KLTVWN"));
                 }
             }
             catch (Exception ex)
@@ -856,6 +861,7 @@ private async Task NavigateToFolderAsync(string path)
                 System.Diagnostics.Debug.WriteLine($"Rating prompt error: {ex.Message}");
             }
         }
+
 
 
         private async void ResultsGrid_DoubleTapped(object sender, Microsoft.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
