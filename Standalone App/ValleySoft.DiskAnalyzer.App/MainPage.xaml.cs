@@ -1131,21 +1131,43 @@ private async Task NavigateToFolderAsync(string path)
         {
             try
             {
-                if (_currentItems == null || _currentItems.Count == 0)
+                string activeTab = (MainPivot?.SelectedItem as PivotItem)?.Header?.ToString() ?? "";
+                bool isTopFilesTab = activeTab == "Top Files";
+
+                if (isTopFilesTab)
                 {
-                    var noItemsDialog = new ContentDialog
+                    if (_topFiles == null || _topFiles.Count == 0)
                     {
-                        Title = "Export CSV",
-                        Content = "No data is currently loaded to export.",
-                        CloseButtonText = "OK",
-                        XamlRoot = this.XamlRoot
-                    };
-                    await noItemsDialog.ShowAsync();
-                    return;
+                        var noItemsDialog = new ContentDialog
+                        {
+                            Title = "Export CSV",
+                            Content = "No top files have been scanned yet to export.",
+                            CloseButtonText = "OK",
+                            XamlRoot = this.XamlRoot
+                        };
+                        await noItemsDialog.ShowAsync();
+                        return;
+                    }
+                }
+                else
+                {
+                    if (_currentItems == null || _currentItems.Count == 0)
+                    {
+                        var noItemsDialog = new ContentDialog
+                        {
+                            Title = "Export CSV",
+                            Content = "No data is currently loaded to export.",
+                            CloseButtonText = "OK",
+                            XamlRoot = this.XamlRoot
+                        };
+                        await noItemsDialog.ShowAsync();
+                        return;
+                    }
                 }
 
                 string safeFolderName = string.Join("_", _currentPath.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).Replace(" ", "_").Trim();
                 if (string.IsNullOrWhiteSpace(safeFolderName)) safeFolderName = "DiskAnalysis";
+                if (isTopFilesTab) safeFolderName += "_TopFiles";
                 string defaultFileName = $"{safeFolderName}_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
 
                 string? destinationPath = null;
@@ -1183,27 +1205,51 @@ private async Task NavigateToFolderAsync(string path)
                 }
 
                 var sb = new System.Text.StringBuilder();
-                sb.AppendLine("Name,Path,Type,Size,Allocated Size,% of Parent,File Count,Folder Count,Last Modified");
-                foreach (var item in _currentItems)
+                int exportedCount = 0;
+
+                if (isTopFilesTab)
                 {
-                    string name = (item.Name ?? "").Replace("\"", "\"\"");
-                    string path = (item.FullPath ?? "").Replace("\"", "\"\"");
-                    string type = item.IsFile ? "File" : "Directory";
-                    string formattedSize = (item.FormattedSize ?? "").Replace("\"", "\"\"");
-                    string formattedAllocated = (item.FormattedAllocated ?? "").Replace("\"", "\"\"");
-                    string pct = (item.FormattedPercentage ?? "0%").Replace("\"", "\"\"");
-                    string files = item.IsFile ? "0" : item.FileCount.ToString();
-                    string folders = item.IsFile ? "0" : item.FolderCount.ToString();
-                    string modified = item.LastModified.ToString("yyyy-MM-dd HH:mm:ss");
-                    sb.AppendLine($"\"{name}\",\"{path}\",\"{type}\",\"{formattedSize}\",\"{formattedAllocated}\",\"{pct}\",{files},{folders},{modified}");
+                    sb.AppendLine("Name,Path,Size (Bytes),Size,Last Modified");
+                    var topFilesList = _topFiles.ToList();
+                    exportedCount = topFilesList.Count;
+                    foreach (var item in topFilesList)
+                    {
+                        string name = (item.Name ?? "").Replace("\"", "\"\"");
+                        string path = (item.FullPath ?? "").Replace("\"", "\"\"");
+                        long sizeBytes = item.SizeBytes;
+                        string formattedSize = (item.FormattedSize ?? "").Replace("\"", "\"\"");
+                        string modified = item.LastModified == DateTime.MinValue ? "" : item.LastModified.ToString("yyyy-MM-dd HH:mm:ss");
+                        sb.AppendLine($"\"{name}\",\"{path}\",{sizeBytes},\"{formattedSize}\",\"{modified}\"");
+                    }
+                }
+                else
+                {
+                    var itemsToExport = (ResultsGrid.ItemsSource as IEnumerable<GridItemViewModel>)?.ToList() ?? _currentItems.ToList();
+                    exportedCount = itemsToExport.Count;
+                    sb.AppendLine("Name,Path,Type,Size (Bytes),Size,Allocated Size (Bytes),Allocated Size,% of Parent,File Count,Folder Count,Last Modified");
+                    foreach (var item in itemsToExport)
+                    {
+                        string name = (item.Name ?? "").Replace("\"", "\"\"");
+                        string path = (item.FullPath ?? "").Replace("\"", "\"\"");
+                        string type = item.IsFile ? "File" : "Directory";
+                        long sizeBytes = item.SizeBytes;
+                        string formattedSize = (item.FormattedSize ?? "").Replace("\"", "\"\"");
+                        long allocatedSizeBytes = item.AllocatedSizeBytes;
+                        string formattedAllocated = (item.FormattedAllocated ?? "").Replace("\"", "\"\"");
+                        string pct = (item.FormattedPercentage ?? "0%").Replace("\"", "\"\"");
+                        string files = item.IsFile ? "0" : item.FileCount.ToString();
+                        string folders = item.IsFile ? "0" : item.FolderCount.ToString();
+                        string modified = item.LastModified == DateTime.MinValue ? "" : item.LastModified.ToString("yyyy-MM-dd HH:mm:ss");
+                        sb.AppendLine($"\"{name}\",\"{path}\",\"{type}\",{sizeBytes},\"{formattedSize}\",{allocatedSizeBytes},\"{formattedAllocated}\",\"{pct}\",{files},{folders},\"{modified}\"");
+                    }
                 }
 
-                System.IO.File.WriteAllText(destinationPath, sb.ToString(), System.Text.Encoding.UTF8);
+                System.IO.File.WriteAllText(destinationPath, sb.ToString(), new System.Text.UTF8Encoding(true));
 
                 var successDialog = new ContentDialog
                 {
                     Title = "Export Complete",
-                    Content = $"Successfully exported {_currentItems.Count} items to:\n{destinationPath}",
+                    Content = $"Successfully exported {exportedCount} items to:\n{destinationPath}",
                     CloseButtonText = "OK",
                     XamlRoot = this.XamlRoot
                 };

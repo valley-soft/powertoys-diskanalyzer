@@ -626,18 +626,20 @@ namespace DiskAnalyzerExtension
             try
             {
                 var sb = new System.Text.StringBuilder();
-                sb.AppendLine("Name,Path,Type,Size (Bytes),Allocated Size (Bytes),File Count,Folder Count,Last Modified");
+                sb.AppendLine("Name,Path,Type,Size (Bytes),Size,Allocated Size (Bytes),Allocated Size,File Count,Folder Count,Last Modified");
                 foreach (var item in _items)
                 {
                     string name = item.Name.Replace("\"", "\"\"");
                     string fpath = item.FullPath.Replace("\"", "\"\"");
                     string type = item.IsFile ? "File" : "Directory";
                     string size = item.SizeBytes.ToString();
+                    string formattedSize = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.FormatSize(item.SizeBytes);
                     string allocated = item.AllocatedSizeBytes.ToString();
+                    string formattedAllocated = Community.PowerToys.Run.Plugin.DiskAnalyzer.DiskAnalyzerHelper.FormatSize(item.AllocatedSizeBytes);
                     string files = item.IsFile ? "0" : item.FileCount.ToString();
                     string folders = item.IsFile ? "0" : item.FolderCount.ToString();
                     string modified = item.LastModified.ToString("yyyy-MM-dd HH:mm:ss");
-                    sb.AppendLine($"\"{name}\",\"{fpath}\",\"{type}\",{size},{allocated},{files},{folders},{modified}");
+                    sb.AppendLine($"\"{name}\",\"{fpath}\",\"{type}\",{size},\"{formattedSize}\",{allocated},\"{formattedAllocated}\",{files},{folders},{modified}");
                 }
 
                 string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -652,7 +654,7 @@ namespace DiskAnalyzerExtension
                 string csvFileName = $"DiskAnalyzer_{safeFolderName}_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
                 string fullCsvPath = System.IO.Path.Combine(downloadsPath, csvFileName);
 
-                System.IO.File.WriteAllText(fullCsvPath, sb.ToString(), System.Text.Encoding.UTF8);
+                System.IO.File.WriteAllText(fullCsvPath, sb.ToString(), new System.Text.UTF8Encoding(true));
 
                 return CommandResult.ShowToast($"Saved {csvFileName} to Downloads");
             }
