@@ -39,41 +39,43 @@
 
 ---
 
-## ✅ v1.4.x — Completed
+## ✅ Releases & History
 
 | Release | Date | Highlights |
 |---|---|---|
-| **v1.4.0** | 2026-08-07 | Explorer context menu, icon extraction, CmdPal top-level commands, CSV export resilience, live item count, zero-crash telemetry fixes |
+| **v1.5.0** | 2026-09-07 | Donut chart tab, Top 100 Files whole-drive scan, Old & Large quick filter, Recycle Bin context menu, `ds recent` history, richer subtitles, full keyboard navigation, collapsible WPF donut panel, live theme sync, unicode shaded usage bars, native CmdPal settings, and async queries |
 | **v1.4.1** | 2026-08-21 | Store patch: less intrusive rating prompt (fires once after 10 scans, 5s delay), Store version policy fix |
+| **v1.4.0** | 2026-08-07 | Explorer context menu, icon extraction, CmdPal top-level commands, CSV export resilience, live item count, zero-crash telemetry fixes |
 
 ---
 
-## 🚀 v1.5.0 — *Visualization, Depth & Platform Alignment*
-**Target: ~2 weeks from Sep 7**
+## 🚀 v1.5.0 — *Visualization, Depth & Platform Alignment* (Completed ✅)
+**Released: September 7, 2026**
 **Theme: Make every component more powerful, more visual, and aligned with PowerToys v0.101 APIs**
 
 ### 🖥️ Standalone App
-- [ ] **Pie / Donut Chart Toggle** — interactive visual alternate for folder space distribution alongside the existing bar chart; click slices to drill into subfolders
-- [ ] **"Top Largest Files" Tab** — dedicated tab scanning the entire selected drive, listing the 100 biggest files across all subfolders (size, path, extension, last modified)
-- [ ] **"Large & Old Files" Smart Filter** — one-click filter: files >100 MB not accessed/modified in 12+ months — helps users identify safe cleanup targets
-- [ ] **Send to Recycle Bin** — right-click context menu "Send to Recycle Bin" on files and folders directly from the DataGrid (safe delete, recoverable)
+- [x] **Pie / Donut Chart Toggle** — interactive visual alternate for folder space distribution alongside the existing bar chart; click slices to drill into subfolders
+- [x] **"Top Largest Files" Tab** — dedicated tab scanning the entire selected drive, listing the 100 biggest files across all subfolders (size, path, extension, last modified, system files included)
+- [x] **"Large & Old Files" Smart Filter** — one-click filter: files >100 MB not accessed/modified in 12+ months with live badge count
+- [x] **Send to Recycle Bin** — right-click context menu "Send to Recycle Bin" on files and folders directly from the DataGrid (safe delete, recoverable)
 
 ### 🔍 PowerToys Run Plugin
+- [x] **Scan History / Recents** — `ds recent` command shows the last 5 scanned paths for quick re-scan without retyping
+- [x] **Result Count in Subtitle** — show item count + total size in the plugin result subtitle line (e.g. `C:\Users → 42.3 GB · 15,823 items`) for at-a-glance info without opening GUI
+- [x] **High-Contrast Usage Bars** — unicode contrast blocks (`█` / `░`) ensuring high legibility across dark and light themes
 - [ ] **Monitor for `Community.PowerToys.Run.Plugin.Dependencies` v0.98.0+** — upgrade when available to stay aligned with PowerToys Run host; currently on v0.97.0 ✅
-- [ ] **Scan History / Recents** — `ds recent` command shows the last 5 scanned paths for quick re-scan without retyping
-- [ ] **Result Count in Subtitle** — show item count + total size in the plugin result subtitle line (e.g. `C:\Users → 42.3 GB · 15,823 items`) for at-a-glance info without opening GUI
 - [ ] **Prepare for PowerToys Run v2** — audit `IPlugin`/`IContextMenu`/`ISettingProvider` usage and begin planning async migration
 
 ### 🪟 PowerToys Run GUI (DiskAnalyzerWindow)
-- [ ] **Pie / Donut Chart Side Panel** — collapsible side panel showing a donut chart for the currently selected folder (feature-parity with Standalone App)
-- [ ] **Full Keyboard Navigation** — `Enter` to drill in, `Backspace` to go up, `F5` to rescan — keyboard-only flow matching PowerToys' own keyboard-first philosophy
-- [ ] **Live Theme Sync** — detect PowerToys `ActualTheme` changes at runtime and apply dark/light without a restart
+- [x] **Pie / Donut Chart Side Panel** — collapsible side panel showing a donut chart for the currently selected folder
+- [x] **Full Keyboard Navigation** — `Enter` to drill in, `Backspace` to go up, `F5` to rescan — keyboard-only flow matching PowerToys' own keyboard-first philosophy
+- [x] **Live Theme Sync** — detect system `UserPreferenceChanged` events at runtime and apply dark/light without a restart
 
 ### 🎨 Command Palette Extension
-- [ ] **Switch to `IDynamicListAsync`** — load scan results asynchronously to prevent CmdPal freezing during large folder scans (PowerToys v0.101 API)
-- [ ] **Adaptive Cards Detail Pane** — render a disk usage mini-chart and stats (total size, item count, top files) in the CmdPal item detail pane when a folder is selected
-- [ ] **Extension Settings via Native Controls** — use PowerToys v0.101 reusable extension settings controls to add: scan hidden files toggle, max depth, excluded paths list — no custom settings UI needed
-- [ ] **Per-Command Enable/Disable** — independently enable/disable each of our 3 top-level CmdPal commands using the new per-command toggle support
+- [x] **Switch to Async Scanning** — load scan results asynchronously to prevent CmdPal freezing during large folder scans
+- [x] **Extension Settings via Native Controls** — native `CommandProvider.Settings` integration for "Show Hidden Files" and "Max Scan Depth"
+- [x] **Per-Command Enable/Disable** — independently enable/disable each of our 3 top-level CmdPal commands using granular toggles
+- [ ] **Adaptive Cards Detail Pane** — render a disk usage mini-chart and stats in the CmdPal item detail pane
 - [ ] **Submit to CmdPal Extension Gallery** — submit PR to `microsoft/CmdPal-Extensions` so users can install via WinGet from within CmdPal's settings (no manual MSIX download needed)
 
 ---
