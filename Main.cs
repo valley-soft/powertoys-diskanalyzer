@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using ManagedCommon;
 using Microsoft.PowerToys.Settings.UI.Library;
+using System.Text.Json;
 using Wox.Plugin;
 using Wox.Plugin.Logger;
 
@@ -22,7 +23,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         public string Name => "DiskAnalyzer (PowerToys Run)";
         public string Description => "Analyze disk space usage like TreeSize. Scan folders, find large files, and view drive info.";
 
-        // Fix #5: Command name constants â€” no more magic strings
+        // Fix #5: Command name constants — no more magic strings
+        private const string CmdRecent = "recent";
         private const string CmdDrives = "drives";
         private const string CmdLargest = "largest ";
         private const string CmdTop = "top ";
@@ -30,7 +32,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         private const string CmdEmpty = "empty ";
         private const string CmdGui = "gui";
 
-        // Fix #4: Scan result cache â€” 10-second TTL avoids redundant re-scans
+        // Fix #4: Scan result cache — 10-second TTL avoids redundant re-scans
         private static readonly ConcurrentDictionary<string, (DateTime Timestamp, List<Result> Results)> _scanCache = new();
         private static readonly TimeSpan CacheTtl = TimeSpan.FromSeconds(10);
 
@@ -44,11 +46,91 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         private bool _includeHiddenFiles = true;
         private bool _showPercentage = true;
 
+        private static readonly string RecentFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ValleySoft", "DiskAnalyzer", "recent.json");
+        private readonly object _recentLock = new();
+        private List<string> _recentPaths = new();
+
+        private static string NormalizeRecentPath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+            var trimmed = path.Trim().Trim('"');
+            try
+            {
+                if (trimmed.Length == 2 && char.IsLetter(trimmed[0]) && trimmed[1] == ':')
+                {
+                    return $"{char.ToUpperInvariant(trimmed[0])}:\\";
+                }
+                var full = Path.GetFullPath(trimmed);
+                var root = Path.GetPathRoot(full);
+                if (full.Equals(root, StringComparison.OrdinalIgnoreCase))
+                {
+                    return root ?? full;
+                }
+                return full.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            }
+            catch
+            {
+                return trimmed;
+            }
+        }
+
+        private void LoadRecents()
+        {
+            lock (_recentLock)
+            {
+                try
+                {
+                    if (File.Exists(RecentFile))
+                    {
+                        var json = File.ReadAllText(RecentFile);
+                        var loaded = JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
+                        _recentPaths = loaded
+                            .Select(NormalizeRecentPath)
+                            .Where(p => !string.IsNullOrEmpty(p))
+                            .Distinct(StringComparer.OrdinalIgnoreCase)
+                            .Take(5)
+                            .ToList();
+                    }
+                    else
+                    {
+                        _recentPaths = new List<string>();
+                    }
+                }
+                catch { }
+            }
+        }
+
+        private void AddRecent(string path)
+        {
+            var cleanPath = NormalizeRecentPath(path);
+            if (string.IsNullOrEmpty(cleanPath)) return;
+
+            lock (_recentLock)
+            {
+                try
+                {
+                    _recentPaths.RemoveAll(p => string.Equals(NormalizeRecentPath(p), cleanPath, StringComparison.OrdinalIgnoreCase));
+                    _recentPaths.Insert(0, cleanPath);
+                    if (_recentPaths.Count > 5) _recentPaths.RemoveAt(5);
+
+                    var dir = Path.GetDirectoryName(RecentFile);
+                    if (dir != null) Directory.CreateDirectory(dir);
+                    File.WriteAllText(RecentFile, JsonSerializer.Serialize(_recentPaths));
+                }
+                catch { }
+            }
+        }
+
         public void Init(PluginInitContext context)
         {
+            // v1.5.0: Community.PowerToys.Run.Plugin.Dependencies is currently v0.97.0.
+            // Monitor https://www.nuget.org/packages/Community.PowerToys.Run.Plugin.Dependencies
+            // for v0.98.0+ and upgrade the PackageReference in the .csproj when available.
+
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _context.API.ThemeChanged += OnThemeChanged;
             UpdateIconPath(_context.API.GetCurrentTheme());
+            LoadRecents();
         }
 
         /// <summary>
@@ -69,13 +151,55 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 return GetHelpResults();
             }
 
-            // "drives" command â€” fast, no delayed execution needed
+            // "recent" command — show recent scan history
+            if (search.Equals(CmdRecent, StringComparison.OrdinalIgnoreCase))
+            {
+                lock (_recentLock)
+                {
+                    var recents = _recentPaths
+                        .Select(NormalizeRecentPath)
+                        .Where(p => !string.IsNullOrEmpty(p))
+                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                        .ToList();
+
+                    if (recents.Count > 0)
+                    {
+                        return recents.Select((p, i) => new Result
+                        {
+                            Title = p,
+                            SubTitle = $"Recent scan \u2014 click or press Enter to scan {p}",
+                            IcoPath = _iconPath,
+                            Score = 100 - i,
+                            Action = _ =>
+                            {
+                                _context?.API.ChangeQuery($"ds {p}", true);
+                                return false;
+                            }
+                        }).ToList();
+                    }
+                    else
+                    {
+                        return new List<Result>
+                        {
+                            new Result
+                            {
+                                Title = "recent \u2014 No recent scans yet",
+                                SubTitle = "Scan a folder or drive first (e.g. 'ds C:\\' or 'ds largest C:\\')",
+                                IcoPath = _iconPath,
+                                Score = 100,
+                            }
+                        };
+                    }
+                }
+            }
+
+            // "drives" command — fast, no delayed execution needed
             if (search.Equals(CmdDrives, StringComparison.OrdinalIgnoreCase))
             {
                 return GetDriveResults();
             }
 
-            // "gui" command â€” opens standalone window
+            // "gui" command — opens standalone window
             if (search.StartsWith(CmdGui, StringComparison.OrdinalIgnoreCase))
             {
                 return new List<Result>
@@ -89,6 +213,10 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                         Action = _ =>
                         {
                             var path = search.Length > 3 ? search[3..].Trim().Trim('"') : null;
+                            if (!string.IsNullOrEmpty(path) && Directory.Exists(path))
+                            {
+                                AddRecent(path);
+                            }
                             try
                             {
                                 Application.Current.Dispatcher.Invoke(() =>
@@ -120,11 +248,14 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 return new List<Result>();
             }
 
-
-
             var search = query.Search?.Trim() ?? string.Empty;
 
+            // Strip "ds " prefix if present
+            if (search.StartsWith("ds ", StringComparison.OrdinalIgnoreCase))
+                search = search.Substring(3).Trim();
+
             if (string.IsNullOrEmpty(search) || 
+                search.Equals(CmdRecent, StringComparison.OrdinalIgnoreCase) ||
                 search.Equals(CmdDrives, StringComparison.OrdinalIgnoreCase) ||
                 search.StartsWith(CmdGui, StringComparison.OrdinalIgnoreCase))
             {
@@ -435,13 +566,6 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             {
                 new Result
                 {
-                    Title = "ValleySoft Disk Analyzer (Runs Plug-in) \u2014 TreeSize-like disk usage tool",
-                    SubTitle = "Type a path, 'drives', 'largest <path>', or 'top <path>'",
-                    IcoPath = _iconPath,
-                    Score = 1000,
-                },
-                new Result
-                {
                     Title = "drives",
                     SubTitle = "Show all drives with used/free/total space",
                     IcoPath = _iconPath,
@@ -454,22 +578,22 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 },
                 new Result
                 {
-                    Title = @"C:\Users",
-                    SubTitle = "Scan a folder \u2014 shows subfolders sorted by size",
+                    Title = "recent",
+                    SubTitle = "Show recently scanned folders and drives",
                     IcoPath = _iconPath,
-                    Score = 800,
+                    Score = 850,
                     Action = _ =>
                     {
-                        _context?.API.ChangeQuery(@"ds C:\Users", true);
+                        _context?.API.ChangeQuery("ds recent", true);
                         return false;
                     },
                 },
                 new Result
                 {
                     Title = "gui",
-                    SubTitle = "Open the full standalone WPF graphical interface",
+                    SubTitle = "Open the full standalone graphical user interface",
                     IcoPath = _iconPath,
-                    Score = 750,
+                    Score = 800,
                     Action = _ =>
                     {
                         _context?.API.ChangeQuery("ds gui", true);
@@ -478,49 +602,49 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 },
                 new Result
                 {
-                    Title = @"largest C:\",
+                    Title = "largest <path>",
                     SubTitle = "Find the largest files in a directory (recursive)",
+                    IcoPath = _iconPath,
+                    Score = 750,
+                    Action = _ =>
+                    {
+                        _context?.API.ChangeQuery("ds largest ", true);
+                        return false;
+                    },
+                },
+                new Result
+                {
+                    Title = "top <path>",
+                    SubTitle = "Show top-level folders ranked by total size",
                     IcoPath = _iconPath,
                     Score = 700,
                     Action = _ =>
                     {
-                        _context?.API.ChangeQuery(@"ds largest C:\", true);
+                        _context?.API.ChangeQuery("ds top ", true);
                         return false;
                     },
                 },
                 new Result
                 {
-                    Title = @"top C:\",
-                    SubTitle = "Show top-level folders ranked by total size",
+                    Title = "ext <path> <ext>",
+                    SubTitle = "Find largest files by extension (e.g. ds ext C:\\ .mp4)",
+                    IcoPath = _iconPath,
+                    Score = 650,
+                    Action = _ =>
+                    {
+                        _context?.API.ChangeQuery("ds ext ", true);
+                        return false;
+                    },
+                },
+                new Result
+                {
+                    Title = "empty <path>",
+                    SubTitle = "Find folders that contain no files or subfolders",
                     IcoPath = _iconPath,
                     Score = 600,
                     Action = _ =>
                     {
-                        _context?.API.ChangeQuery(@"ds top C:\", true);
-                        return false;
-                    },
-                },
-                new Result
-                {
-                    Title = @"ext C:\ .mp4",
-                    SubTitle = "Find largest files of a specific extension",
-                    IcoPath = _iconPath,
-                    Score = 500,
-                    Action = _ =>
-                    {
-                        _context?.API.ChangeQuery(@"ds ext C:\ .mp4", true);
-                        return false;
-                    },
-                },
-                new Result
-                {
-                    Title = @"empty C:\",
-                    SubTitle = "Find folders that contain no files or subfolders",
-                    IcoPath = _iconPath,
-                    Score = 400,
-                    Action = _ =>
-                    {
-                        _context?.API.ChangeQuery(@"ds empty C:\", true);
+                        _context?.API.ChangeQuery("ds empty ", true);
                         return false;
                     },
                 },
@@ -592,6 +716,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 };
             }
 
+            AddRecent(path);
+
             var items = DiskAnalyzerHelper.ScanDirectory(path, _maxDepth, _includeHiddenFiles);
             var parentSize = items.Sum(i => i.SizeBytes);
             var parentAllocated = items.Sum(i => i.AllocatedSizeBytes);
@@ -603,7 +729,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             {
                 results.Add(new Result
                 {
-                    Title = $"⬅ Up one level to {parentDir.Name}",
+                    Title = $"\u2B05 Up one level to {parentDir.Name}",
                     SubTitle = $"Return to {parentDir.FullName}",
                     IcoPath = _iconPath,
                     Score = 10001,
@@ -619,7 +745,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 new Result
                 {
                     Title = $"\U0001F4C1 {path} \u2014 Total: {DiskAnalyzerHelper.FormatSize(parentSize)} (Allocated: {DiskAnalyzerHelper.FormatSize(parentAllocated)})",
-                    SubTitle = $"{items.Count(i => !i.IsFile)} folders, {items.Count(i => i.IsFile)} files scanned" +
+                    SubTitle = $"{DiskAnalyzerHelper.FormatSize(parentSize)} \u00B7 {items.Count(i => !i.IsFile)} folders, {items.Count(i => i.IsFile)} files scanned" +
                                (!_includeHiddenFiles ? " \u26A0\uFE0F Hidden files excluded \u2014 enable in Settings for accurate totals" : ""),
                     IcoPath = _iconPath,
                     Score = 10000,
@@ -650,11 +776,12 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 var pctText = _showPercentage ? $" ({pct:F1}%)" : string.Empty;
                 var bar = DiskAnalyzerHelper.CreateMiniBar(pct);
                 var hint = item.IsFile ? "" : " (Press Enter to drill down)";
+                var itemCountText = item.IsFile ? "" : $" \u00B7 {item.FileCount + item.FolderCount:N0} items";
 
                 results.Add(new Result
                 {
                     Title = $"{icon} {item.Name} \u2014 {DiskAnalyzerHelper.FormatSize(item.SizeBytes)}{pctText}",
-                    SubTitle = $"{bar} Allocated: {DiskAnalyzerHelper.FormatSize(item.AllocatedSizeBytes)} | {item.FullPath}{hint}",
+                    SubTitle = $"{DiskAnalyzerHelper.FormatSize(item.SizeBytes)}{itemCountText} | {bar} Allocated: {DiskAnalyzerHelper.FormatSize(item.AllocatedSizeBytes)} | {item.FullPath}{hint}",
                     IcoPath = _iconPath,
                     Score = 10000 - rank,
                     ContextData = item,
@@ -693,6 +820,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     },
                 };
             }
+
+            AddRecent(path);
 
             var files = DiskAnalyzerHelper.FindLargestFiles(path, _maxResults, _includeHiddenFiles);
 
@@ -769,6 +898,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 };
             }
 
+            AddRecent(path);
+
             // Fix #3: Pass _maxDepth instead of hardcoded 10
             var folders = DiskAnalyzerHelper.GetTopFolders(path, _maxResults, _maxDepth, _includeHiddenFiles);
             var totalSize = folders.Sum(f => f.SizeBytes);
@@ -798,11 +929,12 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             {
                 var pct = totalSize > 0 ? (double)folder.SizeBytes / totalSize * 100 : 0;
                 var bar = DiskAnalyzerHelper.CreateMiniBar(pct);
+                var itemCountText = $" \u00B7 {folder.FileCount + folder.FolderCount:N0} items";
 
                 results.Add(new Result
                 {
                     Title = $"\U0001F4C1 {folder.Name} \u2014 {DiskAnalyzerHelper.FormatSize(folder.SizeBytes)} ({pct:F1}%)",
-                    SubTitle = $"{bar} Allocated: {DiskAnalyzerHelper.FormatSize(folder.AllocatedSizeBytes)} | Items: {folder.FileCount + folder.FolderCount} | {folder.FullPath} (Press Enter to drill down)",
+                    SubTitle = $"{DiskAnalyzerHelper.FormatSize(folder.SizeBytes)}{itemCountText} | {bar} Allocated: {DiskAnalyzerHelper.FormatSize(folder.AllocatedSizeBytes)} | {folder.FullPath} (Press Enter to drill down)",
                     IcoPath = _iconPath,
                     Score = 10000 - rank,
                     ContextData = folder,
@@ -827,6 +959,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     new Result { Title = "Directory not found", SubTitle = $"Path does not exist: {path}", IcoPath = _iconPath, Score = 100 }
                 };
             }
+
+            AddRecent(path);
 
             var files = DiskAnalyzerHelper.FindFilesByExtension(path, ext, _maxResults, _includeHiddenFiles);
 
@@ -874,6 +1008,8 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                     new Result { Title = "Directory not found", SubTitle = $"Path does not exist: {path}", IcoPath = _iconPath, Score = 100 }
                 };
             }
+
+            AddRecent(path);
 
             var folders = DiskAnalyzerHelper.FindEmptyFolders(path, _maxResults, _includeHiddenFiles);
 

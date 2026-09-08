@@ -1,6 +1,6 @@
 # DiskAnalyzer — Standalone App, PowerToys Run Plugin & Command Palette Extension
 
-[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 [![Microsoft Store](https://img.shields.io/badge/Microsoft_Store-Available-0078D7?logo=windows&logoColor=white)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/valley-soft/powertoys-diskanalyzer)
 [![PowerToys](https://img.shields.io/badge/PowerToys-v0.97.0+-orange.svg)](https://github.com/microsoft/PowerToys)
@@ -13,7 +13,7 @@ A [PowerToys Run](https://aka.ms/PowerToysOverview) plugin **and** a native Wind
 **[🌐 Visit the Official DiskAnalyzer Website](https://valley-soft.github.io/powertoys-diskanalyzer/)**
 
 <div align="center">
-  <img src="docs/Images/standalone-app-ui ver 1.4.0.png" alt="DiskAnalyzer Hero Screenshot" width="800"/>
+  <img src="docs/Images/standalone-app-ui ver 1.5.0.png" alt="DiskAnalyzer Hero Screenshot" width="800"/>
 </div>
 
 ### 🚀 Install Instantly (Windows 11)
@@ -38,7 +38,10 @@ This project ships three tools, bundled into two easy installations:
 ## Features
 
 ### Standalone App (WinUI 3)
-- 📊 **Visual Charts & File Type Breakdown**: Instantly visualize disk usage with progress bars and Fluent category colors
+- 🍩 **Interactive Donut Chart & Visual Bar Charts**: Dynamically visualize folder distribution, scale smoothly across window resizes, and tap slices to drill in
+- 📁 **Top 100 Largest Files Tab**: Multithreaded whole-drive scan isolating the 100 largest files (including `pagefile.sys`, `hiberfil.sys`, and system files)
+- 🕐 **Old & Large Files Filter**: One-click toolbar toggle isolating files >100 MB not modified in 12+ months with live badge count
+- 🗑️ **Send to Recycle Bin**: Context menu action to safely send files or directories to the Windows Recycle Bin with a confirmation dialog
 - 💾 **Export CSV**: Export complete disk analysis results to formatted `.csv` files (with Admin elevation save dialog fallback)
 - 📁 **Windows File Explorer Context Menu**: Right-click any folder or drive in Windows Explorer and click **"Analyze with DiskAnalyzer"** to scan directly
 - 🖼️ **Crisp Executable Icons**: True high-fidelity icon extraction (`ExtractIconEx`) for `.exe` and `.dll` binaries
@@ -49,12 +52,18 @@ This project ships three tools, bundled into two easy installations:
 - 🔒 **Safe & Read-Only**: High-speed disk analysis with zero data deletion risk
 
 ### Command Palette Extension (Native Windows CmdPal)
-- 🚀 **3 Top-Level Shortcuts**: Direct entries for **Command Palette View**, **Standalone App**, and **PowerToys Run**
-- 🛡️ **Zero-Hang Activation**: Optimized COM initialization (`MOAPPLICATION_HANG` fix) for instant startup
+- ⚙️ **Native Extension Settings**: Native `CommandProvider.Settings` integration for "Show Hidden Files" and "Max Scan Depth" controls
+- 🚀 **3 Top-Level Shortcuts**: Direct entries for **Command Palette View**, **Standalone App**, and **PowerToys Run** with per-command toggles
+- 🔄 **Async Background Queries**: Non-blocking background disk scans with live progress rendering (`MOAPPLICATION_HANG` resilient)
 - 📂 **In-Palette Drill-Down**: Explore subfolders directly inside Command Palette with an **"Up one level"** return item
-- 🔄 **Async Background Queries**: Non-blocking background disk scans with live progress rendering
 
 ### PowerToys Run Plugin (`ds` keyword)
+- 🕒 **Recent Scans History (`ds recent`)**: Quick access to recent scan targets stored persistently in user profile
+- 📊 **Richer Result Subtitles**: Formats both total size and item count (e.g. `42.3 GB · 15,823 items`)
+- ⌨️ **Full Keyboard Navigation**: `Enter` to drill down, `Backspace` to go up one level, and `F5` to refresh/rescan in GUI
+- 📊 **Collapsible Donut Side Panel**: Toggleable side panel in floating GUI window featuring a visual donut chart
+- 🎨 **Live System Theme Sync**: Dynamically responds to system dark/light theme switches without restarting
+- ▓ **High-Contrast Usage Bars**: Unicode contrast blocks (`█` / `░`) ensuring high legibility across dark and light themes
 - 🖥️ List all drives with used / free / total space and a visual usage bar
 - 📂 Browse any folder — subfolders and files ranked by size
 - 🔍 Recursively find the largest files inside any path
@@ -72,30 +81,34 @@ This project ships three tools, bundled into two easy installations:
 
 Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalone experience.
 
-![GUI — Main Overview](docs/Images/standalone-app-ui%20ver%201.4.0.png)
+![GUI — Main Overview](docs/Images/standalone-app-ui%20ver%201.5.0.png)
 
-![GUI — Visual Chart Analysis](docs/Images/standalone-app-visual-chart.png)
+![GUI — Donut Chart Analysis](docs/Images/standalone-app-donut-chart%20ver%201.5.0.png)
+
+![GUI — Top 100 Files](docs/Images/standalone-app-top-files%20ver%201.5.0.png)
+
+![GUI — Visual Bar Chart](docs/Images/standalone-app-visual-chart%20ver%201.5.0.png)
 
 ![GUI — Run as Administrator](docs/Images/standalone-app-run-as-admin.png)
 *Note: Enabling the "Always Run as Administrator" toggle is only required the first time. The app will automatically save your preference for all future launches!*
 
 ![GUI — Administrator Banner](docs/Images/standalone-app-runas-admin-banner.png)
 
-![GUI — Professional Help & Features Navigation](docs/Images/standalone-app-help-page%20ver%201.4.0.png)
+![GUI — Professional Help & Features Navigation](docs/Images/standalone-app-help-page%20ver%201.5.0.png)
 
-![GUI — About Page](docs/Images/standalone-app-about-page.png)
+![GUI — About Page](docs/Images/standalone-app-about-page%20ver%201.5.0.png)
 
-### PowerToys Run Plugin
+### PowerToys Run Plugin & GUI
 
 ![Help commands overview](docs/Images/ptrun-help-commands.png)
 
-![Advanced commands: largest, top, ext, empty](docs/Images/ptrun-advanced-commands.png)
+![Help commands detailed](docs/Images/ptrun-help-commands-1.png)
 
-#### Scanning Folders
+![Recent scans history](docs/Images/ptrun-recent-scans.png)
 
 ![Scanning top-level folders on C:](docs/Images/ptrun-top-folders.png)
 
-![Scanning C:\WINDOWS folder](docs/Images/ptrun-folder-scan.png)
+![PowerToys Run GUI Chart Panel](docs/Images/ptrun-gui-chart-panel.png)
 
 ### Command Palette Extension
 
@@ -117,7 +130,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 ### Standalone App (WinUI 3) & Command Palette Extension (Unified MSIX)
 
-1. Download **`ValleySoft.DiskAnalyzer.App_1.4.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`ValleySoft.DiskAnalyzer.App_1.5.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Double-click** the `.msix` file — Windows will launch the installer
 3. Click **Install** (or **Update**)
 4. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
@@ -145,7 +158,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 #### Method 1 — Standalone Installer (Recommended)
 
-1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.4.0-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.5.0-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Exit PowerToys completely** — Right-click the PowerToys icon in the system tray → **Exit**
 3. **Run the installer** — it will automatically extract and copy plugin files to:
    ```
@@ -177,7 +190,7 @@ Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 ```powershell
 git clone https://github.com/valley-soft/powertoys-diskanalyzer.git
 cd powertoys-diskanalyzer
-.\build-v1.4.0.ps1
+.\build-v1.5.0.ps1
 # Installers and MSIX packages appear in out\
 ```
 
@@ -193,6 +206,7 @@ Open PowerToys Run (`Alt+Space`) and type `ds` followed by a command.
 |---------|-------------|
 | `ds` | Show help and all available commands |
 | `ds drives` | List all drives with used / free / total space and a usage bar |
+| `ds recent` | Show last 5 scanned paths for instant re-scan |
 | `ds C:\` | Scan a folder — shows subfolders and files sorted by size |
 | `ds C:\Users\Photos` | Drill into any subfolder |
 | `ds largest C:\` | Find the largest files recursively inside a path |
@@ -281,7 +295,7 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 | `Images/` | Plugin icon assets (`DiskAnalyzerLight.png` / `DiskAnalyzerDark.png`) |
 | `CmdPalExtension/` | Native Command Palette MSIX extension project |
 | `Installer/` | Single-file native installer source |
-| `build-v1.4.0.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX + Standalone MSIX for x64 & ARM64 |
+| `build-v1.5.0.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX + Standalone MSIX for x64 & ARM64 |
 | `out/` | Final output directory for all generated artifacts |
 
 ---
@@ -291,6 +305,29 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 Looking to see what's coming next? Check out our official **[Project Roadmap](ROADMAP.md)** for our bi-weekly release schedule and upcoming features!
 
 ---
+
+### v1.5.0 — 2026-09-07
+
+#### Added
+- 🍩 **Interactive Donut Chart**: Added a dedicated Donut Chart tab in the Standalone App to visualize folder space distribution with responsive scaling, Fluent accent colors, center total size display, and tap-to-drill-down navigation.
+- 📁 **Top 100 Largest Files Tab**: Added a dedicated Top Files tab that multithreadedly scans the entire drive/root to surface the 100 largest files with early size pruning and root-level system files (`pagefile.sys`, `hiberfil.sys`, `swapfile.sys`) support.
+- 🕐 **Large & Old Files Quick Filter**: Added a one-click toolbar toggle filter button to instantly isolate files larger than 100 MB not modified in the last 12 months with a live match count badge.
+- 🗑️ **Send to Recycle Bin**: Added a right-click context menu option in the results grid to safely move files or folders to the Windows Recycle Bin with a confirmation dialog and dynamic list updates.
+- 🕒 **PowerToys Run Recent Scans (`ds recent`)**: Added a history mechanism to PowerToys Run storing the last 5 scanned paths for instant 1-click re-scanning.
+- 📊 **Richer Result Subtitles**: PowerToys Run query results now show both total size and formatted item counts (e.g. `42.3 GB · 15,823 items`).
+- ⌨️ **PowerToys Run Full Keyboard Navigation**: Added complete keyboard accessibility to the floating GUI (`Enter` to drill down, `Backspace` to navigate up one level, and `F5` to refresh/rescan).
+- 📊 **PowerToys Run Collapsible Donut Panel**: Added a toggleable side chart panel in the PowerToys Run GUI window featuring a high-contrast visual donut chart.
+- 🎨 **Live Theme Synchronization**: Added dynamic system theme tracking (`UserPreferenceChanged`) to the PowerToys Run GUI, instantly switching between dark and light themes without requiring an app restart.
+- ▓ **High-Contrast Usage Bars**: Redesigned PowerToys Run mini usage progress bars (`DiskAnalyzerHelper.CreateMiniBar`) using unicode contrast blocks (`█` / `░`) ensuring clear visibility across dark and light modes.
+- ⚙️ **Native Command Palette Settings**: Replaced placeholder settings with native `CommandProvider.Settings` integration, introducing persistent "Show Hidden Files" and "Max Scan Depth" controls.
+- ⚡ **Command Palette Asynchronous Loading**: Command Palette extension now streams and queries results asynchronously in the background, eliminating UI freezes and maintaining launcher responsiveness.
+- 🎛️ **Command Palette Per-Command Toggle**: Implemented granular per-command activation toggles enabling or disabling each of the 3 top-level commands independently.
+
+#### Fixed & Improved
+- 📊 **Bar Chart Dynamic Scaling & Horizontal Scrolling**: Fixed bar chart item clipping on smaller displays by adding horizontal scrolling and dynamic bar height scaling.
+- 🛡️ **Drill-Down Tap Safety**: Prevented aggregate "Other (N items)" summary bars from triggering invalid navigation while maintaining tap-to-drill-down on all named item slices and bars.
+- 🧹 **Clean Command Palette Provider Registration**: Purged stale ghost provider cache entries for a clean single-entry settings experience.
+- 📖 **Modernized Standalone Help Page**: Fully refreshed Help and Features documentation detailing Donut Charts, Top Files, Old & Large filtering, Recycle Bin integration, and launcher commands.
 
 ### v1.4.0 — 2026-08-07
 

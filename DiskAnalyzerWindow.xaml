@@ -5,7 +5,8 @@
         Title="ValleySoft Disk Analyzer" Height="620" Width="1000"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource WindowBackground}"
-        Foreground="{DynamicResource WindowForeground}">
+        Foreground="{DynamicResource WindowForeground}"
+        KeyDown="Window_KeyDown">
 
     <Window.Resources>
         <!-- Force button to always look the same regardless of dark/light mode -->
@@ -48,6 +49,50 @@
             </Style.Triggers>
         </Style>
 
+        <!-- Style for ToggleButton matching toolbar buttons -->
+        <Style TargetType="ToggleButton">
+            <Setter Property="Background" Value="{DynamicResource ButtonBg}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonFg}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               TextElement.Foreground="{TemplateBinding Foreground}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource ButtonHover}"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource ButtonPress}"/>
+                </Trigger>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Background" Value="#0078D4"/>
+                    <Setter Property="BorderBrush" Value="#005A9E"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="{DynamicResource ButtonDisabledBg}"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource ButtonDisabledBorder}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource ButtonDisabledFg}"/>
+                    <Setter Property="Cursor" Value="Arrow"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <!-- TreeView item style to fix dark-mode highlight text -->
         <Style TargetType="TreeViewItem">
             <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
@@ -80,6 +125,7 @@
                 <ColumnDefinition Width="250" MinWidth="150" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="0" x:Name="ChartColumn" MinWidth="0" />
             </Grid.ColumnDefinitions>
 
             <!-- Left Pane: TreeView -->
@@ -138,6 +184,19 @@
                             <ComboBoxItem Content="Light" Tag="Light"/>
                             <ComboBoxItem Content="Dark" Tag="Dark"/>
                         </ComboBox>
+
+                        <ToggleButton x:Name="ToggleChartButton" 
+                                      AutomationProperties.Name="Toggle Chart" 
+                                      ToolTip="Toggle Pie / Donut Chart" 
+                                      Margin="0,0,8,0" 
+                                      Padding="8,4" 
+                                      Click="ToggleChartButton_Click" 
+                                      VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📊" Margin="0,0,4,0" FontFamily="Segoe UI Emoji, Segoe UI Symbol" VerticalAlignment="Center"/>
+                                <TextBlock Text="Chart" VerticalAlignment="Center" Foreground="{Binding RelativeSource={RelativeSource AncestorType=ToggleButton}, Path=Foreground}"/>
+                            </StackPanel>
+                        </ToggleButton>
                         
                         <TextBlock x:Name="CurrentPathText" VerticalAlignment="Center" Margin="8,0,0,0" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}"/>
                     </StackPanel>
@@ -204,6 +263,14 @@
                         </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
+            </Grid>
+
+            <!-- Splitter 2 -->
+            <GridSplitter Grid.Column="3" Width="4" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{DynamicResource BorderBrushColor}" />
+
+            <!-- Chart Pane -->
+            <Grid Grid.Column="3" Margin="4,0,0,0" Background="{DynamicResource PanelBackground}">
+                <Canvas x:Name="WpfDonutCanvas" Width="220" Height="220" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Grid>
         </Grid>
 

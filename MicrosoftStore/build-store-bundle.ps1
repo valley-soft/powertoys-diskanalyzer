@@ -66,6 +66,9 @@ foreach ($Arch in $Architectures) {
     # Require the password via environment variable — never hardcoded.
     $certPasswordRaw = $env:VALLEYSOFT_CERT_PASSWORD
     if (!$certPasswordRaw) {
+        $certPasswordRaw = [System.Environment]::GetEnvironmentVariable("VALLEYSOFT_CERT_PASSWORD", "User")
+    }
+    if (!$certPasswordRaw) {
         Write-Error "VALLEYSOFT_CERT_PASSWORD environment variable is not set. Run Setup-DevCert.ps1 first."
         exit 1
     }

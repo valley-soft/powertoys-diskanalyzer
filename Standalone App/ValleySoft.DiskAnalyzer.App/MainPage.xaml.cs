@@ -13,6 +13,7 @@ using Community.PowerToys.Run.Plugin.DiskAnalyzer;
 using Microsoft.UI.Xaml.Navigation;
 using WinRT.Interop;
 using Windows.UI;
+using Microsoft.VisualBasic.FileIO;
 
 namespace ValleySoft_DiskAnalyzer_App
 {
@@ -25,6 +26,9 @@ namespace ValleySoft_DiskAnalyzer_App
         private bool _sortAscending = false;
         private bool _showHiddenFiles = true;
         private System.Threading.CancellationTokenSource? _navigationCts;
+        private ObservableCollection<TopFileResult> _topFiles = new ObservableCollection<TopFileResult>();
+        private bool _topFilesScanned = false;
+        private DispatcherTimer? _filterDebounceTimer;
 
         public MainPage()
         {
@@ -32,6 +36,7 @@ namespace ValleySoft_DiskAnalyzer_App
             {
                 this.InitializeComponent();
                 ResultsGrid.ItemsSource = _currentItems;
+                TopFilesGrid.ItemsSource = _topFiles;
                 PathBreadcrumbBar.ItemsSource = _pathSegments;
                 _currentItems.CollectionChanged += (s, e) => UpdateItemCount();
             }
@@ -285,7 +290,14 @@ namespace ValleySoft_DiskAnalyzer_App
 
         private void FilterBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            SortData();
+            _filterDebounceTimer?.Stop();
+            _filterDebounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(120) };
+            _filterDebounceTimer.Tick += (s, args) =>
+            {
+                _filterDebounceTimer.Stop();
+                SortData();
+            };
+            _filterDebounceTimer.Start();
         }
 
         private void SortData()
@@ -293,22 +305,71 @@ namespace ValleySoft_DiskAnalyzer_App
             if (_currentItems == null || _currentItems.Count == 0) return;
 
             string filter = FilterBox?.Text?.Trim()?.ToLowerInvariant() ?? "";
-            var filtered = string.IsNullOrEmpty(filter) 
-                ? _currentItems.ToList() 
-                : _currentItems.Where(i => {
-                    string nameLower = (i.Name ?? "").ToLowerInvariant();
-                    if (filter.StartsWith("*."))
+            bool isLargeOld = LargeOldFilterButton?.IsChecked == true;
+
+            var filtered = _currentItems.Where(i => {
+                if (isLargeOld)
+                {
+                    // Files: must be >= 50 MB AND modified older than 6 months
+                    // Folders: keep large folders (>= 100 MB) visible so users can drill in to find large contents
+                    if (i.IsFile)
                     {
-                        string ext = filter.Substring(1);
-                        return nameLower.EndsWith(ext, StringComparison.OrdinalIgnoreCase);
+                        if (i.SizeBytes < 50 * 1024 * 1024 || i.LastModified > DateTime.Now.AddMonths(-6))
+                        {
+                            return false;
+                        }
                     }
-                    if (filter.StartsWith("."))
+                    else
                     {
-                        return nameLower.EndsWith(filter, StringComparison.OrdinalIgnoreCase);
+                        // Folder: keep if large (>= 100 MB) or still scanning (size == 0)
+                        if (i.SizeBytes > 0 && i.SizeBytes < 100 * 1024 * 1024)
+                        {
+                            return false;
+                        }
                     }
-                    return nameLower.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
-                           nameLower.EndsWith("." + filter, StringComparison.OrdinalIgnoreCase);
-                }).ToList();
+                }
+
+                if (string.IsNullOrEmpty(filter)) return true;
+
+                string nameLower = (i.Name ?? "").ToLowerInvariant();
+                if (filter.StartsWith("*."))
+                {
+                    string ext = filter.Substring(1);
+                    return nameLower.EndsWith(ext, StringComparison.OrdinalIgnoreCase);
+                }
+                if (filter.StartsWith("."))
+                {
+                    return nameLower.EndsWith(filter, StringComparison.OrdinalIgnoreCase);
+                }
+                return nameLower.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                       nameLower.EndsWith("." + filter, StringComparison.OrdinalIgnoreCase);
+            }).ToList();
+
+            if (LargeOldFilterText != null)
+            {
+                if (isLargeOld)
+                {
+                    int matchCount = filtered.Count;
+                    LargeOldFilterText.Text = $"🕐 Old & Large ({matchCount})";
+                }
+                else
+                {
+                    LargeOldFilterText.Text = "🕐 Old & Large";
+                }
+            }
+
+            // Update item count with filter indicator
+            if (ItemCountText != null)
+            {
+                if (filtered.Count != _currentItems.Count)
+                {
+                    ItemCountText.Text = $"{filtered.Count} of {_currentItems.Count} items (filtered)";
+                }
+                else
+                {
+                    ItemCountText.Text = _currentItems.Count == 1 ? "1 item" : $"{_currentItems.Count} items";
+                }
+            }
 
             switch (_sortColumn)
             {
@@ -339,7 +400,17 @@ namespace ValleySoft_DiskAnalyzer_App
             }
 
             ResultsGrid.ItemsSource = new ObservableCollection<GridItemViewModel>(filtered);
-            UpdateChart(filtered);
+
+            // Only update heavy chart geometry if the respective chart tab is actually visible
+            string? activeTab = (MainPivot?.SelectedItem as PivotItem)?.Header?.ToString();
+            if (activeTab == "Visual Chart")
+            {
+                UpdateChart(filtered);
+            }
+            else if (activeTab == "Donut Chart")
+            {
+                RefreshDonutChart(filtered);
+            }
             CalculateFileTypeBreakdown();
         }
 
@@ -422,7 +493,10 @@ namespace ValleySoft_DiskAnalyzer_App
                 return;
             }
 
-            double maxHeight = 160;
+            double availableHeight = MainPivot.ActualHeight;
+            double maxHeight = availableHeight > 150 ? availableHeight - 150 : 160;
+            if (maxHeight < 100) maxHeight = 100;
+
             double maxSize = items.Max(i => i.SizeBytes);
             if (maxSize <= 0) maxSize = 1;
 
@@ -494,6 +568,8 @@ namespace ValleySoft_DiskAnalyzer_App
         {
             if (sender is FrameworkElement elem && elem.DataContext is ChartItemViewModel vm)
             {
+                if (vm.Name.StartsWith("Other")) return;
+
                 if (!string.IsNullOrEmpty(vm.FullPath))
                 {
                     if (!vm.IsFile)
@@ -515,6 +591,7 @@ namespace ValleySoft_DiskAnalyzer_App
         private async Task LoadDrivesAsync()
         {
             _currentPath = string.Empty;
+            _topFilesScanned = false;
             _pathSegments.Clear();
             _pathSegments.Add("This PC");
             BackButton.IsEnabled = false;
@@ -681,6 +758,7 @@ private async Task NavigateToFolderAsync(string path)
             var token = _navigationCts.Token;
 
             _currentPath = path;
+            _topFilesScanned = false;
             
             _pathSegments.Clear();
             _pathSegments.Add("This PC");
@@ -1325,6 +1403,417 @@ private async Task NavigateToFolderAsync(string path)
             PathBreadcrumbBar.Visibility = Visibility.Visible;
             EditablePathBox.Visibility = Visibility.Collapsed;
         }
+
+        private void LargeOldFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            SortData();
+        }
+
+        private void MainPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (MainPivot.SelectedItem is PivotItem pi)
+            {
+                string header = pi.Header?.ToString() ?? "";
+                if (header == "Visual Chart")
+                {
+                    if (ResultsGrid.ItemsSource is ObservableCollection<GridItemViewModel> filtered)
+                        UpdateChart(filtered.ToList());
+                }
+                else if (header == "Donut Chart")
+                {
+                    if (ResultsGrid.ItemsSource is ObservableCollection<GridItemViewModel> filtered)
+                        RefreshDonutChart(filtered.ToList());
+                }
+                else if (header == "Top Files")
+                {
+                    if (TopFilesGrid.ItemsSource != _topFiles)
+                    {
+                        TopFilesGrid.ItemsSource = _topFiles;
+                    }
+
+                    if (!_topFilesScanned)
+                    {
+                        _ = ScanTopFilesAsync();
+                    }
+                }
+            }
+        }
+
+        private void ScanTopFiles_Click(object sender, RoutedEventArgs e)
+        {
+            _ = ScanTopFilesAsync();
+        }
+
+        private async Task ScanTopFilesAsync()
+        {
+            string scanPath = !string.IsNullOrEmpty(_currentPath)
+                ? _currentPath
+                : (Path.GetPathRoot(Environment.SystemDirectory) ?? @"C:\");
+
+            TopFilesProgress.IsActive = true;
+            TopFilesProgress.Visibility = Visibility.Visible;
+            _topFiles.Clear();
+            TopFilesGrid.ItemsSource = _topFiles;
+            _topFilesScanned = true;
+            TopFilesStatusText.Text = $"Scanning {scanPath}...";
+
+            bool includeHidden = true; // Always include system and hidden files (hiberfil.sys, pagefile.sys, swapfile.sys)
+
+            try
+            {
+                var progress = new Progress<List<DiskItemInfo>>(items =>
+                {
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        var oc = new ObservableCollection<TopFileResult>();
+                        foreach (var f in items)
+                        {
+                            oc.Add(new TopFileResult
+                            {
+                                Name = f.Name,
+                                FullPath = f.FullPath,
+                                SizeBytes = f.SizeBytes,
+                                FormattedSize = DiskAnalyzerHelper.FormatSize(f.SizeBytes),
+                                LastModified = f.LastModified,
+                                FormattedDate = f.LastModified.ToString("M/d/yyyy h:mm:ss tt"),
+                                IconSource = null
+                            });
+                        }
+                        _topFiles = oc;
+                        TopFilesGrid.ItemsSource = _topFiles;
+
+                        if (items.Count > 0)
+                        {
+                            TopFilesStatusText.Text = $"Scanning... Found {items.Count} large files (Largest: {items[0].Name} \u2014 {DiskAnalyzerHelper.FormatSize(items[0].SizeBytes)})";
+                        }
+                    });
+                });
+
+                var files = await Task.Run(() => DiskAnalyzerHelper.FindLargestFiles(scanPath, 100, includeHidden, progress));
+
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    var oc = new ObservableCollection<TopFileResult>();
+                    foreach (var f in files)
+                    {
+                        oc.Add(new TopFileResult
+                        {
+                            Name = f.Name,
+                            FullPath = f.FullPath,
+                            SizeBytes = f.SizeBytes,
+                            FormattedSize = DiskAnalyzerHelper.FormatSize(f.SizeBytes),
+                            LastModified = f.LastModified,
+                            FormattedDate = f.LastModified.ToString("M/d/yyyy h:mm:ss tt"),
+                            IconSource = null
+                        });
+                    }
+                    _topFiles = oc;
+                    TopFilesGrid.ItemsSource = _topFiles;
+                    TopFilesStatusText.Text = $"Scan complete \u2014 Showing {_topFiles.Count} largest files across {scanPath}";
+
+                    var snapshot = oc.ToList();
+                    _ = Task.Run(async () =>
+                    {
+                        foreach (var vm in snapshot)
+                        {
+                            try
+                            {
+                                var icon = await IconUtilities.GetIconAsync(vm.FullPath, false, DispatcherQueue);
+                                if (icon != null)
+                                {
+                                    DispatcherQueue.TryEnqueue(() => vm.IconSource = icon);
+                                }
+                            }
+                            catch { }
+                        }
+                    });
+                });
+            }
+            catch (Exception ex)
+            {
+                App.WriteCrashLog(ex);
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    TopFilesStatusText.Text = "Scan error: " + ex.Message;
+                });
+            }
+            finally
+            {
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    TopFilesProgress.IsActive = false;
+                    TopFilesProgress.Visibility = Visibility.Collapsed;
+                });
+            }
+        }
+
+        private void TopFilesGrid_DoubleTapped(object sender, Microsoft.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
+        {
+            if (TopFilesGrid.SelectedItem is TopFileResult item && !string.IsNullOrEmpty(item.FullPath))
+            {
+                try
+                {
+                    using var p = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "explorer.exe",
+                        Arguments = $"/select,\"{item.FullPath}\"",
+                        UseShellExecute = true
+                    });
+                }
+                catch { }
+            }
+        }
+
+        private void TopFiles_OpenExplorer_Click(object sender, RoutedEventArgs e)
+        {
+            if (TopFilesGrid.SelectedItem is TopFileResult item && !string.IsNullOrEmpty(item.FullPath))
+            {
+                try
+                {
+                    using var p = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "explorer.exe",
+                        Arguments = $"/select,\"{item.FullPath}\"",
+                        UseShellExecute = true
+                    });
+                }
+                catch { }
+            }
+        }
+
+        private void TopFiles_CopyPath_Click(object sender, RoutedEventArgs e)
+        {
+            if (TopFilesGrid.SelectedItem is TopFileResult item && !string.IsNullOrEmpty(item.FullPath))
+            {
+                var package = new Windows.ApplicationModel.DataTransfer.DataPackage();
+                package.SetText(item.FullPath);
+                Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(package);
+            }
+        }
+
+        private async void DataGrid_SendToRecycleBin_Click(object sender, RoutedEventArgs e)
+        {
+            if (ResultsGrid.SelectedItem is GridItemViewModel vm)
+            {
+                var dialog = new ContentDialog
+                {
+                    Title = "Send to Recycle Bin",
+                    Content = $"Send {vm.Name} to the Recycle Bin?",
+                    PrimaryButtonText = "Send to Recycle Bin",
+                    CloseButtonText = "Cancel",
+                    XamlRoot = this.XamlRoot
+                };
+
+                var result = await dialog.ShowAsync();
+                if (result == ContentDialogResult.Primary)
+                {
+                    try
+                    {
+                        await Task.Run(() =>
+                        {
+                            if (vm.IsFile)
+                            {
+                                Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(vm.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                            }
+                            else
+                            {
+                                Microsoft.VisualBasic.FileIO.FileSystem.DeleteDirectory(vm.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                            }
+                        });
+
+                        _currentItems.Remove(vm);
+                        SortData();
+
+                        var infoBar = new InfoBar
+                        {
+                            Severity = InfoBarSeverity.Success,
+                            Title = "Success",
+                            Message = $"{vm.Name} moved to Recycle Bin.",
+                            IsOpen = true,
+                            Margin = new Thickness(0, 0, 0, 12)
+                        };
+                        var parentPanel = AdminWarningBar.Parent as StackPanel;
+                        if (parentPanel != null)
+                        {
+                            parentPanel.Children.Insert(0, infoBar);
+                            _ = Task.Delay(3000).ContinueWith(_ => DispatcherQueue.TryEnqueue(() => parentPanel.Children.Remove(infoBar)));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        var errDialog = new ContentDialog
+                        {
+                            Title = "Error",
+                            Content = $"Failed to send to Recycle Bin: {ex.Message}",
+                            CloseButtonText = "OK",
+                            XamlRoot = this.XamlRoot
+                        };
+                        await errDialog.ShowAsync();
+                    }
+                }
+            }
+        }
+
+        private void RefreshDonutChart(List<GridItemViewModel> items)
+        {
+            if (DonutCanvas == null || DonutLegendList == null) return;
+
+            DonutCanvas.Children.Clear();
+            if (items == null || items.Count == 0)
+            {
+                DonutLegendList.ItemsSource = null;
+                return;
+            }
+
+            double radiusOuter = 160;
+            double radiusInner = 100;
+            double centerX = 160;
+            double centerY = 160;
+
+            var chartItems = new List<ChartItemViewModel>();
+            var colors = new[]
+            {
+                Microsoft.UI.ColorHelper.FromArgb(255, 100, 210, 255),
+                Microsoft.UI.ColorHelper.FromArgb(255, 48, 209, 88),
+                Microsoft.UI.ColorHelper.FromArgb(255, 255, 159, 10),
+                Microsoft.UI.ColorHelper.FromArgb(255, 255, 69, 58),
+                Microsoft.UI.ColorHelper.FromArgb(255, 191, 90, 242),
+                Microsoft.UI.ColorHelper.FromArgb(255, 255, 214, 10),
+                Microsoft.UI.ColorHelper.FromArgb(255, 107, 102, 255),
+                Microsoft.UI.ColorHelper.FromArgb(255, 174, 174, 178)
+            };
+
+            var sortedItems = items.OrderByDescending(i => i.SizeBytes).ToList();
+            int topLimit = 8;
+            var topItems = sortedItems.Take(topLimit).ToList();
+            var remainingItems = sortedItems.Skip(topLimit).ToList();
+
+            long totalSize = items.Sum(i => i.SizeBytes);
+            if (totalSize == 0) return;
+
+            double startAngle = -90;
+            int colorIdx = 0;
+            
+            Action<double, Color, ChartItemViewModel> drawArc = (size, col, vm) =>
+            {
+                double sweepAngle = (size / (double)totalSize) * 360;
+                if (sweepAngle < 0.1) return;
+
+                double endAngle = startAngle + sweepAngle;
+
+                double startOuterX = centerX + radiusOuter * Math.Cos(startAngle * Math.PI / 180);
+                double startOuterY = centerY + radiusOuter * Math.Sin(startAngle * Math.PI / 180);
+                double endOuterX = centerX + radiusOuter * Math.Cos(endAngle * Math.PI / 180);
+                double endOuterY = centerY + radiusOuter * Math.Sin(endAngle * Math.PI / 180);
+
+                double startInnerX = centerX + radiusInner * Math.Cos(startAngle * Math.PI / 180);
+                double startInnerY = centerY + radiusInner * Math.Sin(startAngle * Math.PI / 180);
+                double endInnerX = centerX + radiusInner * Math.Cos(endAngle * Math.PI / 180);
+                double endInnerY = centerY + radiusInner * Math.Sin(endAngle * Math.PI / 180);
+
+                bool isLargeArc = sweepAngle > 180;
+
+                var pathFigure = new Microsoft.UI.Xaml.Media.PathFigure
+                {
+                    StartPoint = new Windows.Foundation.Point(startInnerX, startInnerY),
+                    IsClosed = true
+                };
+
+                pathFigure.Segments.Add(new Microsoft.UI.Xaml.Media.LineSegment { Point = new Windows.Foundation.Point(startOuterX, startOuterY) });
+                pathFigure.Segments.Add(new Microsoft.UI.Xaml.Media.ArcSegment
+                {
+                    Point = new Windows.Foundation.Point(endOuterX, endOuterY),
+                    Size = new Windows.Foundation.Size(radiusOuter, radiusOuter),
+                    IsLargeArc = isLargeArc,
+                    SweepDirection = Microsoft.UI.Xaml.Media.SweepDirection.Clockwise
+                });
+                pathFigure.Segments.Add(new Microsoft.UI.Xaml.Media.LineSegment { Point = new Windows.Foundation.Point(endInnerX, endInnerY) });
+                pathFigure.Segments.Add(new Microsoft.UI.Xaml.Media.ArcSegment
+                {
+                    Point = new Windows.Foundation.Point(startInnerX, startInnerY),
+                    Size = new Windows.Foundation.Size(radiusInner, radiusInner),
+                    IsLargeArc = isLargeArc,
+                    SweepDirection = Microsoft.UI.Xaml.Media.SweepDirection.Counterclockwise
+                });
+
+                var pathGeometry = new Microsoft.UI.Xaml.Media.PathGeometry();
+                pathGeometry.Figures.Add(pathFigure);
+
+                var path = new Microsoft.UI.Xaml.Shapes.Path
+                {
+                    Data = pathGeometry,
+                    Fill = new Microsoft.UI.Xaml.Media.SolidColorBrush(col),
+                    Stroke = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["CardBackgroundFillColorDefaultBrush"],
+                    StrokeThickness = 2,
+                    DataContext = vm
+                };
+                
+                path.Tapped += ChartItem_Tapped;
+                ToolTipService.SetToolTip(path, vm.ToolTip);
+
+                DonutCanvas.Children.Add(path);
+
+                startAngle = endAngle;
+            };
+
+            foreach (var item in topItems)
+            {
+                if (item.SizeBytes == 0) continue;
+                var col = colors[colorIdx % colors.Length];
+                var vm = new ChartItemViewModel
+                {
+                    Name = item.Name,
+                    FullPath = item.FullPath,
+                    IsFile = item.IsFile,
+                    Color = new Microsoft.UI.Xaml.Media.SolidColorBrush(col),
+                    ToolTip = $"{item.Name} - {item.FormattedSize} ({item.FormattedPercentage})",
+                    FormattedSize = item.FormattedSize
+                };
+                chartItems.Add(vm);
+                drawArc(item.SizeBytes, col, vm);
+                colorIdx++;
+            }
+
+            if (remainingItems.Count > 0)
+            {
+                long otherSizeBytes = remainingItems.Sum(i => i.SizeBytes);
+                if (otherSizeBytes > 0)
+                {
+                    var col = Microsoft.UI.ColorHelper.FromArgb(255, 120, 120, 128);
+                    var formattedOtherSize = DiskAnalyzerHelper.FormatSize(otherSizeBytes);
+                    var vm = new ChartItemViewModel
+                    {
+                        Name = $"Other ({remainingItems.Count} items)",
+                        FullPath = "",
+                        IsFile = false,
+                        Color = new Microsoft.UI.Xaml.Media.SolidColorBrush(col),
+                        ToolTip = $"Other {remainingItems.Count} items - {formattedOtherSize}",
+                        FormattedSize = formattedOtherSize
+                    };
+                    chartItems.Add(vm);
+                    drawArc(otherSizeBytes, col, vm);
+                }
+            }
+
+            var tb = new TextBlock
+            {
+                Text = DiskAnalyzerHelper.FormatSize(totalSize),
+                FontSize = 24,
+                FontWeight = Microsoft.UI.Text.FontWeights.Bold,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Foreground = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["TextFillColorPrimaryBrush"]
+            };
+            
+            tb.SizeChanged += (s, e) =>
+            {
+                Canvas.SetLeft(tb, centerX - (tb.ActualWidth / 2));
+                Canvas.SetTop(tb, centerY - (tb.ActualHeight / 2));
+            };
+            DonutCanvas.Children.Add(tb);
+
+            DonutLegendList.ItemsSource = chartItems;
+        }
     }
 
     public class FolderNode
@@ -1375,6 +1864,27 @@ private async Task NavigateToFolderAsync(string path)
         public long AllocatedSizeBytes { get; set; }
         public bool IsFile { get; set; }
         public Microsoft.UI.Xaml.Media.ImageSource? IconSource { get; set; }
+    }
+
+    public class TopFileResult : System.ComponentModel.INotifyPropertyChanged
+    {
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? name = null) =>
+            PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(name));
+
+        public string Name { get; set; } = "";
+        public string FullPath { get; set; } = "";
+        public long SizeBytes { get; set; }
+        public string FormattedSize { get; set; } = "";
+        public DateTime LastModified { get; set; }
+        public string FormattedDate { get; set; } = "";
+
+        private Microsoft.UI.Xaml.Media.ImageSource? _iconSource;
+        public Microsoft.UI.Xaml.Media.ImageSource? IconSource
+        {
+            get => _iconSource;
+            set { _iconSource = value; OnPropertyChanged(); }
+        }
     }
 
     public class TypeCategoryViewModel

@@ -202,6 +202,43 @@
             <p>Track the evolution of Disk Analyzer. All notable changes, fixes, and improvements.</p>
         </header>
 
+        <!-- v1.5.0 -->
+        <div class="release">
+            <div class="release-header">
+                <div class="release-version">v1.5.0</div>
+                <div class="release-date">September 7, 2026</div>
+            </div>
+            
+            <div class="release-section">
+                <span class="tag added">Added</span>
+                <ul class="release-list">
+                    <li><strong>Interactive Donut Chart</strong>: Added a dedicated Donut Chart tab in the Standalone App to visualize folder space distribution with responsive scaling, Fluent accent colors, center total size display, and tap-to-drill-down navigation.</li>
+                    <li><strong>Top 100 Largest Files Tab</strong>: Added a dedicated Top Files tab that multithreadedly scans the entire drive/root to surface the 100 largest files with early size pruning and root-level system files (<code>pagefile.sys</code>, <code>hiberfil.sys</code>, <code>swapfile.sys</code>) support.</li>
+                    <li><strong>Large &amp; Old Files Quick Filter</strong>: Added a one-click toolbar toggle filter button to instantly isolate files larger than 100 MB not modified in the last 12 months with a live match count badge.</li>
+                    <li><strong>Send to Recycle Bin</strong>: Added a right-click context menu option in the results grid to safely move files or folders to the Windows Recycle Bin with a confirmation dialog and dynamic list updates.</li>
+                    <li><strong>PowerToys Run Recent Scans (<code>ds recent</code>)</strong>: Added a history mechanism to PowerToys Run storing the last 5 scanned paths for instant 1-click re-scanning.</li>
+                    <li><strong>Richer Result Subtitles</strong>: PowerToys Run query results now show both total size and formatted item counts (e.g. <code>42.3 GB · 15,823 items</code>).</li>
+                    <li><strong>PowerToys Run Full Keyboard Navigation</strong>: Added complete keyboard accessibility to the floating GUI (<code>Enter</code> to drill down, <code>Backspace</code> to navigate up one level, and <code>F5</code> to refresh/rescan).</li>
+                    <li><strong>PowerToys Run Collapsible Donut Panel</strong>: Added a toggleable side chart panel in the PowerToys Run GUI window featuring a high-contrast visual donut chart.</li>
+                    <li><strong>Live Theme Synchronization</strong>: Added dynamic system theme tracking (<code>UserPreferenceChanged</code>) to the PowerToys Run GUI, instantly switching between dark and light themes without requiring an app restart.</li>
+                    <li><strong>High-Contrast Usage Bars</strong>: Redesigned PowerToys Run mini usage progress bars using unicode contrast blocks (<code>█</code> / <code>░</code>) ensuring clear visibility across dark and light modes.</li>
+                    <li><strong>Native Command Palette Settings</strong>: Replaced placeholder settings with native <code>CommandProvider.Settings</code> integration, introducing persistent "Show Hidden Files" and "Max Scan Depth" controls.</li>
+                    <li><strong>Command Palette Asynchronous Loading</strong>: Command Palette extension now streams and queries results asynchronously in the background, eliminating UI freezes and maintaining launcher responsiveness.</li>
+                    <li><strong>Command Palette Per-Command Toggle</strong>: Implemented granular per-command activation toggles enabling or disabling each of the 3 top-level commands independently.</li>
+                </ul>
+            </div>
+            
+            <div class="release-section">
+                <span class="tag fixed">Fixed &amp; Improved</span>
+                <ul class="release-list">
+                    <li><strong>Bar Chart Dynamic Scaling &amp; Horizontal Scrolling</strong>: Fixed bar chart item clipping on smaller displays by adding horizontal scrolling and dynamic bar height scaling.</li>
+                    <li><strong>Drill-Down Tap Safety</strong>: Prevented aggregate "Other (N items)" summary bars from triggering invalid navigation while maintaining tap-to-drill-down on all named item slices and bars.</li>
+                    <li><strong>Clean Command Palette Provider Registration</strong>: Purged stale ghost provider cache entries for a clean single-entry settings experience.</li>
+                    <li><strong>Modernized Standalone Help Page</strong>: Fully refreshed Help and Features documentation detailing Donut Charts, Top Files, Old &amp; Large filtering, Recycle Bin integration, and launcher commands.</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- v1.4.0 -->
         <div class="release">
             <div class="release-header">

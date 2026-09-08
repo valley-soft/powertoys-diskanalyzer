@@ -61,10 +61,10 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             AttributesToSkip = 0,
         };
 
-        // Fix 1: Cap parallelism to half core count — prevents disk I/O thrashing on SSDs/HDDs
+        // Cap parallelism to at most 4 cores — prevents high CPU load and leaves plenty of cores for the user/system
         private static readonly ParallelOptions _parallelOpts = new ParallelOptions
         {
-            MaxDegreeOfParallelism = Math.Max(2, Environment.ProcessorCount / 2)
+            MaxDegreeOfParallelism = Math.Min(4, Math.Max(2, Environment.ProcessorCount / 4))
         };
 
         // Fix 4: O(1) extension → category dictionary — replaces O(n×m) Array.Contains per file
@@ -219,17 +219,17 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         }
 
         /// <summary>
-        /// Creates a compact progress bar for folder size display.
+        /// Creates a compact high-contrast progress bar for PowerToys Run (WPF monochrome).
+        /// Uses solid block (█) for filled and light shade (░) for empty for clear visibility in both Dark and Light modes.
         /// </summary>
         public static string CreateMiniBar(double percent, int width = 10)
         {
-            var filled = (int)Math.Round(percent / 100 * width);
+            var filled = (int)Math.Round(percent / 100.0 * width);
             filled = Math.Clamp(filled, 0, width);
 
-            var bar = new StringBuilder();
-            bar.Append('\u2593', filled);
-            bar.Append('\u2591', width - filled);
-
+            var bar = new StringBuilder(width);
+            bar.Append('\u2588', filled);          // █ Solid filled block
+            bar.Append('\u2591', width - filled); // ░ Light dotted empty block
             return bar.ToString();
         }
 
@@ -426,86 +426,216 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
         /// Recursively finds the largest files under a given path.
         /// Uses a bounded SortedSet to limit memory to maxResults entries.
         /// </summary>
-        public static List<DiskItemInfo> FindLargestFiles(string path, int maxResults, bool includeHidden)
+        public static List<DiskItemInfo> FindLargestFiles(string path, int maxResults, bool includeHidden, IProgress<List<DiskItemInfo>>? progress = null)
         {
-            var files = new List<DiskItemInfo>();
+            var options = CreateOptions(includeHidden, recurse: false);
+            
+            var topFiles = new SortedSet<(long Size, long Allocated, string Path, string Name, DateTime Modified)>(
+                Comparer<(long Size, long Allocated, string Path, string Name, DateTime Modified)>.Create(
+                    (a, b) =>
+                    {
+                        var cmp = a.Size.CompareTo(b.Size);
+                        return cmp != 0 ? cmp : string.Compare(a.Path, b.Path, StringComparison.Ordinal);
+                    }));
 
+            object lockObj = new object();
+            long minSize = 0;
+            int currentCount = 0;
+
+            List<DiskItemInfo> GetSnapshot()
+            {
+                lock (lockObj)
+                {
+                    return topFiles
+                        .OrderByDescending(f => f.Size)
+                        .Select(f => new DiskItemInfo
+                        {
+                            Name = f.Name,
+                            FullPath = f.Path,
+                            SizeBytes = f.Size,
+                            AllocatedSizeBytes = f.Allocated,
+                            IsFile = true,
+                            FileCount = 1,
+                            FolderCount = 0,
+                            LastModified = f.Modified,
+                        })
+                        .ToList();
+                }
+            }
+
+            // Phase 1: Immediate scan of the root directory files (e.g. C:\hiberfil.sys, pagefile.sys, etc.)
+            // Takes < 5ms and gives the user instant results on screen within milliseconds!
             try
             {
-                var options = CreateOptions(includeHidden, recurse: true, maxDepth: int.MaxValue);
-                
-                long minSize = 0;
-                int currentCount = 0;
-
-                var enumerable = new System.IO.Enumeration.FileSystemEnumerable<(long size, bool isDir, FileAttributes attrs, string fullPath, string name, DateTime modified)>(
+                var rootFilesEnumerable = new System.IO.Enumeration.FileSystemEnumerable<(long size, FileAttributes attrs, string fullPath, string name, DateTime modified)>(
                     path,
-                    (ref System.IO.Enumeration.FileSystemEntry entry) => (entry.Length, entry.IsDirectory, entry.Attributes, entry.ToFullPath(), entry.FileName.ToString(), entry.LastWriteTimeUtc.LocalDateTime),
+                    (ref System.IO.Enumeration.FileSystemEntry entry) => (entry.Length, entry.Attributes, entry.ToFullPath(), entry.FileName.ToString(), entry.LastWriteTimeUtc.LocalDateTime),
                     options)
                 {
-                    ShouldIncludePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => 
-                    {
-                        if (entry.IsDirectory) return false;
-                        if (Interlocked.CompareExchange(ref currentCount, 0, 0) < maxResults) return true;
-                        return entry.Length > Interlocked.Read(ref minSize);
-                    },
-                    ShouldRecursePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => (entry.Attributes & FileAttributes.ReparsePoint) == 0
+                    ShouldIncludePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => !entry.IsDirectory,
+                    ShouldRecursePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => false
                 };
 
-                // Bounded SortedSet — only keeps top maxResults entries in memory
-                var topFiles = new SortedSet<(long Size, long Allocated, string Path, string Name, DateTime Modified)>(
-                    Comparer<(long Size, long Allocated, string Path, string Name, DateTime Modified)>.Create(
-                        (a, b) =>
-                        {
-                            var cmp = a.Size.CompareTo(b.Size);
-                            return cmp != 0 ? cmp : string.Compare(a.Path, b.Path, StringComparison.Ordinal);
-                        }));
-
-                object lockObj = new object();
-
-                foreach (var file in enumerable)
+                foreach (var file in rootFilesEnumerable)
                 {
-                    try
+                    if ((file.attrs & FileAttributes.ReparsePoint) != 0) continue;
+                    long allocated = GetAllocatedSize(file.fullPath, file.size, file.attrs);
+                    topFiles.Add((file.size, allocated, file.fullPath, file.name, file.modified));
+                    if (topFiles.Count > maxResults)
                     {
-                        long size = file.size;
-                        long allocated = GetAllocatedSize(file.fullPath, size, file.attrs);
-                        lock (lockObj)
-                        {
-                            topFiles.Add((size, allocated, file.fullPath, file.name, file.modified));
-                            if (topFiles.Count > maxResults)
-                            {
-                                topFiles.Remove(topFiles.Min);
-                            }
-                            Interlocked.Exchange(ref currentCount, topFiles.Count);
-                            Interlocked.Exchange(ref minSize, topFiles.Min.Size);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogHelper.Debug($"Skipping file {file.name}: {ex.Message}", typeof(DiskAnalyzerHelper));
+                        topFiles.Remove(topFiles.Min);
                     }
                 }
 
-                files = topFiles
-                    .OrderByDescending(f => f.Size)
-                    .Select(f => new DiskItemInfo
+                currentCount = topFiles.Count;
+                if (topFiles.Count == maxResults)
+                {
+                    minSize = topFiles.Min.Size;
+                }
+
+                if (topFiles.Count > 0 && progress != null)
+                {
+                    progress.Report(GetSnapshot());
+                }
+            }
+            catch { }
+
+            // Phase 2: Background multi-threaded search across subdirectories
+            System.Timers.Timer? progressTimer = null;
+            if (progress != null)
+            {
+                progressTimer = new System.Timers.Timer(300);
+                progressTimer.Elapsed += (s, e) =>
+                {
+                    var snapshot = GetSnapshot();
+                    if (snapshot.Count > 0)
                     {
-                        Name = f.Name,
-                        FullPath = f.Path,
-                        SizeBytes = f.Size,
-                        AllocatedSizeBytes = f.Allocated,
-                        IsFile = true,
-                        FileCount = 1,
-                        FolderCount = 0,
-                        LastModified = f.Modified,
-                    })
-                    .ToList();
+                        progress.Report(snapshot);
+                    }
+                };
+                progressTimer.Start();
+            }
+
+            try
+            {
+                var pending = new System.Collections.Concurrent.BlockingCollection<string>();
+                pending.Add(path);
+                int active = 1;
+
+                var threads = Enumerable.Range(0, _parallelOpts.MaxDegreeOfParallelism).Select(_ => Task.Run(() =>
+                {
+                    int processedDirs = 0;
+                    foreach (var dir in pending.GetConsumingEnumerable())
+                    {
+                        try
+                        {
+                            var fileEnumerable = new System.IO.Enumeration.FileSystemEnumerable<(long size, FileAttributes attrs, string fullPath, string name, DateTime modified)>(
+                                dir,
+                                (ref System.IO.Enumeration.FileSystemEntry entry) => (entry.Length, entry.Attributes, entry.ToFullPath(), entry.FileName.ToString(), entry.LastWriteTimeUtc.LocalDateTime),
+                                options)
+                            {
+                                ShouldIncludePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) =>
+                                {
+                                    if (entry.IsDirectory) return false;
+                                    if (Interlocked.CompareExchange(ref currentCount, 0, 0) < maxResults) return true;
+                                    return entry.Length > Interlocked.Read(ref minSize);
+                                },
+                                ShouldRecursePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => false
+                            };
+
+                            foreach (var file in fileEnumerable)
+                            {
+                                if ((file.attrs & FileAttributes.ReparsePoint) != 0) continue;
+                                
+                                lock (lockObj)
+                                {
+                                    if (file.size > minSize || topFiles.Count < maxResults)
+                                    {
+                                        long allocated = GetAllocatedSize(file.fullPath, file.size, file.attrs);
+                                        topFiles.Add((file.size, allocated, file.fullPath, file.name, file.modified));
+                                        
+                                        if (topFiles.Count > maxResults)
+                                        {
+                                            topFiles.Remove(topFiles.Min);
+                                        }
+                                        
+                                        Interlocked.Exchange(ref currentCount, topFiles.Count);
+                                        if (topFiles.Count == maxResults)
+                                        {
+                                            Interlocked.Exchange(ref minSize, topFiles.Min.Size);
+                                        }
+                                    }
+                                }
+                            }
+
+                            var dirEnumerable = new System.IO.Enumeration.FileSystemEnumerable<string>(
+                                dir,
+                                (ref System.IO.Enumeration.FileSystemEntry entry) => entry.ToFullPath(),
+                                options)
+                            {
+                                ShouldIncludePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) =>
+                                {
+                                    if (!entry.IsDirectory) return false;
+                                    if ((entry.Attributes & FileAttributes.ReparsePoint) != 0) return false;
+
+                                    // Prune well-known dev/cache directories with tens of thousands of tiny files and no monolithic multi-GB files
+                                    ReadOnlySpan<char> name = entry.FileName;
+                                    if (name.Equals(".git", StringComparison.OrdinalIgnoreCase) ||
+                                        name.Equals("node_modules", StringComparison.OrdinalIgnoreCase) ||
+                                        name.Equals(".vs", StringComparison.OrdinalIgnoreCase) ||
+                                        name.Equals("INetCache", StringComparison.OrdinalIgnoreCase) ||
+                                        name.Equals("Package Cache", StringComparison.OrdinalIgnoreCase) ||
+                                        name.Equals("$Recycle.Bin", StringComparison.OrdinalIgnoreCase) ||
+                                        name.Equals("System Volume Information", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        return false;
+                                    }
+
+                                    return true;
+                                },
+                                ShouldRecursePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) => false
+                            };
+
+                            foreach (var subDir in dirEnumerable)
+                            {
+                                Interlocked.Increment(ref active);
+                                pending.Add(subDir);
+                            }
+
+                            processedDirs++;
+                            if ((processedDirs & 127) == 0)
+                            {
+                                Thread.Yield();
+                            }
+                        }
+                        catch { }
+                        finally
+                        {
+                            if (Interlocked.Decrement(ref active) == 0)
+                            {
+                                pending.CompleteAdding();
+                            }
+                        }
+                    }
+                })).ToArray();
+
+                Task.WaitAll(threads);
             }
             catch (Exception ex)
             {
                 LogHelper.Error($"Error finding largest files in {path}: {ex.Message}", typeof(DiskAnalyzerHelper));
             }
+            finally
+            {
+                if (progressTimer != null)
+                {
+                    progressTimer.Stop();
+                    progressTimer.Dispose();
+                }
+            }
 
-            return files;
+            GC.KeepAlive(progressTimer);
+            return GetSnapshot();
         }
 
         /// <summary>

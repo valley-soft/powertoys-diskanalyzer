@@ -259,7 +259,7 @@
                 </div>
                 <h1>Privacy Policy</h1>
                 <div class="meta-info">
-                    <span><strong>Effective Date:</strong> June 14, 2026</span>
+                    <span><strong>Effective Date:</strong> September 7, 2026</span>
                     <span><strong>Publisher:</strong> ValleySoft</span>
                     <span><strong>Location:</strong> United States</span>
                 </div>
@@ -268,12 +268,17 @@
             <div class="content">
                 <div class="highlight-box">
                     <h3>Privacy at a Glance</h3>
-                    <p>ValleySoft Disk Analyzer does <strong>not collect, store, transmit, or share any personal data</strong>. All disk analysis runs entirely on your device. No internet connection is made. No account is required.</p>
+                    <p>ValleySoft Disk Analyzer does <strong>not collect, store, transmit, or share any personal data</strong>. All disk analysis runs entirely on your device. No internet connection is made. No telemetry or analytics is embedded. No account is required.</p>
                 </div>
 
                 <h2>1. Introduction</h2>
-                <p>Thank you for using <strong>ValleySoft Disk Analyzer</strong>, a PowerToys Command Palette extension for Windows developed and published by <strong>ValleySoft</strong>. ValleySoft Disk Analyzer helps you analyze and visualize local disk usage directly on your Windows device — showing you drive names, sizes, used space, and free space in a clear, intuitive interface.</p>
-                <p>This Privacy Policy explains what information ValleySoft Disk Analyzer does and does not access, how the app works, and your rights as a user. We are committed to being fully transparent: this is a privacy-first application, and we have deliberately designed it so that your data never leaves your device.</p>
+                <p>Thank you for using <strong>ValleySoft Disk Analyzer</strong>, a suite of native Windows storage utility tools developed and published by <strong>ValleySoft</strong>. ValleySoft Disk Analyzer offers three seamless ways to analyze, visualize, and manage local disk space:</p>
+                <ul>
+                    <li><strong>Standalone Application:</strong> A modern Windows 11 WinUI 3 desktop application featuring visual bar charts, interactive donut charts, top largest file discovery, recursive file type breakdowns, and CSV export.</li>
+                    <li><strong>PowerToys Run Plugin:</strong> An instant keyboard launcher plugin activated via <code>ds</code> in PowerToys Run (<code>Alt + Space</code>) with full keyboard navigation and quick action commands.</li>
+                    <li><strong>PowerToys Command Palette Extension:</strong> A modern in-palette extension for Windows 11 Command Palette (<code>Win + Shift + P</code>) offering fast, searchable folder inspection directly from your keyboard.</li>
+                </ul>
+                <p>This Privacy Policy explains what information ValleySoft Disk Analyzer accesses, how the tools operate, and your rights as a user. We are committed to complete transparency: this is a privacy-first, 100% offline application suite designed so that your data never leaves your device.</p>
                 <p>By using ValleySoft Disk Analyzer, you agree to the terms described in this policy. If you have any questions, please contact us at the details provided in Section 8.</p>
 
                 <h2>2. Information We Collect</h2>
@@ -281,38 +286,36 @@
                 <p>ValleySoft Disk Analyzer does not collect, request, access, store, or transmit any of the following:</p>
                 <ul>
                     <li>Your name, email address, or any other personal identifiers</li>
-                    <li>Location data</li>
-                    <li>Usage statistics or behavioral analytics</li>
-                    <li>Device identifiers, hardware IDs, or IP addresses</li>
-                    <li>File names, folder contents, or any other file system data beyond disk-level capacity figures</li>
-                    <li>Crash reports or diagnostic telemetry</li>
+                    <li>Location data or IP addresses</li>
+                    <li>Usage statistics, behavioral tracking, or session telemetry</li>
+                    <li>Device identifiers or hardware serials</li>
+                    <li>File contents or sensitive personal documents</li>
+                    <li>Crash reports sent over the network</li>
                     <li>Cookies or persistent tracking tokens of any kind</li>
                 </ul>
-                <p>The only information the app reads is your local drive metadata — specifically drive letters, total capacity, used space, and free space — and this information is accessed solely for display within the app interface on your device. It is never transmitted anywhere.</p>
+                <p>The only information the application reads is local drive and file metadata (such as file/folder names, sizes, and timestamps) strictly necessary to calculate and display disk space usage on your screen. This metadata is processed exclusively on your machine and is never transmitted anywhere.</p>
 
-                <h2>3. How the App Works</h2>
-                <p>ValleySoft Disk Analyzer operates as a <strong>PowerToys Command Palette extension</strong> for Windows. Here is what happens when you use the app:</p>
+                <h2>3. How the Tools Work</h2>
+                <p>ValleySoft Disk Analyzer operates entirely locally on Windows:</p>
                 <ul>
-                    <li>You open the PowerToys Command Palette and launch ValleySoft Disk Analyzer.</li>
-                    <li>The app queries your local operating system for drive information — such as drive names (e.g., C:, D:), total disk size, used space, and free space — using standard Windows system APIs.</li>
-                    <li>This information is displayed visually within the Command Palette interface.</li>
-                    <li>When you close the Command Palette, the session data is discarded.</li>
+                    <li>When you perform a scan or query a drive, the application uses standard local Windows File System and Win32 APIs to calculate sizes and folder hierarchies.</li>
+                    <li>All processing happens concurrently in memory on your device using optimized local background threads.</li>
+                    <li>The results are rendered directly to your screen (via WinUI 3, WPF, or Command Palette).</li>
+                    <li>When you close the application or launcher session, scan data in memory is released.</li>
                 </ul>
 
                 <div class="highlight-box">
                     <h3>No Internet Connection Required or Used</h3>
-                    <p>ValleySoft Disk Analyzer makes no network requests of any kind. It does not connect to the internet, does not contact any external server, and does not communicate with any remote service — not even for update checks, licensing, or error reporting. All processing happens exclusively on your local machine.</p>
+                    <p>ValleySoft Disk Analyzer makes zero network requests. It contains no telemetry SDKs, no advertising libraries, no remote license checkers, and no remote crash reporting services. All processing happens exclusively on your local machine.</p>
                 </div>
 
                 <h2>4. Data Storage</h2>
-                <p>ValleySoft Disk Analyzer does <strong>not persistently store any data</strong>. Specifically:</p>
+                <p>ValleySoft Disk Analyzer does <strong>not store personal data</strong>. Specifically:</p>
                 <ul>
-                    <li>No files are written to your disk by the app for data collection or logging purposes.</li>
-                    <li>No databases, user profiles, or preference files containing personal data are created.</li>
-                    <li>Disk usage figures displayed in the interface exist only in memory for the duration of your current session and are discarded when you close the Command Palette.</li>
+                    <li>No databases or user profiles containing personal data are created.</li>
+                    <li>User preferences (such as Dark/Light theme selection, hidden files visibility toggle, or recent scan paths) are stored strictly locally in your user profile (via standard Windows local app settings or local configuration files) and never synchronized to external servers.</li>
                     <li>No data is ever uploaded to any cloud service, remote server, or third-party platform.</li>
                 </ul>
-                <p>Any application settings or preferences saved by the PowerToys framework (such as window position or display preferences) are handled entirely by Microsoft PowerToys — not by ValleySoft — and do not involve personal data.</p>
 
                 <h2>5. Third-Party Services</h2>
                 <p>ValleySoft Disk Analyzer <strong>does not integrate with or use any third-party services</strong>. This includes, but is not limited to:</p>

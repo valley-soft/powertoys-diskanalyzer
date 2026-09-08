@@ -2,16 +2,28 @@ $ErrorActionPreference = "Stop"
 
 # ── Self-elevate if not running as Administrator ─────────────────────────────
 
-# 1. Run the build script
-Write-Host "Running build-v1.4.0.ps1..."
-& ".\build-v1.4.0.ps1"
-
-# 2. Get the generated MSIX file path (on x64 platform)
-$Version = "1.4.0"
-$msixPath = Resolve-Path "out\App\ValleySoft.DiskAnalyzer.App_$($Version)_x64.msix" -ErrorAction SilentlyContinue
-if (!$msixPath) {
-    Write-Error "Could not find generated MSIX file!"
+if (!$env:VALLEYSOFT_CERT_PASSWORD) {
+    $env:VALLEYSOFT_CERT_PASSWORD = [System.Environment]::GetEnvironmentVariable("VALLEYSOFT_CERT_PASSWORD", "User")
 }
+
+# 1. Run the build script
+Write-Host "Running build-v1.5.0.ps1..."
+& ".\build-v1.5.0.ps1"
+
+# 2. Get the generated MSIX file path (x64, newest first)
+$Version = "1.5.0"
+$msixPath = Get-ChildItem "out\App" -Filter "ValleySoft.DiskAnalyzer.App_${Version}_x64.msix" -ErrorAction SilentlyContinue |
+            Select-Object -First 1 -ExpandProperty FullName
+if (!$msixPath) {
+    # Fallback: find any x64 MSIX (newest wins)
+    $msixPath = Get-ChildItem "out\App" -Filter "ValleySoft.DiskAnalyzer.App_*_x64.msix" -ErrorAction SilentlyContinue |
+                Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName
+}
+if (!$msixPath) {
+    Write-Error "Could not find generated MSIX file in out\App! Build may have failed to produce the package."
+    exit 1
+}
+Write-Host "Found MSIX: $msixPath"
 
 # 3. Clean up existing registration of the package
 Write-Host "Checking for existing package registration..."
@@ -87,7 +99,7 @@ dotnet publish "Community.PowerToys.Run.Plugin.DiskAnalyzer.csproj" -c Release -
 
 Write-Host ""
 Write-Host "========================================="
-Write-Host "  ValleySoft Disk Analyzer v1.4.0        "
+Write-Host "  ValleySoft Disk Analyzer v1.5.0        "
 Write-Host "  Successfully installed on your laptop! "
 Write-Host "========================================="
 Write-Host ""

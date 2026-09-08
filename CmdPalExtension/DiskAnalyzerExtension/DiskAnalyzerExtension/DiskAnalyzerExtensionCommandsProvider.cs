@@ -2,6 +2,8 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
+using System.Collections.Generic;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
@@ -26,6 +28,63 @@ public partial class DiskAnalyzerExtensionCommandsProvider : CommandProvider
     {
         DisplayName = "ValleySoft Disk Analyzer (Command Palette)";
         Icon        = SafeIcon("Assets\\DiskAnalyzerLight.png");
+
+        InitializeSettings();
+    }
+
+    private void InitializeSettings()
+    {
+        try
+        {
+            var localValues = Windows.Storage.ApplicationData.Current.LocalSettings.Values;
+            bool initHidden = (localValues["CmdPal_ShowHiddenFiles"] as bool?) ?? true;
+            int initDepth = (localValues["CmdPal_MaxScanDepth"] as int?) ?? 0;
+
+            var showHidden = new ToggleSetting(
+                "CmdPal_ShowHiddenFiles",
+                "Show Hidden Files",
+                "Include hidden files and folders in disk scans",
+                initHidden);
+
+            var depthChoices = new List<ChoiceSetSetting.Choice>
+            {
+                new("Unlimited", "0"),
+                new("1 Level", "1"),
+                new("2 Levels", "2"),
+                new("3 Levels", "3"),
+                new("5 Levels", "5")
+            };
+
+            var maxDepth = new ChoiceSetSetting(
+                "CmdPal_MaxScanDepth",
+                "Max Scan Depth",
+                "Maximum directory depth to scan (0 for unlimited)",
+                depthChoices)
+            {
+                Value = initDepth.ToString()
+            };
+
+            var extSettings = new Settings();
+            extSettings.Add(showHidden);
+            extSettings.Add(maxDepth);
+
+            extSettings.SettingsChanged += (sender, args) =>
+            {
+                try
+                {
+                    var vals = Windows.Storage.ApplicationData.Current.LocalSettings.Values;
+                    vals["CmdPal_ShowHiddenFiles"] = showHidden.Value;
+                    if (int.TryParse(maxDepth.Value, out int d))
+                    {
+                        vals["CmdPal_MaxScanDepth"] = d;
+                    }
+                }
+                catch { }
+            };
+
+            Settings = extSettings;
+        }
+        catch { }
     }
 
     public override ICommandItem[] TopLevelCommands()
@@ -37,73 +96,9 @@ public partial class DiskAnalyzerExtensionCommandsProvider : CommandProvider
                 Title    = "ValleySoft Disk Analyzer (Command Palette)",
                 Subtitle = "Interactive in-palette disk space usage analyzer",
                 Icon     = Icon,
-            },
-            new ListItem(new MyAnonymousCommand(() => 
-            {
-                try
-                {
-                    string aliasPath = System.IO.Path.Combine(
-                        System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData),
-                        "Microsoft", "WindowsApps", "ValleySoft.DiskAnalyzer.exe");
-
-                    bool aliasExists = false;
-                    try
-                    {
-                        var attr = System.IO.File.GetAttributes(aliasPath);
-                        if (attr != (System.IO.FileAttributes)(-1))
-                        {
-                            aliasExists = true;
-                        }
-                    }
-                    catch { }
-
-                    string exePath = aliasExists ? aliasPath : "ValleySoft.DiskAnalyzer.exe";
-
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                    {
-                        FileName = exePath,
-                        UseShellExecute = true
-                    });
-                }
-                catch { }
-            }))
-            {
-                Title    = "ValleySoft Disk Analyzer (Standalone App)",
-                Subtitle = "Launch standalone graphical WinUI 3 window",
-                Icon     = Icon,
-            },
-            new ListItem(new MyAnonymousCommand(() => 
-            {
-                try
-                {
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                    {
-                        FileName = "powertoys://run",
-                        UseShellExecute = true
-                    });
-                }
-                catch
-                {
-                    try
-                    {
-                        string aliasPath = System.IO.Path.Combine(
-                            System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData),
-                            "Microsoft", "WindowsApps", "ValleySoft.DiskAnalyzer.exe");
-
-                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                        {
-                            FileName = aliasPath,
-                            UseShellExecute = true
-                        });
-                    }
-                    catch { }
-                }
-            }))
-            {
-                Title    = "ValleySoft Disk Analyzer (PowerToys Run)",
-                Subtitle = "Open PowerToys Run plugin launcher (ds <path>)",
-                Icon     = Icon,
             }
         };
     }
 }
+
+

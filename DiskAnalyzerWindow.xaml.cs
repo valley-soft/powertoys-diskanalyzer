@@ -34,6 +34,9 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
             InitializeComponent();
             DataContext = this;
 
+            Microsoft.Win32.SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
+            this.Closed += (s, e) => Microsoft.Win32.SystemEvents.UserPreferenceChanged -= SystemEvents_UserPreferenceChanged;
+
             if (!string.IsNullOrEmpty(rootPath) && Directory.Exists(rootPath))
             {
                 _ = LoadTreeAsync(rootPath);
@@ -220,6 +223,7 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
 
                 ItemsGrid.ItemsSource = viewModels;
                 StatusText.Text = $"{viewModels.Count} item(s) in {path}  •  Double-click a folder to drill down";
+                RefreshWpfDonutChart();
             }
             catch (Exception ex)
             {
@@ -292,6 +296,127 @@ namespace Community.PowerToys.Run.Plugin.DiskAnalyzer
                 else
                     ApplyTheme(_theme); // System (PowerToys default)
             }
+        }
+        private void SystemEvents_UserPreferenceChanged(object sender, Microsoft.Win32.UserPreferenceChangedEventArgs e)
+        {
+            if (e.Category == Microsoft.Win32.UserPreferenceCategory.General)
+            {
+                if (ThemeComboBox?.SelectedItem is ComboBoxItem item && item.Tag is string tag && tag == "System")
+                {
+                    // Re-apply system theme without restarting
+                    ApplyTheme(_theme);
+                }
+            }
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Back || e.Key == Key.BrowserBack)
+            {
+                Back_Click(this, new RoutedEventArgs());
+                e.Handled = true;
+            }
+            else if (e.Key == Key.F5)
+            {
+                Refresh_Click(this, new RoutedEventArgs());
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Enter)
+            {
+                if (ItemsGrid.SelectedItem is GridItemViewModel vm)
+                {
+                    if (vm.IsFile)
+                    {
+                        try { System.Diagnostics.Process.Start("explorer.exe", $"/select,\"{vm.FullPath}\""); } catch { }
+                    }
+                    else
+                    {
+                        NavigateTo(vm.FullPath);
+                    }
+                    e.Handled = true;
+                }
+            }
+        }
+
+        private void ToggleChartButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ChartColumn.Width.Value == 0)
+            {
+                ChartColumn.Width = new GridLength(230);
+                ChartColumn.MinWidth = 150;
+                ToggleChartButton.IsChecked = true;
+                RefreshWpfDonutChart();
+            }
+            else
+            {
+                ChartColumn.Width = new GridLength(0);
+                ChartColumn.MinWidth = 0;
+                ToggleChartButton.IsChecked = false;
+            }
+        }
+
+        private void RefreshWpfDonutChart()
+        {
+            if (WpfDonutCanvas == null || ChartColumn.Width.Value == 0) return;
+            WpfDonutCanvas.Children.Clear();
+
+            var items = ItemsGrid.ItemsSource as List<GridItemViewModel>;
+            if (items == null || !items.Any()) return;
+
+            var topItems = items.Take(8).ToList();
+            long total = items.Sum(i => i.SizeBytes);
+            if (total == 0) return;
+
+            long otherSize = total - topItems.Sum(i => i.SizeBytes);
+            if (otherSize > 0)
+            {
+                topItems.Add(new GridItemViewModel { Name = "Other", SizeBytes = otherSize });
+            }
+
+            double angle = 0;
+            double radius = 100;
+            double innerRadius = 50;
+            Point center = new Point(110, 110);
+            
+            Color[] colors = new[] { Colors.SteelBlue, Colors.DarkOrange, Colors.MediumSeaGreen, Colors.Crimson, Colors.MediumPurple, Colors.Gold, Colors.LightSeaGreen, Colors.Chocolate, Colors.Gray };
+
+            for (int i = 0; i < topItems.Count; i++)
+            {
+                var item = topItems[i];
+                double sweepAngle = (double)item.SizeBytes / total * 360;
+                if (sweepAngle < 0.1) continue;
+                if (sweepAngle >= 359.9) sweepAngle = 359.9;
+
+                var path = CreateArc(center, radius, innerRadius, angle, sweepAngle);
+                path.Fill = new SolidColorBrush(colors[i % colors.Length]);
+                path.ToolTip = $"{item.Name}\n{DiskAnalyzerHelper.FormatSize(item.SizeBytes)} ({(sweepAngle / 360 * 100):F1}%)";
+                
+                WpfDonutCanvas.Children.Add(path);
+                angle += sweepAngle;
+            }
+        }
+
+        private System.Windows.Shapes.Path CreateArc(Point center, double radius, double innerRadius, double startAngle, double sweepAngle)
+        {
+            double startRad = (startAngle - 90) * Math.PI / 180;
+            double endRad = (startAngle + sweepAngle - 90) * Math.PI / 180;
+
+            Point p1 = new Point(center.X + radius * Math.Cos(startRad), center.Y + radius * Math.Sin(startRad));
+            Point p2 = new Point(center.X + radius * Math.Cos(endRad), center.Y + radius * Math.Sin(endRad));
+            Point p3 = new Point(center.X + innerRadius * Math.Cos(endRad), center.Y + innerRadius * Math.Sin(endRad));
+            Point p4 = new Point(center.X + innerRadius * Math.Cos(startRad), center.Y + innerRadius * Math.Sin(startRad));
+
+            bool isLargeArc = sweepAngle > 180;
+
+            var pathGeometry = new PathGeometry();
+            var pathFigure = new PathFigure { StartPoint = p1, IsClosed = true };
+
+            pathFigure.Segments.Add(new ArcSegment(p2, new Size(radius, radius), 0, isLargeArc, SweepDirection.Clockwise, true));
+            pathFigure.Segments.Add(new LineSegment(p3, true));
+            pathFigure.Segments.Add(new ArcSegment(p4, new Size(innerRadius, innerRadius), 0, isLargeArc, SweepDirection.Counterclockwise, true));
+
+            pathGeometry.Figures.Add(pathFigure);
+            return new System.Windows.Shapes.Path { Data = pathGeometry, Stroke = Brushes.White, StrokeThickness = 1 };
         }
     }
 

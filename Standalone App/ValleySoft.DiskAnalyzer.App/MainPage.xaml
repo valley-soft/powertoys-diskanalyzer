@@ -81,6 +81,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
                 
@@ -109,7 +110,13 @@
                     </StackPanel>
                 </Button>
 
-                <TextBox x:Name="FilterBox" Grid.Column="3" PlaceholderText="Filter (e.g. *.mp4)" VerticalAlignment="Center" Margin="12,0,0,0" TextChanged="FilterBox_TextChanged" />
+                <ToggleButton Grid.Column="3" x:Name="LargeOldFilterButton" Click="LargeOldFilterButton_Click" Height="40" Padding="16,0">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock x:Name="LargeOldFilterText" Text="🕐 Old &amp; Large" />
+                    </StackPanel>
+                </ToggleButton>
+
+                <TextBox x:Name="FilterBox" Grid.Column="4" PlaceholderText="Filter (e.g. *.mp4)" VerticalAlignment="Center" Margin="12,0,0,0" TextChanged="FilterBox_TextChanged" />
             </Grid>
         </StackPanel>
         
@@ -153,7 +160,7 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Pivot Grid.Row="0">
+                <Pivot Grid.Row="0" x:Name="MainPivot" SelectionChanged="MainPivot_SelectionChanged">
                     <PivotItem Header="Details">
                         <controls:DataGrid x:Name="ResultsGrid" 
                             AutoGenerateColumns="False" 
@@ -174,6 +181,8 @@
                                 <MenuFlyout>
                                     <MenuFlyoutItem Text="Open in Explorer" Click="DataGrid_OpenInExplorer_Click" />
                                     <MenuFlyoutItem Text="Copy Path" Click="DataGrid_CopyPath_Click" />
+                                    <MenuFlyoutSeparator />
+                                    <MenuFlyoutItem Text="Send to Recycle Bin" Click="DataGrid_SendToRecycleBin_Click" />
                                 </MenuFlyout>
                             </controls:DataGrid.ContextFlyout>
                             <controls:DataGrid.Columns>
@@ -208,22 +217,95 @@
                     </PivotItem>
                     <PivotItem Header="Visual Chart">
                         <Grid Padding="24">
-                            <ItemsControl x:Name="ChartItemsControl" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Bottom"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="local:ChartItemViewModel">
-                                        <StackPanel VerticalAlignment="Bottom" ToolTipService.ToolTip="{x:Bind ToolTip}" Tapped="ChartItem_Tapped" Background="Transparent">
-                                            <Rectangle Width="80" Height="{x:Bind Height}" Fill="{x:Bind Color}" StrokeThickness="1" Stroke="{ThemeResource CardStrokeColorDefaultBrush}" RadiusX="4" RadiusY="4"/>
-                                            <TextBlock Text="{x:Bind Name}" Foreground="{ThemeResource TextFillColorPrimaryBrush}" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" Width="80" FontSize="12" Margin="0,8,0,0" TextAlignment="Center" />
-                                            <TextBlock Text="{x:Bind FormattedSize}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" FontSize="11" Margin="0,4,0,0" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" HorizontalScrollMode="Enabled">
+                                <ItemsControl x:Name="ChartItemsControl" HorizontalAlignment="Center" VerticalAlignment="Center" SizeChanged="ChartItemsControl_SizeChanged">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Bottom"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="local:ChartItemViewModel">
+                                            <StackPanel VerticalAlignment="Bottom" ToolTipService.ToolTip="{x:Bind ToolTip}" Tapped="ChartItem_Tapped" Background="Transparent">
+                                                <Rectangle Width="80" Height="{x:Bind Height}" Fill="{x:Bind Color}" StrokeThickness="1" Stroke="{ThemeResource CardStrokeColorDefaultBrush}" RadiusX="4" RadiusY="4"/>
+                                                <TextBlock Text="{x:Bind Name}" Foreground="{ThemeResource TextFillColorPrimaryBrush}" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" Width="80" FontSize="12" Margin="0,8,0,0" TextAlignment="Center" />
+                                                <TextBlock Text="{x:Bind FormattedSize}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" FontSize="11" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </PivotItem>
+                    <PivotItem Header="Donut Chart">
+                        <Grid Padding="24">
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" HorizontalScrollMode="Auto">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="24">
+                                    <Viewbox Stretch="Uniform">
+                                        <Canvas x:Name="DonutCanvas" Width="320" Height="320" IsHitTestVisible="True">
+                                        </Canvas>
+                                    </Viewbox>
+                                    <ListView x:Name="DonutLegendList" SelectionMode="None" HorizontalAlignment="Center">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate x:DataType="local:ChartItemViewModel">
+                                                <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4" Tapped="ChartItem_Tapped" Background="Transparent" ToolTipService.ToolTip="{x:Bind ToolTip}">
+                                                    <Ellipse Width="12" Height="12" Fill="{x:Bind Color}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{x:Bind Name}" VerticalAlignment="Center" Width="120" TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{x:Bind FormattedSize}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Grid>
+                    </PivotItem>
+                    <PivotItem Header="Top Files">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Padding="12">
+                                <Button Content="Scan for Top Files" Click="ScanTopFiles_Click" />
+                                <ProgressRing x:Name="TopFilesProgress" IsActive="False" Width="24" Height="24" Margin="12,0,0,0" Visibility="Collapsed" />
+                                <TextBlock x:Name="TopFilesStatusText" Text="Discover the largest files across this drive." VerticalAlignment="Center" Margin="16,0,0,0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" />
+                            </StackPanel>
+                            <controls:DataGrid x:Name="TopFilesGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                                               AlternatingRowBackground="{ThemeResource ControlFillColorTransparentBrush}"
+                                               RowBackground="{ThemeResource ControlFillColorDefaultBrush}"
+                                               BorderThickness="0"
+                                               DoubleTapped="TopFilesGrid_DoubleTapped">
+                                <controls:DataGrid.ContextFlyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem Text="Open in File Explorer" Click="TopFiles_OpenExplorer_Click">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE8DA;" />
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                        <MenuFlyoutItem Text="Copy Path" Click="TopFiles_CopyPath_Click">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE8C8;" />
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                    </MenuFlyout>
+                                </controls:DataGrid.ContextFlyout>
+                                <controls:DataGrid.Columns>
+                                    <controls:DataGridTemplateColumn Header="Name" Width="*" MinWidth="300">
+                                        <controls:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Spacing="12" Padding="12,0,0,0">
+                                                    <Image Source="{Binding IconSource}" Width="16" Height="16" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </controls:DataGridTemplateColumn.CellTemplate>
+                                    </controls:DataGridTemplateColumn>
+                                    <controls:DataGridTextColumn Header="Size" Binding="{Binding FormattedSize}" Width="100"/>
+                                    <controls:DataGridTextColumn Header="Path" Binding="{Binding FullPath}" Width="350"/>
+                                    <controls:DataGridTextColumn Header="Last Modified" Binding="{Binding FormattedDate}" Width="160"/>
+                                </controls:DataGrid.Columns>
+                            </controls:DataGrid>
                         </Grid>
                     </PivotItem>
                 </Pivot>

@@ -9,10 +9,10 @@
 
 | Component | Description | Current Version |
 |---|---|---|
-| 🖥️ **Standalone App** | WinUI 3 MSIX app (Microsoft Store + sideload) | 1.4.1.0 |
-| 🔍 **PowerToys Run Plugin** | `ds` keyword plugin for PowerToys Run (launcher) | 1.4.0 |
-| 🪟 **PowerToys Run GUI** | WPF floating window launched from PowerToys Run | 1.4.0 |
-| 🎨 **Command Palette Extension** | Native CmdPal WinRT/COM extension (MSIX) | 1.4.0 |
+| 🖥️ **Standalone App** | WinUI 3 MSIX app (Microsoft Store + sideload) | 1.5.0.0 |
+| 🔍 **PowerToys Run Plugin** | `ds` keyword plugin for PowerToys Run (launcher) | 1.5.0 |
+| 🪟 **PowerToys Run GUI** | WPF floating window launched from PowerToys Run | 1.5.0 |
+| 🎨 **Command Palette Extension** | Native CmdPal WinRT/COM extension (MSIX) | 1.5.0 |
 
 ---
 

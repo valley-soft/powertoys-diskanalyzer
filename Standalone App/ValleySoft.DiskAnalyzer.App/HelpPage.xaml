@@ -18,7 +18,7 @@
                         Header="Help &amp; Features"
                         IsSettingsVisible="False">
             <NavigationView.MenuItems>
-                <NavigationViewItem Tag="WhatsNew" Content="What's New (v1.4.0)" Icon="Help" SelectsOnInvoked="True" IsSelected="True" />
+                <NavigationViewItem Tag="WhatsNew" Content="What's New (v1.5.0)" Icon="Help" SelectsOnInvoked="True" IsSelected="True" />
                 <NavigationViewItem Tag="Scanning" Content="Scanning &amp; Admin" Icon="Scan" />
                 <NavigationViewItem Tag="Filtering" Content="Filtering &amp; Search" Icon="Find" />
                 <NavigationViewItem Tag="Navigation" Content="Navigation" Icon="MapDrive" />
@@ -31,58 +31,58 @@
                     <StackPanel x:Name="WhatsNewSection" Spacing="20" Visibility="Visible">
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <FontIcon Glyph="&#xE897;" FontSize="24" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
-                            <TextBlock Text="What's New in Version 1.4.0" Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
+                            <TextBlock Text="What's New in Version 1.5.0" Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
                         </StackPanel>
                         
-                        <TextBlock Text="Here are the latest features and enhancements added in Version 1.4.0:" Style="{ThemeResource SubtitleTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock Text="Here are the latest features and enhancements added in Version 1.5.0:" Style="{ThemeResource SubtitleTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
 
                         <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
                             <StackPanel Spacing="12">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <FontIcon Glyph="&#xEC50;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
-                                    <TextBlock Text="Windows File Explorer Context Menu" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                    <FontIcon Glyph="&#xE9D9;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                    <TextBlock Text="Interactive Donut Chart Visualization" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                 </StackPanel>
-                                <TextBlock Text="You can now right-click any folder, drive, or folder background in Windows File Explorer and select 'Analyze with DiskAnalyzer' to launch directly into target scan view." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <TextBlock Text="A new Donut Chart tab renders vibrant proportional slices for your top space-consuming folders, featuring a central total size indicator and an interactive color-coded legend." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                             </StackPanel>
                         </Border>
 
                         <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
                             <StackPanel Spacing="12">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <FontIcon Glyph="&#xEB9F;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
-                                    <TextBlock Text="Authentic Embedded Executable File Icons" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                    <FontIcon Glyph="&#xE7C3;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                    <TextBlock Text="Top 100 Largest Files Discovery" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                 </StackPanel>
-                                <TextBlock Text="Application executables (.exe and .dll files) now display their real high-resolution embedded application icons in the results grid instead of generic installer placeholders." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <TextBlock Text="A dedicated Top Files tab instantly sweeps your drive or folder for the 100 largest space consumers, including root system files like pagefile.sys and hiberfil.sys." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                             </StackPanel>
                         </Border>
 
                         <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
                             <StackPanel Spacing="12">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <FontIcon Glyph="&#xE78C;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
-                                    <TextBlock Text="3 Top-Level Command Palette Shortcuts" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                    <FontIcon Glyph="&#xE823;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                    <TextBlock Text="Old &amp; Large Files Smart Filter" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                 </StackPanel>
-                                <TextBlock Text="Windows Command Palette now provides 3 dedicated shortcuts for Command Palette In-App Analyzer, Standalone App launcher, and PowerToys Run launcher." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <TextBlock Text="Quickly isolate space hogs with the new 'Old &amp; Large' toolbar filter, surfacing items over 100 MB that haven't been modified in over 12 months." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                             </StackPanel>
                         </Border>
 
                         <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
                             <StackPanel Spacing="12">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <FontIcon Glyph="&#xE74E;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
-                                    <TextBlock Text="Dynamic CSV Export &amp; Admin Elevation Resilience" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                    <FontIcon Glyph="&#xE74D;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                    <TextBlock Text="Send to Recycle Bin Context Action" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                 </StackPanel>
-                                <TextBlock Text="Export CSV button automatically enables once a scan finishes and supports native Win32 save dialogs under Administrator elevation." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <TextBlock Text="Right-click any file or folder directly in the results grid to send it safely to the Windows Recycle Bin with a confirmation dialog." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                             </StackPanel>
                         </Border>
 
                         <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
                             <StackPanel Spacing="12">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <FontIcon Glyph="&#xE80F;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
-                                    <TextBlock Text="Live Item Count Status Bar" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                    <FontIcon Glyph="&#xE756;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                    <TextBlock Text="PowerToys Run &amp; Command Palette Upgrades" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                 </StackPanel>
-                                <TextBlock Text="A new status bar at the bottom of the scan window displays real-time item counts for scanned drives and folders." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <TextBlock Text="Enjoy recent scan history with 'ds recent', colorful progress bars in PowerToys Run folder scans, collapsible WPF GUI donut chart panel, and native Command Palette extension settings." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>

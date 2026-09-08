@@ -10,7 +10,7 @@ $StandaloneProject = "Standalone App\ValleySoft.DiskAnalyzer.App\ValleySoft.Disk
 $StandaloneDir     = "Standalone App\ValleySoft.DiskAnalyzer.App"
 
 Write-Host "========================================="
-Write-Host "  Building DiskAnalyzer v1.4.0          "
+Write-Host "  Building DiskAnalyzer v1.5.0          "
 Write-Host "========================================="
 
 Write-Host "Checking for ValleySoft certificate..."
@@ -18,6 +18,9 @@ Write-Host "Checking for ValleySoft certificate..."
 # Require the password via environment variable — never hardcoded.
 # Run Setup-DevCert.ps1 once to configure this on a new machine.
 $certPasswordRaw = $env:VALLEYSOFT_CERT_PASSWORD
+if (!$certPasswordRaw) {
+    $certPasswordRaw = [System.Environment]::GetEnvironmentVariable("VALLEYSOFT_CERT_PASSWORD", "User")
+}
 if (!$certPasswordRaw) {
     Write-Error "VALLEYSOFT_CERT_PASSWORD environment variable is not set.`nRun Setup-DevCert.ps1 once to generate a strong password and certificate."
     exit 1
@@ -54,10 +57,13 @@ if (Test-Path "$StandaloneDir\bin") { Remove-Item "$StandaloneDir\bin" -Recurse 
 
 $Architectures = @("x64", "arm64")
 
-# Ensure output directories exist
+# Ensure output directories exist and are clean
 foreach ($dir in @("out\Installer", "out\App")) {
     if (!(Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
 }
+Remove-Item "out\App\*.msix" -Force -ErrorAction SilentlyContinue
+Remove-Item "out\App\*.zip" -Force -ErrorAction SilentlyContinue
+
 
 # Create a placeholder payload.zip so MSBuild can evaluate the EmbeddedResource at restore time.
 # This will be overwritten with actual content during step 4 of each architecture build.
@@ -92,8 +98,13 @@ foreach ($Arch in $Architectures) {
     Write-Host "[3/4] Building Unified App & CmdPal MSIX ($Arch)..."
     Push-Location $StandaloneDir
     try {
-        dotnet publish "ValleySoft.DiskAnalyzer.App.csproj" -c Release -r $WinArch `
-            -p:GenerateAppxPackageOnBuild=true -p:PackageCertificatePassword="$certPasswordRaw" 2>&1 | Write-Host
+        dotnet build "ValleySoft.DiskAnalyzer.App.csproj" -c Release `
+            -p:Platform=$Arch `
+            -p:GenerateAppxPackageOnBuild=true `
+            -p:AppxPackageSigningEnabled=true `
+            -p:PackageCertificateKeyFile="..\..\ValleySoft.pfx" `
+            -p:PackageCertificatePassword="$certPasswordRaw" `
+            -p:AppxPackageDir="AppPackages\" 2>&1 | Write-Host
     } finally {
         Pop-Location
     }

@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <WindowsSdkPackageVersion>10.0.26100.68-preview</WindowsSdkPackageVersion>
     <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>ValleySoft_DiskAnalyzer_App</RootNamespace>
@@ -14,11 +15,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <DefineConstants>$(DefineConstants);STANDALONE_APP</DefineConstants>
-    <ApplicationVersion>1.4.0.0</ApplicationVersion>
-    <ApplicationDisplayVersion>1.4.0</ApplicationDisplayVersion>
-    <Version>1.4.0</Version>
-    <AssemblyVersion>1.4.0.0</AssemblyVersion>
-    <FileVersion>1.4.0.0</FileVersion>
+    <ApplicationVersion>1.5.0.0</ApplicationVersion>
+    <ApplicationDisplayVersion>1.5.0</ApplicationDisplayVersion>
+    <Version>1.5.0</Version>
+    <AssemblyVersion>1.5.0.0</AssemblyVersion>
+    <FileVersion>1.5.0.0</FileVersion>
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
   </PropertyGroup>
