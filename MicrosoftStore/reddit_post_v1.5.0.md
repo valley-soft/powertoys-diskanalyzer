@@ -56,10 +56,8 @@ I'm excited to share the release of **v1.5.0** of **ValleySoft Disk Analyzer** �
 
 ---
 
-### ⏳ A Quick Note on the Microsoft Store Version:
-> ℹ️ The **v1.5.0 store bundle has been submitted to the Microsoft Partner Center**! Due to Microsoft Store certification timelines, the update may take **48 hours up to 3 business days** to become available on the Store.
-> 
-> If you'd like to use v1.5.0 right now, you can immediately download the direct `.msix` or `.exe` installer from [GitHub Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/tag/v1.5.0).
+### 🟢 Microsoft Store Version: LIVE NOW!
+> 🎉 **Update:** Microsoft just approved **v1.5.0**, and it is officially live on the Microsoft Store! You can install or update directly through the Store app or via `winget`.
 
 ---
 
@@ -74,9 +72,9 @@ If you enjoy using Disk Analyzer or find it helpful in PowerToys, **it would mea
 ---
 
 ### 📦 Download & Links:
-- ⭐️ **Microsoft Store**: [Get on Microsoft Store](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US) *(v1.5.0 rolling out over the next 48h–3 business days)*
+- ⭐️ **Microsoft Store (v1.5.0 Live)**: [Get on Microsoft Store](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
 - 💻 **Winget**: `winget install ValleySoft.DiskAnalyzer`
-- 🐙 **GitHub Release (v1.5.0 Live Now)**: [Download on GitHub Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/tag/v1.5.0)
+- 🐙 **GitHub Release (v1.5.0)**: [Download on GitHub Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/tag/v1.5.0)
 - 🌐 **Project Website**: [valley-soft.github.io/powertoys-diskanalyzer](https://valley-soft.github.io/powertoys-diskanalyzer/)
 
 Feedback, bug reports, and feature requests are always welcome! Thank you for the support! 🙌
