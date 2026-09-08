@@ -53,7 +53,7 @@ This project ships three tools, bundled into two easy installations:
 
 ### Command Palette Extension (Native Windows CmdPal)
 - ⚙️ **Native Extension Settings**: Native `CommandProvider.Settings` integration for "Show Hidden Files" and "Max Scan Depth" controls
-- 🚀 **3 Top-Level Shortcuts**: Direct entries for **Command Palette View**, **Standalone App**, and **PowerToys Run** with per-command toggles
+- 🚀 **3 Top-Level Shortcuts**: Direct entries for **Command Palette View**, **Standalone App**, and **PowerToys Run**
 - 🔄 **Async Background Queries**: Non-blocking background disk scans with live progress rendering (`MOAPPLICATION_HANG` resilient)
 - 📂 **In-Palette Drill-Down**: Explore subfolders directly inside Command Palette with an **"Up one level"** return item
 
@@ -260,9 +260,14 @@ Launch **DiskAnalyzer** from your Windows Start Menu.
 |--------|-----|
 | Scan a drive | Click the drive letter from the dropdown or sidebar |
 | Pick a custom folder | Click **Browse...** to pick any folder on your PC |
-| View visual charts | Click the **Chart** icon in the toolbar |
-| Drill into a subfolder | **Double-click** any folder row in the data grid |
+| View bar charts | Switch to the **Visual Chart** tab in the main pivot |
+| View donut charts | Switch to the **Donut Chart** tab to inspect folder space distribution (click slice to drill in) |
+| Find top 100 largest files | Switch to the **Top Files** tab and click **Scan for Top Files** |
+| Filter old & large files | Toggle the **🕐 Old & Large** toolbar button (>100 MB, modified 12+ months ago) |
+| Drill into a subfolder | **Double-click** any folder row in the data grid or tap chart slices |
 | Reveal a file | **Double-click** any file row — opens File Explorer |
+| Send to Recycle Bin | **Right-click** any row in the grid and select **Send to Recycle Bin** |
+| Export to CSV | Click **Export CSV** (includes numeric bytes for 100% accurate Excel sorting) |
 | Go back | Click the **← Back** button or use the breadcrumb trail |
 | Rescan current view | Click the **Refresh** button |
 | Sort columns | Click any column header (Size/Allocated sort correctly by bytes) |
@@ -271,7 +276,8 @@ Launch **DiskAnalyzer** from your Windows Start Menu.
 
 ## Settings
 
-Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
+### PowerToys Run Plugin Settings
+Configure in PowerToys Settings → PowerToys Run → Plugins → DiskAnalyzer.
 
 | Setting | Default | Description |
 |---------|---------|-------------|
@@ -279,6 +285,14 @@ Configure in PowerToys Settings → PowerToys Run → DiskAnalyzer.
 | Default scan depth | 1 | How many levels deep to scan (1–5) |
 | Include hidden files | Off | Include items with the Hidden attribute |
 | Show percentage of parent | On | Display what % of the parent each item uses |
+
+### Command Palette Extension Settings
+Configure directly inside Windows Command Palette settings.
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| Show Hidden Files | On | Include files and folders with the Hidden attribute |
+| Max Scan Depth | 0 (Unlimited) | Limit scan recursion depth (0 = unlimited, 1–10) |
 
 ---
 
@@ -318,10 +332,10 @@ Looking to see what's coming next? Check out our official **[Project Roadmap](RO
 - ⌨️ **PowerToys Run Full Keyboard Navigation**: Added complete keyboard accessibility to the floating GUI (`Enter` to drill down, `Backspace` to navigate up one level, and `F5` to refresh/rescan).
 - 📊 **PowerToys Run Collapsible Donut Panel**: Added a toggleable side chart panel in the PowerToys Run GUI window featuring a high-contrast visual donut chart.
 - 🎨 **Live Theme Synchronization**: Added dynamic system theme tracking (`UserPreferenceChanged`) to the PowerToys Run GUI, instantly switching between dark and light themes without requiring an app restart.
-- ▓ **High-Contrast Usage Bars**: Redesigned PowerToys Run mini usage progress bars (`DiskAnalyzerHelper.CreateMiniBar`) using unicode contrast blocks (`█` / `░`) ensuring clear visibility across dark and light modes.
+- ▓ **High-Contrast Shaded Usage Bars**: Redesigned PowerToys Run mini usage progress bars (`DiskAnalyzerHelper.CreateMiniBar`) using unicode contrast blocks (`█` / `░`) ensuring clear visibility across dark and light modes.
 - ⚙️ **Native Command Palette Settings**: Replaced placeholder settings with native `CommandProvider.Settings` integration, introducing persistent "Show Hidden Files" and "Max Scan Depth" controls.
 - ⚡ **Command Palette Asynchronous Loading**: Command Palette extension now streams and queries results asynchronously in the background, eliminating UI freezes and maintaining launcher responsiveness.
-- 🎛️ **Command Palette Per-Command Toggle**: Implemented granular per-command activation toggles enabling or disabling each of the 3 top-level commands independently.
+- 💾 **Enhanced Excel-Sortable CSV Export**: Export formatted `.csv` files including unquoted numeric `Size (Bytes)` and `Allocated Size (Bytes)` columns with UTF-8 BOM encoding for direct numeric sorting and formula calculations in Microsoft Excel.
 
 #### Fixed & Improved
 - 📊 **Bar Chart Dynamic Scaling & Horizontal Scrolling**: Fixed bar chart item clipping on smaller displays by adding horizontal scrolling and dynamic bar height scaling.

@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **High-Contrast Usage Bars**: Redesigned PowerToys Run mini usage progress bars (`DiskAnalyzerHelper.CreateMiniBar`) using unicode contrast blocks (`█` / `░`) ensuring clear visibility across dark and light modes.
 - **Native Command Palette Settings**: Replaced placeholder settings with native `CommandProvider.Settings` integration, introducing persistent "Show Hidden Files" and "Max Scan Depth" controls.
 - **Command Palette Asynchronous Loading**: Command Palette extension now streams and queries results asynchronously in the background, eliminating UI freezes and maintaining launcher responsiveness.
-- **Command Palette Per-Command Toggle**: Implemented granular per-command activation toggles enabling or disabling each of the 3 top-level commands independently.
+- **Enhanced Excel-Sortable CSV Export**: Export formatted `.csv` files including unquoted numeric `Size (Bytes)` and `Allocated Size (Bytes)` columns with UTF-8 BOM encoding for direct numeric sorting and formula calculations in Microsoft Excel.
 
 ### Fixed & Improved
 - **Bar Chart Dynamic Scaling & Horizontal Scrolling**: Fixed bar chart item clipping on smaller displays by adding horizontal scrolling and dynamic bar height scaling.

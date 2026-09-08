@@ -58,6 +58,7 @@
 - [x] **"Top Largest Files" Tab** — dedicated tab scanning the entire selected drive, listing the 100 biggest files across all subfolders (size, path, extension, last modified, system files included)
 - [x] **"Large & Old Files" Smart Filter** — one-click filter: files >100 MB not accessed/modified in 12+ months with live badge count
 - [x] **Send to Recycle Bin** — right-click context menu "Send to Recycle Bin" on files and folders directly from the DataGrid (safe delete, recoverable)
+- [x] **Enhanced CSV Export for Excel** — export formatted `.csv` files with raw numeric `Size (Bytes)` and `Allocated Size (Bytes)` columns alongside UTF-8 BOM encoding for direct numeric sorting in Microsoft Excel
 
 ### 🔍 PowerToys Run Plugin
 - [x] **Scan History / Recents** — `ds recent` command shows the last 5 scanned paths for quick re-scan without retyping
@@ -74,7 +75,6 @@
 ### 🎨 Command Palette Extension
 - [x] **Switch to Async Scanning** — load scan results asynchronously to prevent CmdPal freezing during large folder scans
 - [x] **Extension Settings via Native Controls** — native `CommandProvider.Settings` integration for "Show Hidden Files" and "Max Scan Depth"
-- [x] **Per-Command Enable/Disable** — independently enable/disable each of our 3 top-level CmdPal commands using granular toggles
 - [ ] **Adaptive Cards Detail Pane** — render a disk usage mini-chart and stats in the CmdPal item detail pane
 - [ ] **Submit to CmdPal Extension Gallery** — submit PR to `microsoft/CmdPal-Extensions` so users can install via WinGet from within CmdPal's settings (no manual MSIX download needed)
 
@@ -91,6 +91,7 @@
 - [ ] **Results Grouping** — group results by drive, category (Documents, Videos, etc.), or size tier in the Run results list
 
 ### 🎨 Command Palette Extension
+- [ ] **Per-Command Enable/Disable** — independently enable/disable each of our 3 top-level CmdPal commands using granular toggles
 - [ ] **Native `IExplorerCommand` COM Server** — promote the Windows Explorer right-click entry to a **top-level** context menu item in Windows 11 (no more "Show more options" sub-menu)
 - [ ] **`IFormContent2` Inline Scan Forms** — use action-ID form support to present scan parameter pickers inline in CmdPal (folder depth selector, hidden file toggle)
 - [ ] **CmdPal Compact Mode Adaptation** — ensure our extension gracefully collapses to icon + short name in PowerToys v0.101 compact mode (no truncated/broken UI)
