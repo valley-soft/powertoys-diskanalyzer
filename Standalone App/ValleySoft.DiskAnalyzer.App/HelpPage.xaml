@@ -133,6 +133,13 @@
                                 <TextBlock Text="Type an extension pattern (e.g. *.mp4, *.zip, *.iso) to isolate specific file types across your entire drive!" TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                             </StackPanel>
                         </Border>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="Old &amp; Large Smart Filter" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="Click the '🕐 Old &amp; Large' toolbar toggle to immediately isolate files over 100 MB that haven't been modified in over 12 months. The button features a live count badge of matching items." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
 
                     <!-- Navigation Section -->
@@ -147,7 +154,7 @@
                         <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
                             <StackPanel Spacing="12">
                                 <TextBlock Text="Interactive Folder Drill-Down" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                <TextBlock Text="Double-click any folder in the DataGrid or TreeView to drill down directly into its contents." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <TextBlock Text="Double-click any folder in the Details grid, or tap any slice or bar in the Donut Chart and Visual Bar Chart views to drill down directly into its contents." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                             </StackPanel>
                         </Border>
 
@@ -170,6 +177,13 @@
 
                         <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
                             <StackPanel Spacing="12">
+                                <TextBlock Text="Multiple Visual Perspectives (Tabs)" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="Switch between the Details table, dynamic Donut Chart, responsive Bar Chart, and the Top Files view at any time to explore your storage visually or numerically." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
                                 <TextBlock Text="Hidden Files &amp; Folder Trees" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                 <TextBlock Text="Toggle 'Show Hidden Files' to include or exclude system hidden files, and use Expand/Collapse to manage tree hierarchy views." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                             </StackPanel>
@@ -178,7 +192,7 @@
                         <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
                             <StackPanel Spacing="12">
                                 <TextBlock Text="DataGrid Context Menu" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                <TextBlock Text="Right-click any item in the scan grid to open 'Open in Explorer' or 'Copy Path' directly to clipboard." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <TextBlock Text="Right-click any item in the scan grid to 'Open in Explorer', 'Copy Path', or safely 'Send to Recycle Bin' with a confirmation prompt." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>
