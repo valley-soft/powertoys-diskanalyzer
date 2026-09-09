@@ -1,5 +1,12 @@
 # ValleySoft Disk Analyzer v1.5.0
 
+> [!WARNING]
+> ### ⚠️ Notice for Standalone / Microsoft Store Users (Hotfix v1.5.1 In Progress)
+> We have identified an immediate startup crash affecting certain clean Windows installations where the latest Windows App SDK runtime is not pre-installed.
+> 
+> A fix is already prepared, and **Hotfix v1.5.1** is currently being prepared and will be deployed to both GitHub and the Microsoft Store shortly. If you experience an immediate close on launch in v1.5.0, please watch for the v1.5.1 update! In the meantime, the PowerToys Run plugin works without issues. Thank you for your patience and support!
+
+
 TreeSize-like disk usage analyzer for PowerToys Run, Windows Command Palette, and Standalone WinUI 3 App.
 
 ### Components
