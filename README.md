@@ -320,6 +320,8 @@ Looking to see what's coming next? Check out our official **[Project Roadmap](RO
 
 ---
 
+## Changelog
+
 ### v1.5.1 — 2026-09-09
 
 #### Fixed & Improved
