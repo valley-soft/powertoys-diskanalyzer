@@ -18,7 +18,7 @@ public sealed partial class AboutPage : Page
         catch
         {
             // Unpackaged fallback
-            VersionTextBlock.Text = "Version 1.5.0";
+            VersionTextBlock.Text = "Version 1.5.1";
         }
     }
 

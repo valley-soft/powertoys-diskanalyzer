@@ -1,13 +1,8 @@
-# ValleySoft Disk Analyzer v1.5.0
-
-> [!WARNING]
-> ### ⚠️ Notice for Standalone / Microsoft Store Users (Hotfix v1.5.1 In Progress)
-> We have identified an immediate startup crash affecting certain clean Windows installations where the latest Windows App SDK runtime is not pre-installed.
-> 
-> A fix is already prepared, and **Hotfix v1.5.1** is currently being prepared and will be deployed to both GitHub and the Microsoft Store shortly. If you experience an immediate close on launch in v1.5.0, please watch for the v1.5.1 update! In the meantime, the PowerToys Run plugin works without issues. Thank you for your patience and support!
-
+# ValleySoft Disk Analyzer v1.5.1
 
 TreeSize-like disk usage analyzer for PowerToys Run, Windows Command Palette, and Standalone WinUI 3 App.
+
+> **v1.5.1 Hotfix Release:** This update resolves an immediate startup crash (`0xc000027b`) on clean Windows installations by packaging the Windows App SDK runtime directly with the application (100% self-contained), hardening system backdrop initialization with fallback for Windows 10, and stabilizing layout rendering for unmeasured tabs.
 
 ### Components
 
@@ -43,7 +38,7 @@ This release includes three tools, bundled into two easy installations:
 
 ### Installation — Standalone App & Command Palette Extension (Unified MSIX)
 
-1. Download **`ValleySoft.DiskAnalyzer.App_1.5.0_x64.msix`** (or `arm64`) from the assets below.
+1. Download **`ValleySoft.DiskAnalyzer.App_1.5.1_x64.msix`** (or `arm64`) from the assets below.
 2. Double-click the `.msix` file and click **Install**.
 3. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
 
@@ -66,7 +61,7 @@ This release includes three tools, bundled into two easy installations:
 
 ### Installation — PowerToys Run Plugin
 
-1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.5.0-x64.exe`** (or `arm64`) from the assets below.
+1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.5.1-x64.exe`** (or `arm64`) from the assets below.
 2. Exit PowerToys (right-click tray icon → Exit).
 3. Run the installer — it will clean install to `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins\DiskAnalyzer`.
 4. Restart PowerToys and enable the plugin in Settings → PowerToys Run → Plugins.
@@ -83,6 +78,14 @@ This release includes three tools, bundled into two easy installations:
 | `ds ext C:\ .mp4` | Find files by extension |
 | `ds empty C:\` | Find empty folders |
 | `ds gui` | Open the standalone GUI window |
+
+## 🚀 What's New in Version 1.5.1 (Hotfix)
+
+### 🛠️ What Got Fixed & Improved:
+- **🛡️ Self-Contained Windows App SDK Runtime**: Embedded the entire Windows App SDK runtime directly into the application package (`WindowsAppSDKSelfContained=true`), eliminating startup crashes (`0xc000027b`) on clean Windows installations without requiring external Store framework provisioning.
+- **🎨 Hardened Backdrop Initialization**: Removed declarative `MicaBackdrop` from XAML markup in favor of dynamic runtime initialization with graceful fallback for Windows 10, battery saver, and environments lacking hardware composition.
+- **📊 Top Files DataGrid Stability**: Fixed division-by-zero layout cycles on unmeasured inactive tabs by giving the Name column fixed sizing and lazily binding the items collection on tab activation.
+- **🔄 Synchronized App Metadata**: Updated internal version indicators, Help page "What's New (v1.5.1)" highlights, and fallback version strings across the suite.
 
 ---
 

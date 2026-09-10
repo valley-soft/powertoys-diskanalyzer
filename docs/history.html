@@ -202,20 +202,29 @@
             <p>Track the evolution of Disk Analyzer. All notable changes, fixes, and improvements.</p>
         </header>
 
+        <!-- v1.5.1 -->
+        <div class="release">
+            <div class="release-header">
+                <div class="release-version">v1.5.1</div>
+                <div class="release-date">September 9, 2026</div>
+            </div>
+            
+            <div class="release-section">
+                <span class="tag fixed">Fixed &amp; Improved</span>
+                <ul class="release-list">
+                    <li><strong>Self-Contained Windows App SDK Runtime</strong>: Embedded the complete Windows App SDK native runtime directly into the application package (<code>WindowsAppSDKSelfContained=true</code>), preventing startup crashes (<code>0xc000027b</code>) on clean Windows installations without requiring external framework package provisioning.</li>
+                    <li><strong>Hardened Backdrop Initialization</strong>: Replaced declarative XAML MicaBackdrop with dynamic runtime initialization, providing graceful fallback for Windows 10, battery saver, and systems without hardware composition.</li>
+                    <li><strong>Top Files DataGrid Stability</strong>: Fixed division-by-zero layout cycles on unmeasured inactive tabs by giving the Name column fixed sizing and lazily binding the items collection on tab activation.</li>
+                    <li><strong>Synchronized Version Metadata</strong>: Updated internal version indicators, Help page "What's New (v1.5.1)" highlights, and fallback version strings across the suite.</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- v1.5.0 -->
         <div class="release">
             <div class="release-header">
                 <div class="release-version">v1.5.0</div>
                 <div class="release-date">September 7, 2026</div>
-            </div>
-
-            <!-- Hotfix Notice -->
-            <div style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 6px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 10px;">
-                <span style="font-size: 1.15rem; line-height: 1.2;">⚠️</span>
-                <div style="font-size: 0.9rem; color: #fef08a; line-height: 1.5;">
-                    <strong style="color: #fef08a;">Notice (Hotfix v1.5.1 In Progress):</strong>
-                    An immediate startup crash has been identified on certain clean Windows setups lacking the latest Windows App SDK runtime. Hotfix <strong>v1.5.1</strong> is actively being prepared and will be deployed to GitHub and the Microsoft Store shortly.
-                </div>
             </div>
             
             <div class="release-section">

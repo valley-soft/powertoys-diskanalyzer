@@ -291,7 +291,7 @@
                                     </MenuFlyout>
                                 </controls:DataGrid.ContextFlyout>
                                 <controls:DataGrid.Columns>
-                                    <controls:DataGridTemplateColumn Header="Name" Width="*" MinWidth="300">
+                                    <controls:DataGridTemplateColumn Header="Name" Width="350">
                                         <controls:DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" Spacing="12" Padding="12,0,0,0">

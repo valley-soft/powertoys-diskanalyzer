@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2026-09-09
+
+### Fixed & Improved
+- **Self-Contained Windows App SDK Runtime**: Embedded the entire Windows App SDK runtime directly into the application package (`WindowsAppSDKSelfContained=true`), eliminating startup crashes (`0xc000027b`) on clean Windows installations without requiring external Store framework provisioning.
+- **Hardened Backdrop Initialization**: Removed declarative `MicaBackdrop` from XAML markup in favor of dynamic runtime initialization with graceful fallback for Windows 10, battery saver, and environments lacking hardware composition.
+- **Top Files DataGrid Stability**: Fixed division-by-zero layout cycles on unmeasured inactive tabs by giving the Name column fixed sizing and lazily binding the items collection on tab activation.
+- **Synchronized App Metadata**: Updated internal version indicators, Help page "What's New (v1.5.1)" highlights, and fallback version strings across the suite.
+
 ## [1.5.0] - 2026-09-07
 
 ### Added

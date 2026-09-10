@@ -72,7 +72,7 @@ foreach ($Arch in $Architectures) {
         Write-Error "VALLEYSOFT_CERT_PASSWORD environment variable is not set. Run Setup-DevCert.ps1 first."
         exit 1
     }
-    dotnet publish $ProjectFile -c Release -r $WinArch --self-contained true -p:GenerateAppxPackageOnBuild=true -p:PackageCertificateKeyFile="..\..\Store.pfx" -p:PackageCertificatePassword=$certPasswordRaw -p:DefineConstants="STORE_BUILD"
+    dotnet publish $ProjectFile -c Release -r $WinArch --self-contained true -p:WindowsAppSDKSelfContained=true -p:GenerateAppxPackageOnBuild=true -p:PackageCertificateKeyFile="..\..\Store.pfx" -p:PackageCertificatePassword=$certPasswordRaw -p:DefineConstants="STORE_BUILD"
 
     # Find the generated MSIX file
     $msixFile = Get-ChildItem -Path "$StandaloneDir\AppPackages" -Filter "*.msix" -Recurse -ErrorAction SilentlyContinue |

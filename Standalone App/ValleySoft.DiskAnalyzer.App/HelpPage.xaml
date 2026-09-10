@@ -18,7 +18,7 @@
                         Header="Help &amp; Features"
                         IsSettingsVisible="False">
             <NavigationView.MenuItems>
-                <NavigationViewItem Tag="WhatsNew" Content="What's New (v1.5.0)" Icon="Help" SelectsOnInvoked="True" IsSelected="True" />
+                <NavigationViewItem Tag="WhatsNew" Content="What's New (v1.5.1)" Icon="Help" SelectsOnInvoked="True" IsSelected="True" />
                 <NavigationViewItem Tag="Scanning" Content="Scanning &amp; Admin" Icon="Scan" />
                 <NavigationViewItem Tag="Filtering" Content="Filtering &amp; Search" Icon="Find" />
                 <NavigationViewItem Tag="Navigation" Content="Navigation" Icon="MapDrive" />
@@ -31,10 +31,21 @@
                     <StackPanel x:Name="WhatsNewSection" Spacing="20" Visibility="Visible">
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <FontIcon Glyph="&#xE897;" FontSize="24" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
-                            <TextBlock Text="What's New in Version 1.5.0" Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
+                            <TextBlock Text="What's New in Version 1.5.1" Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
                         </StackPanel>
                         
-                        <TextBlock Text="Here are the latest features and enhancements added in Version 1.5.0:" Style="{ThemeResource SubtitleTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        <TextBlock Text="Here are the latest features, enhancements, and stability hotfixes in Version 1.5.1:" Style="{ThemeResource SubtitleTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                        <!-- Hotfix v1.5.1 Highlight -->
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource AccentAAFillColorDefaultBrush}" BorderThickness="1.5" CornerRadius="8" Padding="16">
+                            <StackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE7BA;" FontSize="16" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                    <TextBlock Text="v1.5.1 Hotfix — Self-Contained Startup &amp; Stability" FontWeight="SemiBold" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                </StackPanel>
+                                <TextBlock Text="Embedded the Windows App SDK runtime directly into the application package (100% self-contained), eliminating startup crashes on clean Windows installations without requiring external framework packages. Hardened Mica backdrop initialization with safe fallback for Windows 10 and display drivers, and optimized Top Files grid rendering." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
 
                         <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
                             <StackPanel Spacing="12">

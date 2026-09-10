@@ -6,12 +6,15 @@ if (!$env:VALLEYSOFT_CERT_PASSWORD) {
     $env:VALLEYSOFT_CERT_PASSWORD = [System.Environment]::GetEnvironmentVariable("VALLEYSOFT_CERT_PASSWORD", "User")
 }
 
+# Terminate running app instances to release file locks
+Stop-Process -Name "ValleySoft.DiskAnalyzer*", "DiskAnalyzer*" -Force -ErrorAction SilentlyContinue
+
 # 1. Run the build script
-Write-Host "Running build-v1.5.0.ps1..."
-& ".\build-v1.5.0.ps1"
+Write-Host "Running build-v1.5.1.ps1..."
+& ".\build-v1.5.1.ps1"
 
 # 2. Get the generated MSIX file path (x64, newest first)
-$Version = "1.5.0"
+$Version = "1.5.1"
 $msixPath = Get-ChildItem "out\App" -Filter "ValleySoft.DiskAnalyzer.App_${Version}_x64.msix" -ErrorAction SilentlyContinue |
             Select-Object -First 1 -ExpandProperty FullName
 if (!$msixPath) {
@@ -99,7 +102,7 @@ dotnet publish "Community.PowerToys.Run.Plugin.DiskAnalyzer.csproj" -c Release -
 
 Write-Host ""
 Write-Host "========================================="
-Write-Host "  ValleySoft Disk Analyzer v1.5.0        "
+Write-Host "  ValleySoft Disk Analyzer v1.5.1        "
 Write-Host "  Successfully installed on your laptop! "
 Write-Host "========================================="
 Write-Host ""

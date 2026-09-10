@@ -9,10 +9,10 @@
 
 | Component | Description | Current Version |
 |---|---|---|
-| 🖥️ **Standalone App** | WinUI 3 MSIX app (Microsoft Store + sideload) | 1.5.0.0 |
-| 🔍 **PowerToys Run Plugin** | `ds` keyword plugin for PowerToys Run (launcher) | 1.5.0 |
-| 🪟 **PowerToys Run GUI** | WPF floating window launched from PowerToys Run | 1.5.0 |
-| 🎨 **Command Palette Extension** | Native CmdPal WinRT/COM extension (MSIX) | 1.5.0 |
+| 🖥️ **Standalone App** | WinUI 3 MSIX app (Microsoft Store + sideload) | 1.5.1.0 |
+| 🔍 **PowerToys Run Plugin** | `ds` keyword plugin for PowerToys Run (launcher) | 1.5.1 |
+| 🪟 **PowerToys Run GUI** | WPF floating window launched from PowerToys Run | 1.5.1 |
+| 🎨 **Command Palette Extension** | Native CmdPal WinRT/COM extension (MSIX) | 1.5.1 |
 
 ---
 
@@ -43,6 +43,7 @@
 
 | Release | Date | Highlights |
 |---|---|---|
+| **v1.5.1** | 2026-09-09 | Hotfix: 100% self-contained Windows App SDK runtime packaging, hardened Mica system backdrop initialization, Top Files DataGrid division-by-zero layout cycle fix on unmeasured tabs, and synchronized version metadata |
 | **v1.5.0** | 2026-09-07 | Donut chart tab, Top 100 Files whole-drive scan, Old & Large quick filter, Recycle Bin context menu, `ds recent` history, richer subtitles, full keyboard navigation, collapsible WPF donut panel, live theme sync, unicode shaded usage bars, native CmdPal settings, and async queries |
 | **v1.4.1** | 2026-08-21 | Store patch: less intrusive rating prompt (fires once after 10 scans, 5s delay), Store version policy fix |
 | **v1.4.0** | 2026-08-07 | Explorer context menu, icon extraction, CmdPal top-level commands, CSV export resilience, live item count, zero-crash telemetry fixes |

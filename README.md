@@ -1,6 +1,6 @@
 # DiskAnalyzer — Standalone App, PowerToys Run Plugin & Command Palette Extension
 
-[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+[![Version](https://img.shields.io/badge/version-1.5.1-blue.svg)](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 [![Microsoft Store](https://img.shields.io/badge/Microsoft_Store-Available-0078D7?logo=windows&logoColor=white)](https://apps.microsoft.com/detail/9nf073kltvwn?hl=en-US&gl=US)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/valley-soft/powertoys-diskanalyzer)
 [![PowerToys](https://img.shields.io/badge/PowerToys-v0.97.0+-orange.svg)](https://github.com/microsoft/PowerToys)
@@ -130,7 +130,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 ### Standalone App (WinUI 3) & Command Palette Extension (Unified MSIX)
 
-1. Download **`ValleySoft.DiskAnalyzer.App_1.5.0_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`ValleySoft.DiskAnalyzer.App_1.5.1_x64.msix`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Double-click** the `.msix` file — Windows will launch the installer
 3. Click **Install** (or **Update**)
 4. You're done! The Standalone App will be in your Start Menu, and the Command Palette Extension will automatically be registered in the Windows Command Palette.
@@ -158,7 +158,7 @@ Launch **DiskAnalyzer** from your Windows Start Menu to access the full standalo
 
 #### Method 1 — Standalone Installer (Recommended)
 
-1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.5.0-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
+1. Download **`ValleySoft.DiskAnalyzerInstaller-v1.5.1-x64.exe`** (or `arm64`) from [Releases](https://github.com/valley-soft/powertoys-diskanalyzer/releases/latest)
 2. **Exit PowerToys completely** — Right-click the PowerToys icon in the system tray → **Exit**
 3. **Run the installer** — it will automatically extract and copy plugin files to:
    ```
@@ -190,7 +190,7 @@ Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 ```powershell
 git clone https://github.com/valley-soft/powertoys-diskanalyzer.git
 cd powertoys-diskanalyzer
-.\build-v1.5.0.ps1
+.\build-v1.5.1.ps1
 # Installers and MSIX packages appear in out\
 ```
 
@@ -309,7 +309,7 @@ Configure directly inside Windows Command Palette settings.
 | `Images/` | Plugin icon assets (`DiskAnalyzerLight.png` / `DiskAnalyzerDark.png`) |
 | `CmdPalExtension/` | Native Command Palette MSIX extension project |
 | `Installer/` | Single-file native installer source |
-| `build-v1.5.0.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX + Standalone MSIX for x64 & ARM64 |
+| `build-v1.5.1.ps1` | Build script — compiles PT Run plugin + CmdPal MSIX + Standalone MSIX for x64 & ARM64 |
 | `out/` | Final output directory for all generated artifacts |
 
 ---
@@ -319,6 +319,14 @@ Configure directly inside Windows Command Palette settings.
 Looking to see what's coming next? Check out our official **[Project Roadmap](ROADMAP.md)** for our bi-weekly release schedule and upcoming features!
 
 ---
+
+### v1.5.1 — 2026-09-09
+
+#### Fixed & Improved
+- 🛡️ **Self-Contained Windows App SDK Runtime**: Embedded the entire Windows App SDK runtime directly into the application package (`WindowsAppSDKSelfContained=true`), eliminating startup crashes (`0xc000027b`) on clean Windows installations without requiring external Store framework provisioning.
+- 🎨 **Hardened Backdrop Initialization**: Removed declarative `MicaBackdrop` from XAML markup in favor of dynamic runtime initialization with graceful fallback for Windows 10, battery saver, and environments lacking hardware composition.
+- 📊 **Top Files DataGrid Stability**: Fixed division-by-zero layout cycles on unmeasured inactive tabs by giving the Name column fixed sizing and lazily binding the items collection on tab activation.
+- 🔄 **Synchronized App Metadata**: Updated internal version indicators, Help page "What's New (v1.5.1)" highlights, and fallback version strings across the suite.
 
 ### v1.5.0 — 2026-09-07
 
