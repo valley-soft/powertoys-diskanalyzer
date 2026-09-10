@@ -25,9 +25,8 @@ Write-Host "MakeAppx found at: $makeAppxPath"
 $Architectures = @("x64", "arm64")
 $BundleMapping = "bundle_mapping.txt"
 
-# Extract version from the appxmanifest
-[xml]$manifest = Get-Content "$StandaloneDir\Package.appxmanifest"
-$Version = $manifest.Package.Identity.Version
+$StoreVersion = "1.5.2.0"
+$Version = $StoreVersion
 $BundleFileName = "ValleySoft.DiskAnalyzer_StoreBundle_v${Version}.msixbundle"
 
 # Clear out any old data
@@ -49,10 +48,10 @@ if (Test-Path "$StandaloneDir\bin\Release") {
 $ManifestPath = "$StandaloneDir\Package.appxmanifest"
 $ManifestBackup = "$StandaloneDir\Package.appxmanifest.bak"
 Copy-Item $ManifestPath $ManifestBackup
-$manifestContent = Get-Content $ManifestPath -Raw
-$manifestContent = $manifestContent -replace '<rescap:Capability Name="allowElevation" />', ''
-$manifestContent = $manifestContent -replace 'Publisher="CN=ValleySoft"', 'Publisher="CN=609617EB-B04D-404E-B0F3-720FF360003B"'
-$manifestContent | Out-File $ManifestPath -Encoding UTF8
+[xml]$xmlDoc = Get-Content $ManifestPath
+$xmlDoc.Package.Identity.Version = $StoreVersion
+$xmlDoc.Package.Identity.Publisher = "CN=609617EB-B04D-404E-B0F3-720FF360003B"
+$xmlDoc.Save((Resolve-Path $ManifestPath).Path)
 
 $msixPaths = @()
 
@@ -60,19 +59,21 @@ foreach ($Arch in $Architectures) {
     $WinArch = "win-$Arch"
 
     Write-Host "`n========================================="
-    Write-Host "  Building Store MSIX ($Arch)            "
+    Write-Host "  Building Store MSIX ($Arch) v$StoreVersion"
     Write-Host "========================================="
 
-    # Require the password via environment variable — never hardcoded.
-    $certPasswordRaw = $env:VALLEYSOFT_CERT_PASSWORD
-    if (!$certPasswordRaw) {
-        $certPasswordRaw = [System.Environment]::GetEnvironmentVariable("VALLEYSOFT_CERT_PASSWORD", "User")
-    }
-    if (!$certPasswordRaw) {
-        Write-Error "VALLEYSOFT_CERT_PASSWORD environment variable is not set. Run Setup-DevCert.ps1 first."
-        exit 1
-    }
-    dotnet publish $ProjectFile -c Release -r $WinArch --self-contained true -p:WindowsAppSDKSelfContained=true -p:GenerateAppxPackageOnBuild=true -p:PackageCertificateKeyFile="..\..\Store.pfx" -p:PackageCertificatePassword=$certPasswordRaw -p:DefineConstants="STORE_BUILD"
+    $storeCertPassword = "password"
+    dotnet publish $ProjectFile -c Release -r $WinArch --self-contained true `
+        -p:WindowsAppSDKSelfContained=true `
+        -p:GenerateAppxPackageOnBuild=true `
+        -p:PackageCertificateKeyFile="..\..\Store.pfx" `
+        -p:PackageCertificatePassword="$storeCertPassword" `
+        -p:DefineConstants="STORE_BUILD" `
+        -p:ApplicationVersion=$StoreVersion `
+        -p:ApplicationDisplayVersion="1.5.2" `
+        -p:Version="1.5.2" `
+        -p:AssemblyVersion=$StoreVersion `
+        -p:FileVersion=$StoreVersion
 
     # Find the generated MSIX file
     $msixFile = Get-ChildItem -Path "$StandaloneDir\AppPackages" -Filter "*.msix" -Recurse -ErrorAction SilentlyContinue |

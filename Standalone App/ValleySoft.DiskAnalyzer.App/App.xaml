@@ -10,7 +10,20 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
-            <!-- Other app resources here -->
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="ControlFillColorTransparentBrush" Color="#F1F5F9" />
+                    <SolidColorBrush x:Key="DataGridGridLinesBrush" Color="#CBD5E1" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="ControlFillColorTransparentBrush" Color="#1E293B" />
+                    <SolidColorBrush x:Key="DataGridGridLinesBrush" Color="#334155" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="ControlFillColorTransparentBrush" Color="#1E293B" />
+                    <SolidColorBrush x:Key="DataGridGridLinesBrush" Color="#334155" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

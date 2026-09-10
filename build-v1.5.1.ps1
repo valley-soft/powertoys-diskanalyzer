@@ -126,8 +126,6 @@ foreach ($Arch in $Architectures) {
             $signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\signtool.exe"
         }
         if (Test-Path $signtool) {
-            # Sign by thumbprint so signtool uses the cert already in CurrentUser\My
-            # This bypasses the EKU filter issue that occurs with /f file-based signing
             & $signtool sign /sha1 $CertThumbprint /fd SHA256 /v "$msixPath"
         } else {
             Write-Host "Warning: signtool.exe not found at $signtool"

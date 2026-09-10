@@ -22,6 +22,21 @@
                     <SolidColorBrush x:Key="DataGridGridLinesBrush" Color="#CBD5E1" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="CardStrokeColorDefaultBrush" Color="#334155" />
+                    <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="#1E293B" />
+                    <SolidColorBrush x:Key="ControlFillColorDefaultBrush" Color="#0F172A" />
+                    <SolidColorBrush x:Key="ControlFillColorTransparentBrush" Color="#1E293B" />
+                    <SolidColorBrush x:Key="TextFillColorPrimaryBrush" Color="#F8FAFC" />
+                    <SolidColorBrush x:Key="TextFillColorSecondaryBrush" Color="#94A3B8" />
+                    <SolidColorBrush x:Key="DataGridGridLinesBrush" Color="#334155" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="CardStrokeColorDefaultBrush" Color="#334155" />
+                    <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="#1E293B" />
+                    <SolidColorBrush x:Key="ControlFillColorDefaultBrush" Color="#0F172A" />
+                    <SolidColorBrush x:Key="ControlFillColorTransparentBrush" Color="#1E293B" />
+                    <SolidColorBrush x:Key="TextFillColorPrimaryBrush" Color="#F8FAFC" />
+                    <SolidColorBrush x:Key="TextFillColorSecondaryBrush" Color="#94A3B8" />
                     <SolidColorBrush x:Key="DataGridGridLinesBrush" Color="#334155" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>

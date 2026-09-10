@@ -36,6 +36,7 @@ namespace ValleySoft_DiskAnalyzer_App
             {
                 this.InitializeComponent();
                 ResultsGrid.ItemsSource = _currentItems;
+                TopFilesGrid.ItemsSource = _topFiles;
                 PathBreadcrumbBar.ItemsSource = _pathSegments;
                 _currentItems.CollectionChanged += (s, e) => UpdateItemCount();
             }
